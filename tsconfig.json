@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "jsx": "react",
+    "strict": true,
+    "noEmitOnError": true
+  },
+  "include": ["to-be-added-later"],
+  "exclude": ["node_modules"],
+}
