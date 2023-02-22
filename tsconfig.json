@@ -9,7 +9,8 @@
     "jsx": "react",
     "strict": true,
     "noEmitOnError": true,
-    "types": ["react/next"]
+    "types": ["react/next"],
+    "target": "ESNext",
   },
   "include": ["client"],
   "exclude": ["node_modules"]
