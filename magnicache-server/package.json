@@ -11,7 +11,7 @@
     "url": "git+https://github.com/oslabs-beta/MagniCache.git"
   },
   "author": "MagniCache",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/oslabs-beta/MagniCache/issues"
   },
