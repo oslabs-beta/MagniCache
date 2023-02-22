@@ -5,11 +5,15 @@ import VisualsContainer from './VisualsContainer';
 
 const MetricsContainer: React.FC = () => {
   return (
-    <>
-      <QueryContainer />
-      <ResultContainer />
-      <VisualsContainer />
-    </>
+    <div className='metrics-flex'> 
+      <div className="metrics-container">
+        <div className='query-result'>
+          <QueryContainer />
+          <ResultContainer />
+        </div>
+        <VisualsContainer />
+      </div>
+    </div>
   );
 };
 
