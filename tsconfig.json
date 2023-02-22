@@ -8,8 +8,9 @@
     "sourceMap": true,
     "jsx": "react",
     "strict": true,
-    "noEmitOnError": true
+    "noEmitOnError": true,
+    "types": ["react/next"]
   },
-  "include": ["to-be-added-later"],
-  "exclude": ["node_modules"],
+  "include": ["client"],
+  "exclude": ["node_modules"]
 }
