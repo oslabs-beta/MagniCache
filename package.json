@@ -20,7 +20,7 @@
     "cache",
     "graphQL"
   ],
-  "author": "Truman Miller, Aria Soltankhah, Ahmed Chami, Yousuf Elkhoga",
+  "author": "MagniCache",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/oslabs-beta/MagniCache/issues"
@@ -47,11 +47,6 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
-    "bootstrap": "^5.2.3",
-    "express": "^4.18.2",
-    "react": "^18.2.0",
-    "react-bootstrap": "^2.7.2",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.1"
+
   }
 }
