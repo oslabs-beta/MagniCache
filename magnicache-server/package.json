@@ -1,8 +1,8 @@
 {
-  "name": "magnicache-server",
-  "version": "1.0.0",
+  "name": "@magnicache/server",
+  "version": "1.0.1",
   "description": "Server side caching for GraphQL",
-  "main": "index.js",
+  "main": "magnicache-server.js",
   "scripts": {
     "test": "test"
   },
@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/oslabs-beta/MagniCache/issues"
   },
-  "homepage": "https://github.com/oslabs-beta/MagniCache#readme"
+  "homepage": "https://github.com/oslabs-beta/MagniCache#readme",
+  "dependencies": {
+    "graphql": "^16.6.0"
+  }
 }
