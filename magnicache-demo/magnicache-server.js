@@ -1,25 +1,32 @@
-const { graphql } = require('graphql');
+const {
+  graphql,
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLString,
+} = require('graphql');
 
 const magni = {};
 
 magni.MagniCache = class {
   //class, constructor fn; and then we have methods
+
   constructor(schema) {
     this.schema = schema;
     this.query = this.query.bind(this);
   }
 
   query(req, res, next) {
-    console.log('schema', this.schema);
     graphql({ schema: this.schema, source: req.body.query })
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         res.locals.queryResponse = result;
         return next();
       })
       .catch((err) => {
+        // console.log(err);
         return next({
-          err: err,
+          log: err,
+          // message: { err: err },
         });
       });
     // console.log(req.body.query);
