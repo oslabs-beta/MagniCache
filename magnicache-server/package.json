@@ -10,6 +10,9 @@
     "type": "git",
     "url": "git+https://github.com/oslabs-beta/MagniCache.git"
   },
+  "dependencies": {
+    "graphql": "^16.6.0"
+  },
   "author": "MagniCache",
   "license": "MIT",
   "bugs": {
