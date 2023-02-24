@@ -3,7 +3,7 @@ import QueryDisplay from '../components/QueryDisplay';
 
 const QueryContainer: React.FC = () => {
   return (
-    <div className='query-container'>
+    <div className="query-container">
       <QueryDisplay />
     </div>
   );

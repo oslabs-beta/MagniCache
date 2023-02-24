@@ -16,10 +16,13 @@ magni.MagniCache = class {
   }
 
   query(req, res, next) {
+    console.log('query', req.body);
     graphql({ schema: this.schema, source: req.body.query })
       .then((result) => {
         // console.log(result);
         res.locals.queryResponse = result;
+        // res.locals.queryResponse = 'test';
+
         return next();
       })
       .catch((err) => {

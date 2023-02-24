@@ -83,7 +83,7 @@ body {
 
 .query-result {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+
 }
 
 .query-display-flex {
@@ -143,20 +143,22 @@ h1 {
 }
 
 .fields-container-result {
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
+  // display: flex;
+  // flex-direction: column;
+  // justify-content: start;
   align-items: start;
   padding-left: 8px;
   padding-top: 8px;
   margin-right: 10px;
   border-radius: $borderRad;
-  width: 100%;
+  width: 50rem;
+  height: 200px;
   margin-bottom: 8px;
   border: 1px solid $blackColor;
   min-height: 150px;
   max-height: 300px;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .visuals-display {
@@ -202,4 +204,13 @@ h1 {
   min-width: 250px;
   max-width: 450px;
   height: 250px;
+}
+
+
+.query-input {
+  width: 400%;
+  height: 8rem;
+  border: none;
+  text-align: left;
+  display: flex;
 }
