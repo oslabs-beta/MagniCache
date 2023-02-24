@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const app = express();
 const db = require('./db-model.js');
-const { MagniCache } = require('@magnicache/server');
+const { MagniCache } = require('./magnicache-server.js');
 
 const {
   GraphQLNonNull,
@@ -114,20 +114,6 @@ const schema = new GraphQLSchema({
   query: RootQueryType,
   // mutation: RootMutationType,
 });
-
-// var schema = new GraphQLSchema({
-//   query: new GraphQLObjectType({
-//     name: 'RootQueryType',
-//     fields: {
-//       hello: {
-//         type: GraphQLString,
-//         resolve() {
-//           return 'world';
-//         },
-//       },
-//     },
-//   }),
-// });
 
 const magnicache = new MagniCache(schema);
 

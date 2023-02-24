@@ -3,7 +3,7 @@ import VisualsDisplay from '../components/VisualsDisplay';
 
 const VisualsContainer: React.FC = () => {
   return (
-    <div className='visuals-container'>
+    <div className="visuals-container">
       <VisualsDisplay />
     </div>
   );
