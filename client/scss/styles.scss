@@ -9,9 +9,9 @@ $secondaryWhite: white;
 $blackColor: #313533;
 $errorColor: #b3001b;
 body {
-  display: flex;
+  display: grid;
   flex-direction: row;
-  justify-content: center;
+  // justify-content: center;
   align-items: center;
   margin-top: 20px;
   // margin: 0;
@@ -83,16 +83,15 @@ body {
 
 .query-result {
   display: grid;
-
 }
 
 .query-display-flex {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  // justify-content: center;
+  // align-items: center;
   padding-top: 5%;
+  padding-left: 10px;
 }
 
 .fields-container {
@@ -151,8 +150,6 @@ h1 {
   padding-top: 8px;
   margin-right: 10px;
   border-radius: $borderRad;
-  width: 50rem;
-  height: 200px;
   margin-bottom: 8px;
   border: 1px solid $blackColor;
   min-height: 150px;
@@ -194,6 +191,7 @@ h1 {
 .right-chart {
   margin-right: 40px;
   min-width: 250px;
+  padding-bottom: 10px;
 }
 
 .visuals-container {
@@ -201,16 +199,22 @@ h1 {
 }
 
 .left-visual {
-  min-width: 250px;
-  max-width: 450px;
-  height: 250px;
+  padding-bottom: 30px;
+  margin: 20px;
+  width: 50%;
 }
-
 
 .query-input {
   width: 400%;
   height: 8rem;
   border: none;
   text-align: left;
-  display: flex;
+}
+
+.query-input:focus {
+  outline-width: 0;
+}
+
+#doughtnut {
+  padding-bottom: 20px;
 }
