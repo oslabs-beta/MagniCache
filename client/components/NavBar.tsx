@@ -4,22 +4,24 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import '../scss/styles.scss';
+import { useNavigate } from 'react-router-dom';
 
 const NavBar: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <Navbar fixed="top" className="nav">
       <Container>
-        <Navbar.Brand id="nav-title" href="#home">
+        <Navbar.Brand id="nav-title" href="/">
           MagniCache
         </Navbar.Brand>
         <Nav className="all-nav-links">
-          <Nav.Link id="nav-link" href="#about">
+          <Nav.Link id="nav-link" onClick={() => navigate('/about')}>
             About
           </Nav.Link>
-          <Nav.Link id="nav-link" href="#docs">
+          <Nav.Link id="nav-link" onClick={() => navigate('/docs')}>
             Docs
           </Nav.Link>
-          <Nav.Link id="nav-link" href="#team">
+          <Nav.Link id="nav-link" onClick={() => navigate('/team')}>
             Team
           </Nav.Link>
         </Nav>
