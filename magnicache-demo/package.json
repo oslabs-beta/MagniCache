@@ -6,17 +6,19 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "NODE_ENV=production nodemon server.js"
+    "dev": "nodemon server.js",
+    "tsc": "tsc --watch --outDir ../magnicache-demo ../magnicache-server/magnicache-server.ts"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@magnicache/server": "^1.0.1",
+    "@magnicache/server": "^1.0.2",
     "express": "^4.18.2",
     "graphql": "^16.6.0",
     "pg": "^8.9.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "typescript": "^4.9.5"
   }
 }

@@ -7,10 +7,10 @@ const {
 const { parse } = require('graphql/language/parser');
 import { Response, Request, NextFunction } from 'express';
 
-function Magnicache(schema: any): void {
+function Magnicache(this: any, schema: any): void {
   this.schema = schema;
   this.cache = new Map();
-  // this.query = this.query.bind(this);
+  this.query = this.query.bind(this);
 }
 
 Magnicache.prototype.query = function (
@@ -25,11 +25,12 @@ Magnicache.prototype.query = function (
 
   if (ast.operation === 'query') {
     const queries: string[] = this.magniParser(ast.selectionSet.selections);
-    // console.log('queries:', queries);
+    console.log('queries', queries);
     const queryResponses: {}[] = [];
 
     // this compileQueries function needs work -> currently it is not compiling all of our queries because each messageById value is an array?
     const compileQueries = () => {
+      console.log('compiling queries....');
       // console.log(Object.assign({}, ...queryResponses));
       let response = {};
       // maybe try lodash
@@ -55,15 +56,19 @@ Magnicache.prototype.query = function (
         console.log('cache miss');
 
         graphql({ schema: this.schema, source: query })
-          .then((result) => {
+          .then((result: {}) => {
+            console.log('qRes;', queryResponses);
+            console.log('result;', result);
+
             this.cache.set(query, result);
+
             queryResponses.push(result);
             if (queries.length === queryResponses.length) {
-              // console.log(queryResponses);
               compileQueries();
             }
           })
-          .catch((err) => {
+          .catch((err: {}) => {
+            console.log(err);
             return next({
               log: err,
             });
@@ -100,9 +105,10 @@ Magnicache.prototype.magniParser = function (
       selections: typeof selections;
     };
   }[],
-  queryArray: (string | string[])[],
+  queryArray: (string | string[])[] = [],
   queries: string[] = []
 ): string[] {
+  console.log('parsing');
   for (const selection of selections) {
     queryArray.push(selection.name.value);
     if (selection.arguments?.length > 0) {
