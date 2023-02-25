@@ -6,7 +6,7 @@ import AboutPage from './containers/AboutPage';
 import DocsPage from './containers/DocsPage';
 import TeamPage from './containers/TeamPage';
 import './scss/styles.scss';
-import { Routes, Route, useNavigate, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
 // Create a type to easily add types to variables
 type Rtype = React.FC;
