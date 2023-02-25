@@ -6,9 +6,9 @@ type Rtype = React.FC;
 
 const App: Rtype = () => {
   return (
-    <>
+    
       <MainContainer />
-    </>
+  
   );
 };
 
