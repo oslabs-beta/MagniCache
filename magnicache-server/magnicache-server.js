@@ -55,7 +55,7 @@ magni.MagniCache = class {
             //{allMessages(id:4){message}}
             console.log('queryArray:', queryArray);
 
-            // Ex:  ['messageById', ['id:4'], ['name:yousuf'], 'message'] 
+            // Ex:  ['messageById', ['id:4'], ['name:yousuf'], 'message']
             // would give {messageById(id:4,name:yousuf){message}}
             for (let i = queryArray.length - 1; i >= 0; i--) {
               if (Array.isArray(queryArray[i])) {
@@ -120,32 +120,6 @@ magni.MagniCache = class {
     } else {
       console.log('this is a mutation');
     }
-
-    // console.log('query:', query);
-    // if (this.cache.has(query)) {
-    //   console.log('cache hit');
-    //   res.locals.queryResponse = this.cache.get(query);
-    //   return next();
-    // } else {
-    //   console.log('cache miss');
-    //   graphql({ schema: this.schema, source: query })
-    //     .then((result) => {
-    //       this.cache.set(query, result);
-    //       res.locals.queryResponse = result;
-    //       // res.locals.queryResponse = parseGraphql(query);
-
-    //       // console.log('result:', result)
-    //       return next();
-    //     })
-    //     .catch((err) => {
-    //       return next({
-    //         log: err,
-    //       });
-    //     });
-    // }
-    // console.log(req.body.query);
-    // res.locals.queryResponse = req.body.query;
-    // return next();
   }
 };
 
