@@ -7,16 +7,8 @@ const MetricsContainer: React.FC = () => {
   const [queryResponse, setQueryResponse] = useState({});
   const [fetchTime, setFetchTime] = useState(0);
 
-
   const handleClickRun = () => {
-    const resourceTimings = window.performance.getEntriesByType('resource');
-
-    for (let i = 0; i < resourceTimings.length; i++) {
-      const timing = resourceTimings[i];
-      setFetchTime(timing.duration);
-    }
-    console.log(fetchTime);
-    //TODO: Have it fetch the query in the input
+    //TODO: Have the backend send the cache hits and misses in some way. possibly here or visual display
     fetch(`/graphql`, {
       method: 'POST',
       headers: {
@@ -28,10 +20,17 @@ const MetricsContainer: React.FC = () => {
     })
       .then((res) => res.json())
       .then((data) => {
+        /*query{messageById(id:12){message message_id}} */
         setQueryResponse(data);
-        console.log(fetchTime);
       })
       .catch((err) => console.log(err));
+
+    const resourceTimings = window.performance.getEntriesByType('resource');
+    for (let i = 0; i < resourceTimings.length; i++) {
+      const timing = resourceTimings[i];
+      // setFetchTime(Math.floor(timing.duration) + 1);
+      setFetchTime(Math.floor(timing.duration) + 1);
+    }
   };
 
   const handleClickClear = () => {
@@ -51,7 +50,6 @@ const MetricsContainer: React.FC = () => {
               handleClickRun={handleClickRun}
             />
           </div>
-          {/* <ResultContainer /> */}
         </div>
         <div className="visuals-container">
           <VisualsDisplay
