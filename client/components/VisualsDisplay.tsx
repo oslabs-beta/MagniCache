@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, SetStateAction } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -28,15 +28,23 @@ interface VisualProps {
   queryValue: string;
   queryResponse: Object;
   fetchTime: number;
+
   cacheData: string[];
+
+  lineGraphTimes: number[];
+  setLineGraphTimes: React.Dispatch<SetStateAction<number[]>>;
+  lineGraphLabels: string[];
+  setLineGraphLabels: React.Dispatch<SetStateAction<string[]>>;
+
 }
 
 // Create the charts within this file, response.tsx will take care of the metrics for the cache response
 const VisualsDisplay = (props: VisualProps) => {
+
   // const [hits, setHits] = useState(5);
   // const [misses, setMisses] = useState(5);
   //TODO: Use queryresponse and fetch time to populate data inside visuals
-  const { queryResponse, fetchTime, cacheData } = props;
+  const { queryResponse, fetchTime, cacheData, lineGraphTimes, lineGraphLabels } = props;
   //TODO: refactor this mess
   console.log('cache me ousside', cacheData);
   const hits = cacheData.reduce((acc: number, curr: string): number => {
@@ -54,6 +62,7 @@ const VisualsDisplay = (props: VisualProps) => {
   // const misses = cacheData.filter((status) => status === 'misses');
 
   // console.log(new Date(window.performance.timing.fetchStart).toDateString())
+
   const dataDo = {
     labels: ['Hits', 'Misses'],
     datasets: [
@@ -66,12 +75,13 @@ const VisualsDisplay = (props: VisualProps) => {
       },
     ],
   };
+  // if first response is 0, replace it/slice the array
   const dataLine = {
-    labels: ['Cached', 'Uncached', 'Cached', 'Cached'],
+    labels: lineGraphLabels,
     datasets: [
       {
         label: 'Response Time',
-        data: [120, 400, 60, 90],
+        data: lineGraphTimes,
         borderColor: '#5b2af0',
         backgroundColor: '#5b2af0',
       },
