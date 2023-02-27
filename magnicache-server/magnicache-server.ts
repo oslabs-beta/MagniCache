@@ -181,7 +181,11 @@ Magnicache.prototype.query = function (
         // check if query is already cached
        // if (this.cache.has(query)) {
           // output message indicating that the query is cached
-         // console.log('cache hit');
+
+          console.log('cache hit');
+          res.cookie('cachestatus', 'hit');
+          console.log('cachestatus set hit on res');
+
 
           // store the cached response
          // queryResponses.push(this.cache.get(query));
@@ -189,9 +193,12 @@ Magnicache.prototype.query = function (
           // check if all queries have been fetched
          // if (queries.length === queryResponses.length) {
             // if yes, compile all queries
-           // compileQueries();
-         // }
-       // } else {
+
+            compileQueries();
+          }
+        } else {
+          res.cookie('cachestatus', 'miss');
+          console.log('cachestatsus set miss on Res')
           // output message indicating that the query is missing
           //console.log('cache miss');
 
