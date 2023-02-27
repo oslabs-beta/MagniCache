@@ -6,6 +6,7 @@ const MetricsContainer: React.FC = () => {
   const [queryValue, setQueryValue] = useState('');
   const [queryResponse, setQueryResponse] = useState({});
   const [fetchTime, setFetchTime] = useState(0);
+  const [cacheData, setCacheData] = useState(['']); // need to figure how to type this so TS stops bitching
 
   const handleClickRun = () => {
     //TODO: Have the backend send the cache hits and misses in some way. possibly here or visual display
@@ -19,7 +20,28 @@ const MetricsContainer: React.FC = () => {
           query: queryValue,
         }),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (
+            document.cookie
+              .split(';')
+              .some((cookie: string): boolean =>
+                cookie.includes('cacheStatus=hit')
+              )
+          ) {
+            setCacheData([...cacheData, 'hit']);
+          }
+          if (
+            document.cookie
+              .split(';')
+              .some((cookie: string): boolean =>
+                cookie.includes('cacheStatus=miss')
+              )
+          ) {
+            setCacheData([...cacheData, 'miss']);
+          }
+
+          return res.json();
+        })
         .then((data) => {
           /*query{messageById(id:12){message message_id}} */
           setQueryResponse(data);
@@ -59,6 +81,7 @@ const MetricsContainer: React.FC = () => {
           queryValue={queryValue}
           queryResponse={queryResponse}
           fetchTime={fetchTime}
+          cacheData={cacheData}
         />
       </div>
     </div>

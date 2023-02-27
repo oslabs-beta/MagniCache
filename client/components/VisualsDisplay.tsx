@@ -28,14 +28,31 @@ interface VisualProps {
   queryValue: string;
   queryResponse: Object;
   fetchTime: number;
+  cacheData: string[];
 }
 
 // Create the charts within this file, response.tsx will take care of the metrics for the cache response
 const VisualsDisplay = (props: VisualProps) => {
-  const [hits, setHits] = useState(5);
-  const [misses, setMisses] = useState(5);
+  // const [hits, setHits] = useState(5);
+  // const [misses, setMisses] = useState(5);
   //TODO: Use queryresponse and fetch time to populate data inside visuals
-  const { queryResponse, fetchTime } = props;
+  const { queryResponse, fetchTime, cacheData } = props;
+  //TODO: refactor this mess
+  console.log('cache me ousside', cacheData);
+  const hits = cacheData.reduce((acc: number, curr: string): number => {
+    if (curr === 'hit') {
+      acc++;
+    }
+    return acc;
+  }, 0);
+  const misses = cacheData.reduce((acc: number, curr: string): number => {
+    if (curr === 'miss') {
+      acc++;
+    }
+    return acc;
+  }, 0);
+  // const misses = cacheData.filter((status) => status === 'misses');
+
   // console.log(new Date(window.performance.timing.fetchStart).toDateString())
   const dataDo = {
     labels: ['Hits', 'Misses'],

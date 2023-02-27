@@ -36,17 +36,20 @@ Magnicache.prototype.query = function (
       // maybe try lodash
       for (const queryResponse of queryResponses) {
         response = Object.assign(response, queryResponse);
-        console.log(JSON.stringify(response));
+        // console.log(JSON.stringify(response));
       }
 
       res.locals.queryResponse = response;
-      console.log(this.cache);
+      // console.log(this.cache);
       return next();
     };
 
     for (const query of queries) {
       if (this.cache.has(query)) {
         console.log('cache hit');
+        res.cookie('cacheStatus', 'hit');
+        console.log('cacheStatus set hit on Res');
+
         queryResponses.push(this.cache.get(query));
         if (queries.length === queryResponses.length) {
           // console.log(queryResponses);
@@ -54,14 +57,11 @@ Magnicache.prototype.query = function (
         }
       } else {
         console.log('cache miss');
-
+        res.cookie('cacheStatus', 'miss');
+        console.log('cacheStatus set miss on Res');
         graphql({ schema: this.schema, source: query })
           .then((result: {}) => {
-            console.log('qRes;', queryResponses);
-            console.log('result;', result);
-
             this.cache.set(query, result);
-
             queryResponses.push(result);
             if (queries.length === queryResponses.length) {
               compileQueries();
@@ -125,7 +125,7 @@ Magnicache.prototype.magniParser = function (
     } else {
       let string = ``;
       //{allMessages(id:4){message}}
-      console.log('queryArray:', queryArray);
+      // console.log('queryArray:', queryArray);
 
       // Ex:  ['messageById', ['id:4'], ['name:yousuf'], 'message']
       // would give {messageById(id:4,name:yousuf){message}}
