@@ -9,6 +9,8 @@ import { Response, Request, NextFunction } from 'express';
 
 import * as mergeWith from 'lodash/mergeWith';
 
+// EvictionCache Class, for removing the LRU item in the cachce
+
 // Magnicache class for creating a queryable cache
 function Magnicache(this: any, schema: any): void {
   // save the provided schema
@@ -20,6 +22,51 @@ function Magnicache(this: any, schema: any): void {
   // bind the query method for use in other functions
   this.query = this.query.bind(this);
 }
+// Class constructors for the linked list and the nodes for the list
+class EvictionCache<T> {
+  maxSize: number;
+  cache: Map<string, T>;
+  head: EvictionNode<T> | null;
+  tail: EvictionNode<T> | null;
+  constructor(maxSize: number) {
+    this.maxSize = maxSize;
+    this.cache = new Map();
+    this.head = null;
+    this.tail = null;
+  }
+}
+
+class EvictionNode<T> {
+  key: string;
+  value: T;
+  next: EvictionNode<T> | null;
+  prev: EvictionNode<T> | null;
+  constructor(key: string, value: T) {
+    this.key = key;
+    this.value = value;
+    this.next = null;
+    this.prev = null;
+  }
+}
+// If getting setting or looking up, time complex should be O(1)
+// Insert a node at the head of the list
+Magnicache.prototype.changeHead = (): EvictionNode<T> => {};
+
+// Evict node at the end of the list
+Magnicache.prototype.evictEnd = (): EvictionNode<T> => {};
+
+// Create and add a node to the cache(possibly not needed)
+Magnicache.prototype.createNode = (): EvictionNode<T> => {};
+
+// Update the node when it is used and add it to the queue to be evicted(possibly not needed)
+Magnicache.prototype.updateEvictionNode = (): EvictionNode<T> => {};
+
+// Set the new node and add it to the list(may be implemenmted through create node instead or vice versa)
+Magnicache.prototype.setNode = (): EvictionNode<T> => {};
+
+// Get a specific node from the linked list(to return from the cache)
+Magnicache.prototype.getNode = (): EvictionNode<T> => {};
+
 
 // Query method takes request, response and next callbacks
 // as its arguments
@@ -32,7 +79,9 @@ Magnicache.prototype.query = function (
   const { query } = req.body;
 
   // parse the query into an AST
-  const { definitions: [ast] } = parse(query);
+  const {
+    definitions: [ast],
+  } = parse(query);
 
   // check if the operation is a query
   // and not some other type of mutation
@@ -142,13 +191,6 @@ Magnicache.prototype.query = function (
         });
       });
   }
-  /*addMessage: {
-        type: MessageType,
-        description: 'add a message to the db',
-        args: {
-          sender_id: { type: GraphQLInt },
-          message: { type: GraphQLString },
-        }, */
 };
 
 // Function that takes an array of selections and generates an array of strings based off of them
@@ -219,9 +261,5 @@ Magnicache.prototype.magniParser = function (
   // Returning the queries array with all strings
   return queries;
 };
-
-Magnicache.prototype.removeEnd = () => {
-  
-}
 
 module.exports = Magnicache;

@@ -3,6 +3,7 @@ exports.__esModule = true;
 var _a = require('graphql'), graphql = _a.graphql, GraphQLSchema = _a.GraphQLSchema, GraphQLObjectType = _a.GraphQLObjectType, GraphQLString = _a.GraphQLString;
 var parse = require('graphql/language/parser').parse;
 var mergeWith = require("lodash/mergeWith");
+// EvictionCache Class, for removing the LRU item in the cachce
 // Magnicache class for creating a queryable cache
 function Magnicache(schema) {
     // save the provided schema
@@ -12,6 +13,38 @@ function Magnicache(schema) {
     // bind the query method for use in other functions
     this.query = this.query.bind(this);
 }
+// Class constructors for the linked list and the nodes for the list
+var EvictionCache = /** @class */ (function () {
+    function EvictionCache(maxSize) {
+        this.maxSize = maxSize;
+        this.cache = new Map();
+        this.head = null;
+        this.tail = null;
+    }
+    return EvictionCache;
+}());
+var EvictionNode = /** @class */ (function () {
+    function EvictionNode(key, value) {
+        this.key = key;
+        this.value = value;
+        this.next = null;
+        this.prev = null;
+    }
+    return EvictionNode;
+}());
+// If getting setting or looking up, time complex should be O(1)
+// Insert a node at the head of the list
+Magnicache.prototype.changeHead = function () { };
+// Evict node at the end of the list
+Magnicache.prototype.evictEnd = function () { };
+// Create and add a node to the cache(possibly not needed)
+Magnicache.prototype.createNode = function () { };
+// Update the node when it is used and add it to the queue to be evicted(possibly not needed)
+Magnicache.prototype.updateEvictionNode = function () { };
+// Set the new node and add it to the list(may be implemenmted through create node instead or vice versa)
+Magnicache.prototype.setNode = function () { };
+// Get a specific node from the linked list(to return from the cache)
+Magnicache.prototype.getNode = function () { };
 // Query method takes request, response and next callbacks
 // as its arguments
 Magnicache.prototype.query = function (req, res, next) {
@@ -119,13 +152,6 @@ Magnicache.prototype.query = function (req, res, next) {
             });
         });
     }
-    /*addMessage: {
-          type: MessageType,
-          description: 'add a message to the db',
-          args: {
-            sender_id: { type: GraphQLInt },
-            message: { type: GraphQLString },
-          }, */
 };
 // Function that takes an array of selections and generates an array of strings based off of them
 Magnicache.prototype.magniParser = function (selections, queryArray, queries) {
@@ -174,7 +200,5 @@ Magnicache.prototype.magniParser = function (selections, queryArray, queries) {
     }
     // Returning the queries array with all strings
     return queries;
-};
-Magnicache.prototype.removeEnd = function () {
 };
 module.exports = Magnicache;
