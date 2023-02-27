@@ -2,10 +2,26 @@
 exports.__esModule = true;
 var _a = require('graphql'), graphql = _a.graphql, GraphQLSchema = _a.GraphQLSchema, GraphQLObjectType = _a.GraphQLObjectType, GraphQLString = _a.GraphQLString;
 var parse = require('graphql/language/parser').parse;
+var mergeWith = require("lodash/mergeWith");
 function Magnicache(schema) {
     this.schema = schema;
     this.cache = new Map();
     this.query = this.query.bind(this);
+}
+function bypass(req, res, next) {
+    var query = req.body.query;
+    graphql({ schema: this.schema, source: query })
+        .then(function (result) {
+        // console.log('qRes;', queryResponses);
+        // console.log('result;', result);
+        res.locals.queryResponse = result;
+        return next();
+    })["catch"](function (err) {
+        console.log(err);
+        return next({
+            log: err
+        });
+    });
 }
 Magnicache.prototype.query = function (req, res, next) {
     var _this = this;
@@ -14,27 +30,32 @@ Magnicache.prototype.query = function (req, res, next) {
     var definitions = AST.definitions;
     var ast = definitions[0];
     if (ast.operation === 'query') {
+        // console.log(ast.selectionSet.selections[0].name.value)
+        if (ast.selectionSet.selections[0].name.value === '__schema') {
+            graphql({ schema: this.schema, source: query }).then(function (result) {
+                res.locals.queryResponse = result;
+                return next();
+            });
+        }
         var queries_2 = this.magniParser(ast.selectionSet.selections);
-        console.log('queries', queries_2);
+        // console.log('queries', queries);
         var queryResponses_1 = [];
         // this compileQueries function needs work -> currently it is not compiling all of our queries because each messageById value is an array?
         var compileQueries_1 = function () {
-            console.log('compiling queries....');
-            // console.log(Object.assign({}, ...queryResponses));
-            var response = {};
-            // maybe try lodash
+            var response1 = {};
             for (var _i = 0, queryResponses_2 = queryResponses_1; _i < queryResponses_2.length; _i++) {
                 var queryResponse = queryResponses_2[_i];
-                response = Object.assign(response, queryResponse);
-                console.log(JSON.stringify(response));
+                // console.log(JSON.stringify(response));
+                response1 = mergeWith(response1, queryResponse);
             }
-            res.locals.queryResponse = response;
-            console.log(_this.cache);
+            /*[{"data":{"messageById":[{"message":"\n\nHey there everyone! I've been having such a great time getting to know all of you"}]}},{"data":{"messageById":[{"sender_id":1}]}}] */
+            res.locals.queryResponse = response1;
+            // console.log(this.cache);
             return next();
         };
         var _loop_1 = function (query_1) {
             if (this_1.cache.has(query_1)) {
-                console.log('cache hit');
+                // console.log('cache hit');
                 queryResponses_1.push(this_1.cache.get(query_1));
                 if (queries_2.length === queryResponses_1.length) {
                     // console.log(queryResponses);
@@ -42,11 +63,11 @@ Magnicache.prototype.query = function (req, res, next) {
                 }
             }
             else {
-                console.log('cache miss');
+                // console.log('cache miss');
                 graphql({ schema: this_1.schema, source: query_1 })
                     .then(function (result) {
-                    console.log('qRes;', queryResponses_1);
-                    console.log('result;', result);
+                    // console.log('qRes;', queryResponses);
+                    // console.log('result;', result);
                     _this.cache.set(query_1, result);
                     queryResponses_1.push(result);
                     if (queries_2.length === queryResponses_1.length) {
@@ -69,6 +90,7 @@ Magnicache.prototype.query = function (req, res, next) {
     }
     else {
         console.log('this is a mutation');
+        return next();
     }
 };
 Magnicache.prototype.magniParser = function (selections, queryArray, queries) {
@@ -94,7 +116,7 @@ Magnicache.prototype.magniParser = function (selections, queryArray, queries) {
         else {
             var string = "";
             //{allMessages(id:4){message}}
-            console.log('queryArray:', queryArray);
+            // console.log('queryArray:', queryArray);
             // Ex:  ['messageById', ['id:4'], ['name:yousuf'], 'message']
             // would give {messageById(id:4,name:yousuf){message}}
             for (var i = queryArray.length - 1; i >= 0; i--) {
