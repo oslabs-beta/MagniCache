@@ -9,27 +9,31 @@ const MetricsContainer: React.FC = () => {
 
   const handleClickRun = () => {
     //TODO: Have the backend send the cache hits and misses in some way. possibly here or visual display
-    fetch(`/graphql`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: queryValue,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        /*query{messageById(id:12){message message_id}} */
-        setQueryResponse(data);
+    if (queryValue !== '' && queryValue !== null) {
+      fetch(`/graphql`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: queryValue,
+        }),
       })
-      .catch((err) => console.log(err));
+        .then((res) => res.json())
+        .then((data) => {
+          /*query{messageById(id:12){message message_id}} */
+          setQueryResponse(data);
+        })
+        .catch((err) => console.log(err));
 
-    const resourceTimings = window.performance.getEntriesByType('resource');
-    for (let i = 0; i < resourceTimings.length; i++) {
-      const timing = resourceTimings[i];
-      // setFetchTime(Math.floor(timing.duration) + 1);
-      setFetchTime(Math.floor(timing.duration) + 1);
+      const resourceTimings = window.performance.getEntriesByType('resource');
+      for (let i = 0; i < resourceTimings.length; i++) {
+        const timing = resourceTimings[i];
+        // setFetchTime(Math.floor(timing.duration) + 1);
+        setFetchTime(Math.floor(timing.duration) + 1);
+      }
+    } else {
+      setQueryResponse('Query field cannot be empty');
     }
   };
 
