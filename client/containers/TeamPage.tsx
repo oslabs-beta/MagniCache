@@ -120,6 +120,7 @@ const TeamPage: React.FC = () => {
         </div>
       </div>
     </div>
+
   );
 };
 

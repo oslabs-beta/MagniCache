@@ -2,6 +2,7 @@ import React from 'react';
 
 const AboutPage: React.FC = () => {
   return (
+
     <div id="about-page">
       <h1>About Magnicache</h1>
       <p>
