@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 
 const UserType = new GraphQLObjectType({
   name: 'User',
-  description: 'Get all Users',
+  description: 'type of Users',
   fields: () => ({
     user_id: { type: GraphQLInt },
     username: { type: GraphQLString },
@@ -35,7 +35,7 @@ const UserType = new GraphQLObjectType({
 
 const MessageType = new GraphQLObjectType({
   name: 'Message',
-  description: 'this is just for the dev',
+  description: 'type Message',
   fields: () => ({
     message: { type: GraphQLString },
     message_id: { type: GraphQLInt },
@@ -117,6 +117,14 @@ const schema = new GraphQLSchema({
 
 const magnicache = new MagniCache(schema);
 
+//ideally, we would want a viz to have the following middleware:
+//app.get(/magnicache, magnicache.viz, (req,res) => {
+//return res.status(200).sendFile(<root>)
+//})
+
+//currently, we want any requests being sent to /graphql to come back w a custom (header/cookie?) that shows if it is chached or not
+//
+//alternatively, we can have magnicache.query take a vizaulaizer options, set and the send the respoinser from the middleware
 app.use('/graphql', magnicache.query, (req, res) => {
   return res.status(200).send(res.locals.queryResponse);
 });
