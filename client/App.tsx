@@ -16,8 +16,6 @@ const App: Rtype = () => {
   return (
     <div className="maintainer">
       <NavBar />
-      {/* <MetricsContainer /> */}
-      {/* <AboutPage /> */}
       <Routes>
         <Route path="/" element={<MetricsContainer />} />
         <Route path="/about" element={<AboutPage />} />

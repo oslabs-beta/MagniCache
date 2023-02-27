@@ -34,30 +34,28 @@ const MetricsContainer: React.FC = () => {
   };
 
   const handleClickClear = () => {
+    // TODO: should clear button should also clear the query value?
+    // setQueryValue('');
     setQueryResponse({});
   };
   return (
-    <div className="metrics-flex">
-      <div className="metrics-container">
-        <div className="query-result">
-          <div className="query-container">
-            <QueryDisplay
-              queryResponse={queryResponse}
-              setQueryValue={setQueryValue}
-              queryValue={queryValue}
-              fetchTime={fetchTime}
-              handleClickClear={handleClickClear}
-              handleClickRun={handleClickRun}
-            />
-          </div>
-        </div>
-        <div className="visuals-container">
-          <VisualsDisplay
-            queryValue={queryValue}
-            queryResponse={queryResponse}
-            fetchTime={fetchTime}
-          />
-        </div>
+    <div className="metrics-container">
+      <div className="query-container">
+        <QueryDisplay
+          queryResponse={queryResponse}
+          setQueryValue={setQueryValue}
+          queryValue={queryValue}
+          fetchTime={fetchTime}
+          handleClickClear={handleClickClear}
+          handleClickRun={handleClickRun}
+        />
+      </div>
+      <div className="visuals-container">
+        <VisualsDisplay
+          queryValue={queryValue}
+          queryResponse={queryResponse}
+          fetchTime={fetchTime}
+        />
       </div>
     </div>
   );

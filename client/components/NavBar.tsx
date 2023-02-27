@@ -5,9 +5,9 @@ import Navbar from 'react-bootstrap/Navbar';
 import { Link } from 'react-router-dom';
 
 const NavBar: React.FC = () => {
-  // Navbar.Brand is currently using href, which reloads home page onClicking magniCache
+  // Navbar.Brand is currently using href, which reloads home page onClicking magniCache --> not sure whether this is better or do we want to make it a router link
   return (
-    <Navbar fixed="top" className="nav">
+    <Navbar className="nav">
       <Container>
         <Navbar.Brand id="nav-title" href="/">
           MagniCache
