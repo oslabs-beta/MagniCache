@@ -7,7 +7,7 @@ interface ResultProps {
 const Result: React.FC<ResultProps> = ({ queryResponse }) => {
   return (
     <>
-      <div className="single-result">{JSON.stringify(queryResponse)}</div>
+      <p className="single-result">{JSON.stringify(queryResponse)}</p>
     </>
   );
 };

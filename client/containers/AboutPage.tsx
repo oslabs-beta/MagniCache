@@ -2,7 +2,8 @@ import React from 'react';
 
 const AboutPage: React.FC = () => {
   return (
-    <>
+
+    <div id="about-page">
       <h1>About Magnicache</h1>
       <p>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente esse
@@ -10,7 +11,7 @@ const AboutPage: React.FC = () => {
         magni quam explicabo, debitis sed iure dignissimos ratione eligendi
         quod?
       </p>
-    </>
+    </div>
   );
 };
 
