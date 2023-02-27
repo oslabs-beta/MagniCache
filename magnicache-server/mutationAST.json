@@ -1,0 +1,72 @@
+{
+  "kind": "Document",
+  "definitions": [
+    {
+      "kind": "OperationDefinition",
+      "operation": "mutation",
+      "variableDefinitions": [],
+      "directives": [],
+      "selectionSet": {
+        "kind": "SelectionSet",
+        "selections": [
+          {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "addMessage"
+            },
+            "arguments": [
+              {
+                "kind": "Argument",
+                "name": {
+                  "kind": "Name",
+                  "value": "sender_id"
+                },
+                "value": {
+                  "kind": "IntValue",
+                  "value": "12"
+                }
+              },
+              {
+                "kind": "Argument",
+                "name": {
+                  "kind": "Name",
+                  "value": "message"
+                },
+                "value": {
+                  "kind": "StringValue",
+                  "value": "This is a new message part1 ",
+                  "block": false
+                }
+              }
+            ],
+            "directives": [],
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [
+                {
+                  "kind": "Field",
+                  "name": {
+                    "kind": "Name",
+                    "value": "message"
+                  },
+                  "arguments": [],
+                  "directives": []
+                },
+                {
+                  "kind": "Field",
+                  "name": {
+                    "kind": "Name",
+                    "value": "sender_id"
+                  },
+                  "arguments": [],
+                  "directives": []
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
