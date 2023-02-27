@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import QueryDisplay from '../components/QueryDisplay';
 import VisualsDisplay from '../components/VisualsDisplay';
+import { Metrics } from '../../types';
 
 const MetricsContainer: React.FC = () => {
   const [queryValue, setQueryValue] = useState('');
@@ -9,6 +10,7 @@ const MetricsContainer: React.FC = () => {
   const [fetchTime, setFetchTime] = useState<number>(0);
   const [lineGraphTimes, setLineGraphTimes] = useState<number[]>([]);
   const [lineGraphLabels, setLineGraphLabels] = useState<string[]>([]);
+  const [metrics, setMetrics] = useState<Metrics[]>([]);
 
   const handleClickRun = () => {
     if (queryValue !== '' && queryValue !== null) {
@@ -23,6 +25,8 @@ const MetricsContainer: React.FC = () => {
         }),
       })
         .then((res) => {
+          //sett all the metrics in this 'then' block
+          let cacheStatus!: 'hit' | 'miss';
           if (
             document.cookie
               .split(';')
@@ -30,7 +34,9 @@ const MetricsContainer: React.FC = () => {
                 cookie.includes('cacheStatus=hit')
               )
           ) {
-            setCacheData([...cacheData, 'hit']);
+            // setCacheData([...cacheData, 'hit']);
+            // setMetrics([...metrics, {cacheStatus: 'hit', }])
+            cacheStatus = 'hit';
           }
           if (
             document.cookie
@@ -39,10 +45,13 @@ const MetricsContainer: React.FC = () => {
                 cookie.includes('cacheStatus=miss')
               )
           ) {
-            setCacheData([...cacheData, 'miss']);
+            // setCacheData([...cacheData, 'miss']);
+            cacheStatus = 'miss';
           }
           const endTime = performance.now();
-          setFetchTime(Math.floor(endTime - startTime - 1)); // 20ms
+          // setFetchTime(Math.floor(endTime - startTime - 1)); // 20ms
+          let fetchTime = Math.floor(endTime - startTime - 1);
+          setMetrics([...metrics, { cacheStatus, fetchTime }]);
           return res.json();
         })
         .then((data) => {
@@ -61,13 +70,14 @@ const MetricsContainer: React.FC = () => {
 
   const handleClickClear = () => {
     // TODO: should clear button should also clear the query value?
-    // setQueryValue('');
+    setQueryValue('');
     setQueryResponse({});
   };
   return (
     <div className="metrics-container">
       <div className="query-container">
         <QueryDisplay
+          key={'A1'}
           queryResponse={queryResponse}
           setQueryValue={setQueryValue}
           queryValue={queryValue}
@@ -78,14 +88,17 @@ const MetricsContainer: React.FC = () => {
       </div>
       <div className="visuals-container">
         <VisualsDisplay
+          key={'B1'}
           queryValue={queryValue}
           queryResponse={queryResponse}
-          fetchTime={fetchTime}
-          cacheData={cacheData}
-          lineGraphTimes={lineGraphTimes}
-          setLineGraphTimes={setLineGraphTimes}
-          lineGraphLabels={lineGraphLabels}
-          setLineGraphLabels={setLineGraphLabels}
+          // fetchTime={fetchTime}
+          // cacheData={cacheData}
+          // lineGraphTimes={lineGraphTimes}
+          // setLineGraphTimes={setLineGraphTimes}
+          // lineGraphLabels={lineGraphLabels}
+          // setLineGraphLabels={setLineGraphLabels}
+          metrics={metrics}
+          setMetrics={setMetrics}
         />
       </div>
     </div>

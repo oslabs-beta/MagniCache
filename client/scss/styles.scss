@@ -39,7 +39,7 @@ body {
 
 #nav-title {
   color: $tertiaryColor;
-  font-size: 1.5em;
+  font-size: 1.75em;
 }
 
 .metrics-container {
@@ -172,7 +172,9 @@ h1 {
 
 .single-result {
   word-break: break-all;
-  font-size: 1.3vw;
+  font-size: 1rem;
+  white-space: pre-wrap;
+  // line-height: 1vh;
 }
 
 #visuals-header {

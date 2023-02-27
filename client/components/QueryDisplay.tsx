@@ -10,6 +10,7 @@ interface QueryProps {
   fetchTime: number;
   handleClickRun: () => void;
   handleClickClear: () => void;
+  key: string;
 }
 
 const QueryDisplay = (props: QueryProps) => {
@@ -29,6 +30,7 @@ const QueryDisplay = (props: QueryProps) => {
         <div className="fields-container">
           <textarea
             className="query-input"
+            value={queryValue}
             onChange={(e) => setQueryValue(e.target.value)}
           />
         </div>
