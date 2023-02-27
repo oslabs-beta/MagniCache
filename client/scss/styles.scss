@@ -50,8 +50,7 @@ body {
   background-color: $lightTertiaryColor;
   height: 100%;
   width: 100%;
-  padding: 1%;
-  margin: 1% 0;
+  padding: 1.5%;
 }
 
 .query-container,
@@ -103,6 +102,13 @@ body {
   overflow-y: scroll;
 }
 
+.fields-container-result::-webkit-scrollbar {
+  display: none;
+}
+.fields-container::-webkit-scrollbar {
+  display: none;
+}
+
 .query-input {
   color: $secondaryColor;
   background-color: $lightTertiaryColor;
@@ -119,12 +125,6 @@ body {
 
 .query-input:focus {
   outline-width: 0;
-}
-
-// scrollbar
-.fields-container::-webkit-scrollbar,
-.fields-container-result::-webkit-scrollbar {
-  // display: none;
 }
 
 #query-box {
