@@ -2,7 +2,7 @@ import React from 'react';
 
 const DocsPage: React.FC = () => {
   return (
-    <>
+    <div id="docs-page">
       <h1>Documentation</h1>
       <p>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente esse
@@ -10,7 +10,7 @@ const DocsPage: React.FC = () => {
         magni quam explicabo, debitis sed iure dignissimos ratione eligendi
         quod?
       </p>
-    </>
+    </div>
   );
 };
 

@@ -9,6 +9,10 @@ $blackColor: #313533;
 $errorColor: #b3001b;
 $lightTertiaryColor: rgba(214, 251, 255, 0.3);
 
+body {
+  background-color: $lightTertiaryColor;
+}
+
 .maintainer {
   width: 100%;
   height: 100%;
@@ -38,18 +42,16 @@ $lightTertiaryColor: rgba(214, 251, 255, 0.3);
   font-size: 1.5em;
 }
 
-#moon {
-}
-
 .metrics-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   background-color: $lightTertiaryColor;
   height: 100%;
   width: 100%;
-  padding: 0.5%;
+  padding: 1%;
+  margin: 1% 0;
 }
 
 .query-container,
@@ -67,6 +69,7 @@ $lightTertiaryColor: rgba(214, 251, 255, 0.3);
 
 .visuals-container {
   min-height: 400px;
+  margin-top: 1vh;
 }
 
 .query-display-flex {
@@ -140,11 +143,6 @@ $lightTertiaryColor: rgba(214, 251, 255, 0.3);
   // display: none;
 }
 
-h5 {
-  margin-bottom: 20px;
-  color: $secondaryColor;
-}
-
 h1 {
   color: $secondaryColor;
 }
@@ -157,7 +155,7 @@ h1 {
   border-radius: $borderRad;
   margin-bottom: 8px;
   border: 1px solid $blackColor;
-  min-height: 150px;
+  min-height: 162px;
   max-height: 200px;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -269,4 +267,64 @@ h1 {
   padding-bottom: 1vw;
   margin: 0;
   margin-left: 0.7vw;
+}
+
+/*
+
+
+
+pages
+
+
+
+*/
+
+#team-page,
+#about-page,
+#docs-page {
+  background-color: $lightTertiaryColor;
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+}
+
+#team-page h1,
+#about-page h1,
+#docs-page h1 {
+  font-size: 3rem;
+  padding-top: 3%;
+}
+
+#team-description {
+  margin: 4%;
+}
+
+#team-members {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.member-img {
+  width: 280px;
+  height: 280px;
+  border-radius: 16px;
+}
+
+.member-name {
+  margin-top: 2%;
+  font-size: 1.6em;
+  font-weight: 500;
+  color: $primaryColor;
+}
+
+.member-links {
+  font-size: 1em;
+  font-weight: 400;
+  color: $secondaryColor;
+  text-decoration: none;
+}
+
+.member-links:hover {
+  text-decoration: none;
 }

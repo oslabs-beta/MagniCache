@@ -32,8 +32,8 @@ interface VisualProps {
 
 // Create the charts within this file, response.tsx will take care of the metrics for the cache response
 const VisualsDisplay = (props: VisualProps) => {
-  const [hits, setHits] = useState(Number);
-  const [misses, setMisses] = useState(Number);
+  const [hits, setHits] = useState(5);
+  const [misses, setMisses] = useState(5);
   //TODO: Use queryresponse and fetch time to populate data inside visuals
   const { queryResponse, fetchTime } = props;
   // console.log(new Date(window.performance.timing.fetchStart).toDateString())
@@ -42,7 +42,7 @@ const VisualsDisplay = (props: VisualProps) => {
     datasets: [
       {
         label: 'Cache Hits/Misses',
-        data: [10, 4],
+        data: [hits, misses],
         backgroundColor: ['#5b2af0', '#b3001b'],
         borderColor: ['white'],
         borderWidth: 1,

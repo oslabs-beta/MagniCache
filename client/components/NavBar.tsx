@@ -5,8 +5,8 @@ import Navbar from 'react-bootstrap/Navbar';
 import { Link } from 'react-router-dom';
 
 const NavBar: React.FC = () => {
-  let nightMode = false;
   // Navbar.Brand is currently using href, which reloads home page onClicking magniCache --> not sure whether this is better or do we want to make it a router link
+  const [nightMode, setNightMode] = useState(false);
   return (
     <Navbar className="nav">
       <Container>
@@ -23,13 +23,14 @@ const NavBar: React.FC = () => {
           <Nav.Link as={Link} id="team-nav-link" to="/team">
             Team
           </Nav.Link>
-          {/* <Nav.Link>
+          <Nav.Link>
             <i
               id="moon"
               className="fas fa-moon"
+              onClick={() => setNightMode(!nightMode)}
               style={nightMode ? { color: '#1a8fe3' } : { color: 'black' }}
             ></i>
-          </Nav.Link> */}
+          </Nav.Link>
         </Nav>
       </Container>
     </Navbar>
