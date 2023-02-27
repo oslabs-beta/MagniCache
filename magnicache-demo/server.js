@@ -112,7 +112,7 @@ const RootMutationType = new GraphQLObjectType({
 
 const schema = new GraphQLSchema({
   query: RootQueryType,
-  // mutation: RootMutationType,
+  mutation: RootMutationType,
 });
 
 const magnicache = new MagniCache(schema);

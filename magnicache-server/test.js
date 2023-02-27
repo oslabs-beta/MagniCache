@@ -11,3 +11,11 @@ const obj = {
 };
 
 console.log(obj.invoke()); // undefined
+
+const queryResponses = [
+  {data: {messageById: [{ message:
+            "\n\nHey there everyone! I've been having such a great time getting to know all of you",},],
+    },
+  },
+  { data: { messageById: [{ sender_id: 1 }] } },
+];
