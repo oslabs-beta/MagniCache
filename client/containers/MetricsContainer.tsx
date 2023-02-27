@@ -5,11 +5,13 @@ import VisualsDisplay from '../components/VisualsDisplay';
 const MetricsContainer: React.FC = () => {
   const [queryValue, setQueryValue] = useState('');
   const [queryResponse, setQueryResponse] = useState({});
-  const [fetchTime, setFetchTime] = useState(0);
+  const [fetchTime, setFetchTime] = useState<number>(0);
+  const [lineGraphTimes, setLineGraphTimes] = useState<number[]>([]);
+  const [lineGraphLabels, setLineGraphLabels] = useState<string[]>([]);
 
   const handleClickRun = () => {
-    //TODO: Have the backend send the cache hits and misses in some way. possibly here or visual display
     if (queryValue !== '' && queryValue !== null) {
+      const startTime = performance.now();
       fetch(`/graphql`, {
         method: 'POST',
         headers: {
@@ -19,19 +21,20 @@ const MetricsContainer: React.FC = () => {
           query: queryValue,
         }),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          const endTime = performance.now();
+          setFetchTime(Math.floor(endTime - startTime - 1)); // 20ms
+          return res.json();
+        })
         .then((data) => {
-          /*query{messageById(id:12){message message_id}} */
           setQueryResponse(data);
         })
+        // .then(() => {
+        //   setLineGraphTimes([...lineGraphTimes, fetchTime]); // [0, 20]
+        //   let newLabel = fetchTime < 100 ? 'Cached' : 'Uncached';
+        //   setLineGraphLabels([...lineGraphLabels, newLabel]);
+        // })
         .catch((err) => console.log(err));
-
-      const resourceTimings = window.performance.getEntriesByType('resource');
-      for (let i = 0; i < resourceTimings.length; i++) {
-        const timing = resourceTimings[i];
-        // setFetchTime(Math.floor(timing.duration) + 1);
-        setFetchTime(Math.floor(timing.duration) + 1);
-      }
     } else {
       setQueryResponse('Query field cannot be empty');
     }
@@ -59,6 +62,10 @@ const MetricsContainer: React.FC = () => {
           queryValue={queryValue}
           queryResponse={queryResponse}
           fetchTime={fetchTime}
+          lineGraphTimes={lineGraphTimes}
+          setLineGraphTimes={setLineGraphTimes}
+          lineGraphLabels={lineGraphLabels}
+          setLineGraphLabels={setLineGraphLabels}
         />
       </div>
     </div>

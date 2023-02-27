@@ -50,8 +50,8 @@ body {
   background-color: $lightTertiaryColor;
   height: 100%;
   width: 100%;
-  padding: 1%;
-  margin: 1% 0;
+  padding: 1.5%;
+  margin: 0;
 }
 
 .query-container,
@@ -124,7 +124,7 @@ body {
 // scrollbar
 .fields-container::-webkit-scrollbar,
 .fields-container-result::-webkit-scrollbar {
-  // display: none;
+  display: none;
 }
 
 #query-box {
