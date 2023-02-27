@@ -1,6 +1,5 @@
+// @import '~bootstrap/scss/bootstrap';
 $borderRad: 14px;
-// $bgColor: ;
-$MainColor: #5b2af0;
 $SmallFont: #313533;
 $primaryColor: #5b2af0;
 $secondaryColor: #1a8fe3;
@@ -30,7 +29,7 @@ body {
 .nav {
   border-bottom: 1px solid $blackColor;
   // border-radius: $borderRad;
-  background-color: $secondaryColor;
+  background-color: $primaryColor;
   color: $tertiaryColor;
   margin-bottom: 20px;
 }
@@ -40,7 +39,9 @@ body {
   justify-content: right;
 }
 
-#nav-link {
+#about-nav-link,
+#docs-nav-link,
+#team-nav-link {
   color: $tertiaryColor;
 }
 
