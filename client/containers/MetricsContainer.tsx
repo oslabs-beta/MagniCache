@@ -5,6 +5,7 @@ import VisualsDisplay from '../components/VisualsDisplay';
 const MetricsContainer: React.FC = () => {
   const [queryValue, setQueryValue] = useState('');
   const [queryResponse, setQueryResponse] = useState({});
+  const [cacheData, setCacheData] = useState(['']); // TODO:need to figure how to type this so TS stops shouting
   const [fetchTime, setFetchTime] = useState<number>(0);
   const [lineGraphTimes, setLineGraphTimes] = useState<number[]>([]);
   const [lineGraphLabels, setLineGraphLabels] = useState<string[]>([]);
@@ -22,6 +23,24 @@ const MetricsContainer: React.FC = () => {
         }),
       })
         .then((res) => {
+          if (
+            document.cookie
+              .split(';')
+              .some((cookie: string): boolean =>
+                cookie.includes('cacheStatus=hit')
+              )
+          ) {
+            setCacheData([...cacheData, 'hit']);
+          }
+          if (
+            document.cookie
+              .split(';')
+              .some((cookie: string): boolean =>
+                cookie.includes('cacheStatus=miss')
+              )
+          ) {
+            setCacheData([...cacheData, 'miss']);
+          }
           const endTime = performance.now();
           setFetchTime(Math.floor(endTime - startTime - 1)); // 20ms
           return res.json();
@@ -62,6 +81,7 @@ const MetricsContainer: React.FC = () => {
           queryValue={queryValue}
           queryResponse={queryResponse}
           fetchTime={fetchTime}
+          cacheData={cacheData}
           lineGraphTimes={lineGraphTimes}
           setLineGraphTimes={setLineGraphTimes}
           lineGraphLabels={lineGraphLabels}
