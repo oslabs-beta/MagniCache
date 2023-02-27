@@ -23,18 +23,6 @@ function Magnicache(this: any, schema: any): void {
   this.query = this.query.bind(this);
 }
 // Class constructors for the linked list and the nodes for the list
-class EvictionCache<T> {
-  maxSize: number;
-  cache: Map<string, T>;
-  head: EvictionNode<T> | null;
-  tail: EvictionNode<T> | null;
-  constructor(maxSize: number) {
-    this.maxSize = maxSize;
-    this.cache = new Map();
-    this.head = null;
-    this.tail = null;
-  }
-}
 
 class EvictionNode<T> {
   key: string;
@@ -48,24 +36,49 @@ class EvictionNode<T> {
     this.prev = null;
   }
 }
-// If getting setting or looking up, time complex should be O(1)
-// Insert a node at the head of the list
-Magnicache.prototype.changeHead = (): EvictionNode<T> => {};
+class EvictionCache<T> {
+  maxSize: number;
+  cache: Map<string, T>;
+  head: EvictionNode<T> | null;
+  tail: EvictionNode<T> | null;
+  constructor(maxSize: number) {
+    this.maxSize = maxSize;
+    this.cache = new Map();
+    this.head = null;
+    this.tail = null;
+  }
 
-// Evict node at the end of the list
-Magnicache.prototype.evictEnd = (): EvictionNode<T> => {};
 
-// Create and add a node to the cache(possibly not needed)
-Magnicache.prototype.createNode = (): EvictionNode<T> => {};
+  // Insert a node at the head of the list
+  changeHead(): EvictionNode<T> {
+    // IF there is no head of the linked list create one
+  }
 
-// Update the node when it is used and add it to the queue to be evicted(possibly not needed)
-Magnicache.prototype.updateEvictionNode = (): EvictionNode<T> => {};
+  // Evict node at the end of the list
+  evictEnd(): EvictionNode<T> {
+    // ...
+  }
 
-// Set the new node and add it to the list(may be implemenmted through create node instead or vice versa)
-Magnicache.prototype.setNode = (): EvictionNode<T> => {};
+  // Create and add a node to the cache(possibly not needed)
+  createNode(): EvictionNode<T> {
+    // ...
+  }
 
-// Get a specific node from the linked list(to return from the cache)
-Magnicache.prototype.getNode = (): EvictionNode<T> => {};
+  // Update the node when it is used and add it to the queue to be evicted(possibly not needed)
+  updateEvictionNode(): EvictionNode<T> {
+    // ...
+  }
+
+  // Set the new node and add it to the list(may be implemented through create node instead or vice versa)
+  setNode(): EvictionNode<T> {
+    // ...
+  }
+
+  // Get a specific node from the linked list(to return from the cache)
+  getNode(): EvictionNode<T> {
+    // ...
+  }
+}
 
 
 // Query method takes request, response and next callbacks
