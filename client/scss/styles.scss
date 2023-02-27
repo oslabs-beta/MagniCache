@@ -39,7 +39,7 @@ body {
 
 #nav-title {
   color: $tertiaryColor;
-  font-size: 1.5em;
+  font-size: 1.75em;
 }
 
 .metrics-container {
@@ -127,6 +127,10 @@ body {
   outline-width: 0;
 }
 
+.fields-container::-webkit-scrollbar,
+.fields-container-result::-webkit-scrollbar {
+  display: none;
+}
 #query-box {
   display: flex;
   flex-direction: column;
@@ -172,7 +176,9 @@ h1 {
 
 .single-result {
   word-break: break-all;
-  font-size: 1.3vw;
+  font-size: 1rem;
+  white-space: pre-wrap;
+  // line-height: 1vh;
 }
 
 #visuals-header {

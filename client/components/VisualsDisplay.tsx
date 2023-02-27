@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, SetStateAction } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import { Doughnut, Line } from 'react-chartjs-2';
 import Response from './Response';
+import { Metrics } from '../../types';
 
 ChartJS.register(
   ArcElement,
@@ -27,16 +28,47 @@ ChartJS.register(
 interface VisualProps {
   queryValue: string;
   queryResponse: Object;
-  fetchTime: number;
+  // fetchTime: number;
+  // cacheData: string[];
+  // lineGraphTimes: number[];
+  // setLineGraphTimes: React.Dispatch<SetStateAction<number[]>>;
+  // lineGraphLabels: string[];
+  // setLineGraphLabels: React.Dispatch<SetStateAction<string[]>>;
+  metrics: Metrics[];
+  setMetrics: React.Dispatch<SetStateAction<Metrics[]>>;
 }
 
 // Create the charts within this file, response.tsx will take care of the metrics for the cache response
 const VisualsDisplay = (props: VisualProps) => {
-  const [hits, setHits] = useState(5);
-  const [misses, setMisses] = useState(5);
+  // const [hits, setHits] = useState(5);
+  // const [misses, setMisses] = useState(5);
   //TODO: Use queryresponse and fetch time to populate data inside visuals
-  const { queryResponse, fetchTime } = props;
+  const {
+    queryResponse,
+    metrics,
+    // fetchTime,
+    // cacheData,
+    // lineGraphTimes,
+    // lineGraphLabels,
+  } = props;
+  //TODO: refactor this mess
+  // console.log('cache me ousside', cacheData);
+  const hits = metrics.reduce((acc: number, curr: Metrics): number => {
+    if (curr.cacheStatus === 'hit') {
+      acc++;
+    }
+    return acc;
+  }, 0);
+  const misses = metrics.reduce((acc: number, curr: Metrics): number => {
+    if (curr.cacheStatus === 'miss') {
+      acc++;
+    }
+    return acc;
+  }, 0);
+  // const misses = cacheData.filter((status) => status === 'misses');
+
   // console.log(new Date(window.performance.timing.fetchStart).toDateString())
+
   const dataDo = {
     labels: ['Hits', 'Misses'],
     datasets: [
@@ -49,12 +81,17 @@ const VisualsDisplay = (props: VisualProps) => {
       },
     ],
   };
+  // if first response is 0, replace it/slice the array
   const dataLine = {
-    labels: ['Cached', 'Uncached', 'Cached', 'Cached'],
+    labels: metrics.map((obj) => {
+      if (obj.cacheStatus === 'hit') {
+        return 'Cached';
+      } else return 'Uncached';
+    }),
     datasets: [
       {
         label: 'Response Time',
-        data: [120, 400, 60, 90],
+        data: metrics.map((obj) => obj.fetchTime),
         borderColor: '#5b2af0',
         backgroundColor: '#5b2af0',
       },
@@ -78,7 +115,7 @@ const VisualsDisplay = (props: VisualProps) => {
         <div className="right-visual">
           <div className="hits-misses">
             {/* Props passed here are for the response container being able to render the metrics associated with the hits and misses from the cache */}
-            <Response hits={hits} misses={misses} fetchTime={fetchTime} />
+            <Response hits={hits} misses={misses} metrics={metrics} />
           </div>
           <div className="donut-chart">
             <Doughnut id="doughnut" data={dataDo} />

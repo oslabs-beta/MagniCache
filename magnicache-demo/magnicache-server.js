@@ -56,6 +56,45 @@ Magnicache.prototype.query = function (req, res, next) {
     // check if the operation is a query
     // and not some other type of mutation
     if (ast.operation === 'query') {
+
+        var queries_2 = this.magniParser(ast.selectionSet.selections);
+        console.log('queries', queries_2);
+        var queryResponses_1 = [];
+        // this compileQueries function needs work -> currently it is not compiling all of our queries because each messageById value is an array?
+        var compileQueries_1 = function () {
+            console.log('compiling queries....');
+            // console.log(Object.assign({}, ...queryResponses));
+            var response = {};
+            // maybe try lodash
+            for (var _i = 0, queryResponses_2 = queryResponses_1; _i < queryResponses_2.length; _i++) {
+                var queryResponse = queryResponses_2[_i];
+                response = Object.assign(response, queryResponse);
+                // console.log(JSON.stringify(response));
+            }
+            res.locals.queryResponse = response;
+            // console.log(this.cache);
+            return next();
+        };
+        var _loop_1 = function (query_1) {
+            if (this_1.cache.has(query_1)) {
+                console.log('cache hit');
+                res.cookie('cacheStatus', 'hit');
+                console.log('cacheStatus set hit on Res');
+                queryResponses_1.push(this_1.cache.get(query_1));
+                if (queries_2.length === queryResponses_1.length) {
+                    // console.log(queryResponses);
+                    compileQueries_1();
+                }
+            }
+            else {
+                console.log('cache miss');
+                res.cookie('cacheStatus', 'miss');
+                console.log('cacheStatus set miss on Res');
+                graphql({ schema: this_1.schema, source: query_1 })
+                    .then(function (result) {
+                    _this.cache.set(query_1, result);
+                    queryResponses_1.push(result);
+
         if (ast.selectionSet.selections[0].name.value === '__schema') {
             // execute the graphl query against the schema
             graphql({ schema: this.schema, source: query })
@@ -181,6 +220,9 @@ Magnicache.prototype.magniParser = function (selections, queryArray, queries) {
         else {
             var string = "";
             //{allMessages(id:4){message}}
+
+            // console.log('queryArray:', queryArray);
+
             // Ex:  ['messageById', ['id:4'], ['name:yousuf'], 'message']
             // would give {messageById(id:4,name:yousuf){message}}
             // Looping through the query array to build the string
