@@ -160,7 +160,7 @@ Magnicache.prototype.query = function (
           }
         } else {
           res.cookie('cachestatus', 'miss');
-          console.log('cachestatsus set miss on Res')
+          console.log('cachestatsus set miss on Res');
           // output message indicating that the query is missing
           console.log('cache miss');
 
