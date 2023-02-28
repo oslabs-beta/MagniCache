@@ -23,6 +23,18 @@ function Magnicache(this: any, schema: any): void {
   this.query = this.query.bind(this);
 }
 // Class constructors for the linked list and the nodes for the list
+class EvictionCache<T> {
+  maxSize: number;
+  cache: Map<string, T>;
+  head: EvictionNode<T> | null;
+  tail: EvictionNode<T> | null;
+  constructor(maxSize: number) {
+    this.maxSize = maxSize;
+    this.cache = new Map();
+    this.head = null;
+    this.tail = null;
+  }
+}
 
 class EvictionNode<T> {
   key: string;
@@ -36,49 +48,24 @@ class EvictionNode<T> {
     this.prev = null;
   }
 }
-class EvictionCache<T> {
-  maxSize: number;
-  cache: Map<string, T>;
-  head: EvictionNode<T> | null;
-  tail: EvictionNode<T> | null;
-  constructor(maxSize: number) {
-    this.maxSize = maxSize;
-    this.cache = new Map();
-    this.head = null;
-    this.tail = null;
-  }
+// If getting setting or looking up, time complex should be O(1)
+// Insert a node at the head of the list
+Magnicache.prototype.changeHead = (): EvictionNode<T> => {};
 
+// Evict node at the end of the list
+Magnicache.prototype.evictEnd = (): EvictionNode<T> => {};
 
-  // Insert a node at the head of the list
-  changeHead(): EvictionNode<T> {
-    // IF there is no head of the linked list create one
-  }
+// Create and add a node to the cache(possibly not needed)
+Magnicache.prototype.createNode = (): EvictionNode<T> => {};
 
-  // Evict node at the end of the list
-  evictEnd(): EvictionNode<T> {
-    // ...
-  }
+// Update the node when it is used and add it to the queue to be evicted(possibly not needed)
+Magnicache.prototype.updateEvictionNode = (): EvictionNode<T> => {};
 
-  // Create and add a node to the cache(possibly not needed)
-  createNode(): EvictionNode<T> {
-    // ...
-  }
+// Set the new node and add it to the list(may be implemenmted through create node instead or vice versa)
+Magnicache.prototype.setNode = (): EvictionNode<T> => {};
 
-  // Update the node when it is used and add it to the queue to be evicted(possibly not needed)
-  updateEvictionNode(): EvictionNode<T> {
-    // ...
-  }
-
-  // Set the new node and add it to the list(may be implemented through create node instead or vice versa)
-  setNode(): EvictionNode<T> {
-    // ...
-  }
-
-  // Get a specific node from the linked list(to return from the cache)
-  getNode(): EvictionNode<T> {
-    // ...
-  }
-}
+// Get a specific node from the linked list(to return from the cache)
+Magnicache.prototype.getNode = (): EvictionNode<T> => {};
 
 
 // Query method takes request, response and next callbacks
@@ -99,54 +86,6 @@ Magnicache.prototype.query = function (
   // check if the operation is a query
   // and not some other type of mutation
   if (ast.operation === 'query') {
-
-    const queries: string[] = this.magniParser(ast.selectionSet.selections);
-    console.log('queries', queries);
-    const queryResponses: {}[] = [];
-
-    // this compileQueries function needs work -> currently it is not compiling all of our queries because each messageById value is an array?
-    const compileQueries = () => {
-      console.log('compiling queries....');
-      // console.log(Object.assign({}, ...queryResponses));
-      let response = {};
-      // maybe try lodash
-      for (const queryResponse of queryResponses) {
-        response = Object.assign(response, queryResponse);
-        // console.log(JSON.stringify(response));
-      }
-
-      res.locals.queryResponse = response;
-      // console.log(this.cache);
-      return next();
-    };
-
-    for (const query of queries) {
-      if (this.cache.has(query)) {
-        console.log('cache hit');
-        res.cookie('cacheStatus', 'hit');
-        console.log('cacheStatus set hit on Res');
-
-        queryResponses.push(this.cache.get(query));
-        if (queries.length === queryResponses.length) {
-          // console.log(queryResponses);
-          compileQueries();
-        }
-      } else {
-        console.log('cache miss');
-        res.cookie('cacheStatus', 'miss');
-        console.log('cacheStatus set miss on Res');
-        graphql({ schema: this.schema, source: query })
-          .then((result: {}) => {
-            this.cache.set(query, result);
-            queryResponses.push(result);
-            if (queries.length === queryResponses.length) {
-              compileQueries();
-            }
-          })
-          .catch((err: {}) => {
-            console.log(err);
-            return next({
-              log: err,
     if (ast.selectionSet.selections[0].name.value === '__schema') {
       // execute the graphl query against the schema
       graphql({ schema: this.schema, source: query })
@@ -190,56 +129,53 @@ Magnicache.prototype.query = function (
       };
 
       // loop through the individual queries and execute them in turn
-     // for (const query of queries) {
+      for (const query of queries) {
         // check if query is already cached
-       // if (this.cache.has(query)) {
+        if (this.cache.has(query)) {
           // output message indicating that the query is cached
-
           console.log('cache hit');
           res.cookie('cachestatus', 'hit');
           console.log('cachestatus set hit on res');
 
-
           // store the cached response
-         // queryResponses.push(this.cache.get(query));
+          queryResponses.push(this.cache.get(query));
 
           // check if all queries have been fetched
-         // if (queries.length === queryResponses.length) {
+          if (queries.length === queryResponses.length) {
             // if yes, compile all queries
-
             compileQueries();
           }
         } else {
           res.cookie('cachestatus', 'miss');
           console.log('cachestatsus set miss on Res')
           // output message indicating that the query is missing
-          //console.log('cache miss');
+          console.log('cache miss');
 
           // execute the query against graphql
-         // graphql({ schema: this.schema, source: query })
-            //.then((result: {}) => {
+          graphql({ schema: this.schema, source: query })
+            .then((result: {}) => {
               // cache the newest response
-            //  this.cache.set(query, result);
+              this.cache.set(query, result);
 
               // store the query response
-            //  queryResponses.push(result);
+              queryResponses.push(result);
 
               // check if all queries have been fetched
-              //if (queries.length === queryResponses.length) {
+              if (queries.length === queryResponses.length) {
                 // if yes, compile all queries
-               // compileQueries();
-            //  }
-           // })
-           // .catch((err: {}) => {
-             // console.log(err);
+                compileQueries();
+              }
+            })
+            .catch((err: {}) => {
+              console.log(err);
 
               // throw an error to the next callback
-              //return next({
-               // log: err,
-              //});
-            //});
-       // }
-     // }
+              return next({
+                log: err,
+              });
+            });
+        }
+      }
     }
     // not a query!!
   } else if (ast.operation === 'mutation') {
@@ -310,8 +246,6 @@ Magnicache.prototype.magniParser = function (
     } else {
       let string = ``;
       //{allMessages(id:4){message}}
-      // console.log('queryArray:', queryArray);
-
       // Ex:  ['messageById', ['id:4'], ['name:yousuf'], 'message']
       // would give {messageById(id:4,name:yousuf){message}}
       // Looping through the query array to build the string
