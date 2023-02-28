@@ -9,7 +9,8 @@
     "strict": true,
     "noEmitOnError": true,
     "types": ["react/next"],
-    "target": "ESNext"
+    "target": "ESNext",
+    "noImplicitAny": true
   },
   "include": ["client"],
   "exclude": ["node_modules"]
