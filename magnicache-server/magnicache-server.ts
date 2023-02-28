@@ -25,9 +25,9 @@ function Magnicache(this: any, schema: any): void {
 // Class constructors for the linked list and the nodes for the list
 class EvictionNode<T> {
   key: string;
-  value: T;
-  next: EvictionNode<T> | null;
-  prev: EvictionNode<T> | null;
+  value: any;
+  next: EvictionNode<any> | null;
+  prev: EvictionNode<any> | null;
   constructor(key: string, value: T) {
     this.key = key;
     this.value = value;
@@ -38,47 +38,79 @@ class EvictionNode<T> {
 
 class EvictionCache<T> {
   maxSize: number;
-  cache: Map<string, T>;
-  head: EvictionNode<T> | null;
-  tail: EvictionNode<T> | null;
+  cache: Map<string, any>;
+  head: EvictionNode<any> | null;
+  tail: EvictionNode<any> | null;
   constructor(maxSize: number) {
     this.maxSize = maxSize;
     this.cache = new Map();
     this.head = null;
     this.tail = null;
+    this.createNode = this.createNode.bind(this);
+    this.evictEnd = this.evictEnd.bind(this);
+    this.updateEvictionNode = this.updateEvictionNode.bind(this);
+    this.setNode = this.setNode.bind(this);
+    this.deleteNode = this.deleteNode.bind(this);
   }
 
-  // Insert a node at the head of the list
-  changeHead(): EvictionNode<T> {
-    // IF there is no head of the linked list create one
-    if (!this.head) {
-      // ...
+  // Insert a node at the head of the list/evict least recently used node 
+  createNode(key: string, value: object): EvictionNode<string> {
+    // Create a new instance of eviction cache. Max size can be determined later..........
+    const evictionCache = new EvictionCache<string>(20);
+    // Create a new node to add
+    const newNode = new EvictionNode<any > (key, value);
+    // IF there is no head of the linked list create one, same with the tai;
+    this.cache.set(key, newNode);
+    
+    if (!evictionCache.head) {
+      evictionCache.head = newNode;
+      if (!evictionCache.tail) evictionCache.tail = newNode;
     }
+    // else we want to add a next node to our newNode, which should be the head of the evictionCache
+    else {
+      newNode.next = evictionCache.head;
+      evictionCache.head.prev = newNode;
+      evictionCache.head = newNode;
+    }
+    // Check if the size of our eviction cache's cache is greater than the largest value. If so, delete the tail
+    if (evictionCache.cache.size > evictionCache.maxSize) {
+      // Create a node, reassign the tail, set next to null, delete the evicted node returning evict end
+      evictionCache.cache.delete(evictionCache.tail.key);
+      evictionCache.tail = evictionCache.tail.prev;
+      evictionCache.tail.next = null;
+    }
+    return newNode;
   }
-
   // Evict node at the end of the list
-  evictEnd(): EvictionNode<T> {
-    // ...
+  evictEnd(): EvictionNode<T> | void {
+    // Evict tail of the linked list so long as the tail is not null
+    this.cache.delete(this.tail.key);
+    this.tail.prev.next = null;
+    this.tail = this.tail.prev;
   }
 
-  // Create and add a node to the cache(possibly not needed)
-  createNode(): EvictionNode<T> {
-    // ...
-  }
-
-  // Update the node when it is used and add it to the queue to be evicted(possibly not needed)
+  // Update the node when it is used and add it to the queue to be further from eviction(possibly not needed)
   updateEvictionNode(): EvictionNode<T> {
-    // ...
+    // We want to check if a node has been used. If it has, move it to the head of the list. This way, if a node is unsused it will slowly make its way to the tail
   }
 
   // Set the new node and add it to the list(may be implemented through create node instead or vice versa)
   setNode(): EvictionNode<T> {
     // ...
   }
+  
+  deleteNode(node): EvictionNode<T> {
+
+  }
 
   // Get a specific node from the linked list(to return from the cache)
-  getNode(): EvictionNode<T> {
+  getNode(key: string): EvictionNode<T> {
     // ...
+    const node = this.cache.get(key);
+    this.deleteNode(node);
+    this.createNode(node.key, node.value);
+  
+    return node;
   }
 }
 // Query method takes request, response and next callbacks
@@ -169,6 +201,7 @@ Magnicache.prototype.query = function (
             .then((result: {}) => {
               // cache the newest response
               this.cache.set(query, result);
+              // this.cache.set(EvictionCache.prototype.createHead())
 
               // store the query response
               queryResponses.push(result);
