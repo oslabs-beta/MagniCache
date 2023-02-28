@@ -14,15 +14,6 @@ function Magnicache(schema) {
     this.query = this.query.bind(this);
 }
 // Class constructors for the linked list and the nodes for the list
-var EvictionCache = /** @class */ (function () {
-    function EvictionCache(maxSize) {
-        this.maxSize = maxSize;
-        this.cache = new Map();
-        this.head = null;
-        this.tail = null;
-    }
-    return EvictionCache;
-}());
 var EvictionNode = /** @class */ (function () {
     function EvictionNode(key, value) {
         this.key = key;
@@ -32,19 +23,42 @@ var EvictionNode = /** @class */ (function () {
     }
     return EvictionNode;
 }());
-// If getting setting or looking up, time complex should be O(1)
-// Insert a node at the head of the list
-Magnicache.prototype.changeHead = function () { };
-// Evict node at the end of the list
-Magnicache.prototype.evictEnd = function () { };
-// Create and add a node to the cache(possibly not needed)
-Magnicache.prototype.createNode = function () { };
-// Update the node when it is used and add it to the queue to be evicted(possibly not needed)
-Magnicache.prototype.updateEvictionNode = function () { };
-// Set the new node and add it to the list(may be implemenmted through create node instead or vice versa)
-Magnicache.prototype.setNode = function () { };
-// Get a specific node from the linked list(to return from the cache)
-Magnicache.prototype.getNode = function () { };
+var EvictionCache = /** @class */ (function () {
+    function EvictionCache(maxSize) {
+        this.maxSize = maxSize;
+        this.cache = new Map();
+        this.head = null;
+        this.tail = null;
+    }
+    // Insert a node at the head of the list
+    EvictionCache.prototype.changeHead = function () {
+        // IF there is no head of the linked list create one
+        if (!this.head) {
+            // ...
+        }
+    };
+    // Evict node at the end of the list
+    EvictionCache.prototype.evictEnd = function () {
+        // ...
+    };
+    // Create and add a node to the cache(possibly not needed)
+    EvictionCache.prototype.createNode = function () {
+        // ...
+    };
+    // Update the node when it is used and add it to the queue to be evicted(possibly not needed)
+    EvictionCache.prototype.updateEvictionNode = function () {
+        // ...
+    };
+    // Set the new node and add it to the list(may be implemented through create node instead or vice versa)
+    EvictionCache.prototype.setNode = function () {
+        // ...
+    };
+    // Get a specific node from the linked list(to return from the cache)
+    EvictionCache.prototype.getNode = function () {
+        // ...
+    };
+    return EvictionCache;
+}());
 // Query method takes request, response and next callbacks
 // as its arguments
 Magnicache.prototype.query = function (req, res, next) {
