@@ -195,7 +195,8 @@ Magnicache.prototype.query = function (
         if (this.cache.includes(query)) {
           // output message indicating that the query is cached
           console.log('cache hit');
-          // res.cookie('cachestatus', 'hit');
+
+          res.cookie('cacheStatus', 'hit');
           console.log('cachestatus set hit on res');
 
           // store the cached response
@@ -209,7 +210,7 @@ Magnicache.prototype.query = function (
             compileQueries();
           }
         } else {
-          res.cookie('cachestatus', 'miss');
+          res.cookie('cacheStatus', 'miss');
           console.log('cachestatsus set miss on Res');
           // output message indicating that the query is missing
           console.log('cache miss');
