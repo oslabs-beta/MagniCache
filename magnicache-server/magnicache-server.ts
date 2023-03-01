@@ -9,19 +9,17 @@ import { Response, Request, NextFunction } from 'express';
 
 import * as mergeWith from 'lodash/mergeWith';
 
-// Cache Class, for removing the LRU item in the cachce
+// Cache Class, for removing the LRU item in the cache
 
 // Magnicache class for creating a queryable cache
 function Magnicache(this: any, schema: any, maxSize: number = 100): void {
   // save the provided schema
   this.schema = schema;
-
-  // create a map for caching query responses
-
+  this.maxSize = maxSize;
   // bind the query method for use in other functions
   this.query = this.query.bind(this);
-  
-  this.cache = new Cache(maxSize)
+
+  this.cache = new Cache(maxSize);
 }
 // Class constructors for the linked list and the nodes for the list
 class EvictionNode<T> {
@@ -81,7 +79,7 @@ class Cache<T> {
   // Update the node when it is used and add it to the queue to be further from eviction(possibly not needed)
   deleteNode(node): void {
     if (node === null) throw new Error('node is null');
-    
+
     if (node.next === null) {
       node.prev.next = null;
       this.tail = node.prev;
@@ -97,19 +95,30 @@ class Cache<T> {
 
   // Get a specific node from the linked list(to return from the cache)
   get(key: string): EvictionNode<T> {
-    // if (this.head === null) return null;
     const node = this.map.get(key);
-
-    node.prev.next = node.next;
-    node.next.prev = node.prev;
-
-    this.head.prev = node;
+    // if (this.head === null) return node;
+    console.log(node);
+    //if the node is at the head, simply return the value
+    if (this.head === node) return node.value;
+    //if node is at the tail, remove it from the tail
+    if (this.tail === node) {
+      this.tail = node.prev;
+      node.prev.next = null;
+      // if node is neither, remove it
+    } else {
+      node.prev.next = node.next;
+      node.next.prev = node.prev;
+    }
+    //move the current head down one in the LL, move the current node to the head
+    this.head!.prev = node;
     node.prev = null;
     node.next = this.head;
     this.head = node;
 
-    return node;
+    return node.value;
   }
+
+  //check if the cache has the key, only prupose if for semantic sugar
   includes(key: string) {
     return this.map.has(key);
   }
@@ -128,6 +137,12 @@ Magnicache.prototype.query = function (
   const {
     definitions: [ast],
   } = parse(query);
+
+  if (ast.selectionSet.selections[0].name.value === 'clearCache') {
+    this.cache = new Cache(this.maxSize);
+    res.locals.queryResponse = { cacheStatus: 'cacheCleared' };
+    return next();
+  }
 
   // check if the operation is a query
   // and not some other type of mutation
@@ -168,7 +183,7 @@ Magnicache.prototype.query = function (
         // assign the combined result to the response locals
         res.locals.queryResponse = response1;
 
-        console.log(this.cache);
+        // console.log(this.cache);
 
         // proceed to execute the next callback
         return next();
@@ -180,11 +195,13 @@ Magnicache.prototype.query = function (
         if (this.cache.includes(query)) {
           // output message indicating that the query is cached
           console.log('cache hit');
-          res.cookie('cachestatus', 'hit');
+          // res.cookie('cachestatus', 'hit');
           console.log('cachestatus set hit on res');
 
           // store the cached response
+          console.log('query response', this.cache.get(query));
           queryResponses.push(this.cache.get(query));
+          // console.log(this.cache)
 
           // check if all queries have been fetched
           if (queries.length === queryResponses.length) {
@@ -312,7 +329,5 @@ Magnicache.prototype.magniParser = function (
   // Returning the queries array with all strings
   return queries;
 };
-
-
 
 module.exports = Magnicache;

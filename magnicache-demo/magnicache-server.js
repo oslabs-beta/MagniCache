@@ -3,15 +3,16 @@ exports.__esModule = true;
 var _a = require('graphql'), graphql = _a.graphql, GraphQLSchema = _a.GraphQLSchema, GraphQLObjectType = _a.GraphQLObjectType, GraphQLString = _a.GraphQLString;
 var parse = require('graphql/language/parser').parse;
 var mergeWith = require("lodash/mergeWith");
-// EvictionCache Class, for removing the LRU item in the cachce
+// Cache Class, for removing the LRU item in the cache
 // Magnicache class for creating a queryable cache
-function Magnicache(schema) {
+function Magnicache(schema, maxSize) {
+    if (maxSize === void 0) { maxSize = 100; }
     // save the provided schema
     this.schema = schema;
-    // create a map for caching query responses
-    this.cache = new Map();
+    this.maxSize = maxSize;
     // bind the query method for use in other functions
     this.query = this.query.bind(this);
+    this.cache = new Cache(maxSize);
 }
 // Class constructors for the linked list and the nodes for the list
 var EvictionNode = /** @class */ (function () {
@@ -23,41 +24,90 @@ var EvictionNode = /** @class */ (function () {
     }
     return EvictionNode;
 }());
-var EvictionCache = /** @class */ (function () {
-    function EvictionCache(maxSize) {
+var Cache = /** @class */ (function () {
+    function Cache(maxSize) {
         this.maxSize = maxSize;
-        this.cache = new Map();
+        this.map = new Map();
         this.head = null;
         this.tail = null;
+        // Function binding
+        this.create = this.create.bind(this);
+        this.deleteNode = this.deleteNode.bind(this);
+        this.get = this.get.bind(this);
+        this.includes = this.includes.bind(this);
     }
-    // Insert a node at the head of the list
-    EvictionCache.prototype.changeHead = function () {
-        // IF there is no head of the linked list create one
+    // Insert a node at the head of the list/evict least recently used node
+    Cache.prototype.create = function (key, value) {
+        // Create a new instance of eviction cache. Max size can be determined later..........
+        // const cache = new Cache<string>(size);
+        // Create a new node to add
+        var newNode = new EvictionNode(key, value);
+        // IF there is no head of the linked list create one, same with the tai;
+        this.map.set(key, newNode);
         if (!this.head) {
-            // ...
+            this.head = newNode;
+            if (!this.tail)
+                this.tail = newNode;
         }
+        // else we want to add a next node to our newNode, which should be the head of the Cache
+        else {
+            newNode.next = this.head;
+            this.head.prev = newNode;
+            this.head = newNode;
+        }
+        // Check if the size of our eviction cache's cache is greater than the largest value. If so, delete the tail
+        if (this.map.size > this.maxSize)
+            this.deleteNode(this.tail);
+        return newNode;
     };
-    // Evict node at the end of the list
-    EvictionCache.prototype.evictEnd = function () {
-        // ...
-    };
-    // Create and add a node to the cache(possibly not needed)
-    EvictionCache.prototype.createNode = function () {
-        // ...
-    };
-    // Update the node when it is used and add it to the queue to be evicted(possibly not needed)
-    EvictionCache.prototype.updateEvictionNode = function () {
-        // ...
-    };
-    // Set the new node and add it to the list(may be implemented through create node instead or vice versa)
-    EvictionCache.prototype.setNode = function () {
-        // ...
+    // Update the node when it is used and add it to the queue to be further from eviction(possibly not needed)
+    Cache.prototype.deleteNode = function (node) {
+        if (node === null)
+            throw new Error('node is null');
+        if (node.next === null) {
+            node.prev.next = null;
+            this.tail = node.prev;
+        }
+        else if (node.prev === null) {
+            node.next.prev = null;
+            this.head = node.next;
+        }
+        else {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+        }
+        this.map["delete"](node.key);
     };
     // Get a specific node from the linked list(to return from the cache)
-    EvictionCache.prototype.getNode = function () {
-        // ...
+    Cache.prototype.get = function (key) {
+        var node = this.map.get(key);
+        // if (this.head === null) return node;
+        console.log(node);
+        //if the node is at the head, simply return the value
+        if (this.head === node)
+            return node.value;
+        //if node is at the tail, remove it from the tail
+        if (this.tail === node) {
+            this.tail = node.prev;
+            node.prev.next = null;
+            // if node is neither, remove it
+        }
+        else {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+        }
+        //move the current head down one in the LL, move the current node to the head
+        this.head.prev = node;
+        node.prev = null;
+        node.next = this.head;
+        this.head = node;
+        return node.value;
     };
-    return EvictionCache;
+    //check if the cache has the key, only prupose if for semantic sugar
+    Cache.prototype.includes = function (key) {
+        return this.map.has(key);
+    };
+    return Cache;
 }());
 // Query method takes request, response and next callbacks
 // as its arguments
@@ -67,6 +117,11 @@ Magnicache.prototype.query = function (req, res, next) {
     var query = req.body.query;
     // parse the query into an AST
     var ast = parse(query).definitions[0];
+    if (ast.selectionSet.selections[0].name.value === 'clearCache') {
+        this.cache = new Cache(this.maxSize);
+        res.locals.queryResponse = { cacheStatus: 'cacheCleared' };
+        return next();
+    }
     // check if the operation is a query
     // and not some other type of mutation
     if (ast.operation === 'query') {
@@ -100,19 +155,21 @@ Magnicache.prototype.query = function (req, res, next) {
                 }
                 // assign the combined result to the response locals
                 res.locals.queryResponse = response1;
-                console.log(_this.cache);
+                // console.log(this.cache);
                 // proceed to execute the next callback
                 return next();
             };
             var _loop_1 = function (query_1) {
                 // check if query is already cached
-                if (this_1.cache.has(query_1)) {
+                if (this_1.cache.includes(query_1)) {
                     // output message indicating that the query is cached
                     console.log('cache hit');
-                    res.cookie('cachestatus', 'hit');
+                    // res.cookie('cachestatus', 'hit');
                     console.log('cachestatus set hit on res');
                     // store the cached response
+                    console.log('query response', this_1.cache.get(query_1));
                     queryResponses_1.push(this_1.cache.get(query_1));
+                    // console.log(this.cache)
                     // check if all queries have been fetched
                     if (queries_2.length === queryResponses_1.length) {
                         // if yes, compile all queries
@@ -128,7 +185,8 @@ Magnicache.prototype.query = function (req, res, next) {
                     graphql({ schema: this_1.schema, source: query_1 })
                         .then(function (result) {
                         // cache the newest response
-                        _this.cache.set(query_1, result);
+                        _this.cache.create(query_1, result);
+                        // this.cache.set(Cache.prototype.createHead())
                         // store the query response
                         queryResponses_1.push(result);
                         // check if all queries have been fetched
@@ -157,7 +215,7 @@ Magnicache.prototype.query = function (req, res, next) {
     else if (ast.operation === 'mutation') {
         console.log('this is a mutation');
         // Logic for mutation goes here
-        this.cache = new Map();
+        this.cache = new Cache(this.maxSize);
         console.log(this.cache);
         graphql({ schema: this.schema, source: query })
             .then(function (result) {
