@@ -6,11 +6,11 @@ import { Metrics } from '../../types';
 const MetricsContainer: React.FC = () => {
   const [queryValue, setQueryValue] = useState('');
   const [queryResponse, setQueryResponse] = useState({});
-  const [cacheData, setCacheData] = useState(['']); // TODO:need to figure how to type this so TS stops shouting
   const [fetchTime, setFetchTime] = useState<number>(0);
-  const [lineGraphTimes, setLineGraphTimes] = useState<number[]>([]);
-  const [lineGraphLabels, setLineGraphLabels] = useState<string[]>([]);
   const [metrics, setMetrics] = useState<Metrics[]>([]);
+
+  // TODO:New metrics for cache container
+  // ...
 
   const handleClickRun = () => {
     if (queryValue !== '' && queryValue !== null) {
@@ -73,6 +73,18 @@ const MetricsContainer: React.FC = () => {
     setQueryValue('');
     setQueryResponse({});
   };
+
+  const handleClearCache = () => {
+    fetch('graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: '{clearCache}',
+      // delete cache
+    });
+  };
+
   return (
     <div className="metrics-container">
       <div className="query-container">
@@ -84,6 +96,7 @@ const MetricsContainer: React.FC = () => {
           fetchTime={fetchTime}
           handleClickClear={handleClickClear}
           handleClickRun={handleClickRun}
+          handleClearCache={handleClearCache}
         />
       </div>
       <div className="visuals-container">

@@ -26,28 +26,30 @@ body {
   background-color: $primaryColor;
   color: $tertiaryColor;
   margin-bottom: 20px;
+  .all-nav-links {
+    display: flex;
+    justify-content: right;
+    #about-nav-link,
+    #docs-nav-link,
+    #team-nav-link {
+      color: $secondaryWhite;
+    }
+  }
+  #nav-title {
+    color: $secondaryWhite;
+    font-size: 1.75em;
+  }
 }
 
-.all-nav-links {
-  display: flex;
-  justify-content: right;
-}
-
-#about-nav-link,
-#docs-nav-link,
-#team-nav-link {
-  color: $secondaryWhite;
-}
-
-#nav-title {
-  color: $secondaryWhite;
-  font-size: 1.75em;
-}
 .logo {
   width: 115px;
   height: 70px;
   margin-left: -20px;
   transition: transform 0.5s ease-in-out;
+}
+
+.logo:hover {
+  animation: spin360 2.5s linear infinite;
 }
 
 @keyframes spin360 {
@@ -57,14 +59,6 @@ body {
   to {
     transform: rotate(360deg);
   }
-}
-
-.logo:hover {
-  animation: spin360 2.5s linear infinite;
-}
-
-.metric-result-numbers {
-  color: $blackColor;
 }
 
 // ALL NAV BAR SELECTORS ABOVE THIS LINE
@@ -90,6 +84,10 @@ body {
   padding: 1.5%;
 }
 
+.metric-result-numbers {
+  color: $blackColor;
+}
+
 // ALL MAINTAINER/MAIN METRICS CONTAINER SELECTORS ABOVE THIS LINE
 // ALL MAINTAINER/MAIN METRICS CONTAINER SELECTORS ABOVE THIS LINE
 // ALL MAINTAINER/MAIN METRICS CONTAINER SELECTORS ABOVE THIS LINE
@@ -101,28 +99,24 @@ body {
   border-radius: $borderRad;
   background-color: rgba(89, 48, 212, 0.412);
   box-shadow: 12px 12px 15px 1px rgba($color: white, $alpha: 0.4);
-}
-
-.query-container {
-  width: 85%;
-  margin-bottom: 10px;
-}
-
-.query-display-flex {
-  border-radius: $borderRad;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
-.query-display-child {
-  padding-left: 1.5%;
-}
-
-.query-display-title {
-  text-align: center;
-  padding: 0.5vw;
-  margin-top: 1vw;
-  font-size: 3vw;
+  .query-container {
+    width: 85%;
+    margin-bottom: 10px;
+  }
+  .query-display-flex {
+    border-radius: $borderRad;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    .query-display-child {
+      padding-left: 1.5%;
+    }
+  }
+  .query-display-title {
+    text-align: center;
+    padding: 0.5vw;
+    margin-top: 1vw;
+    font-size: 3vw;
+  }
 }
 
 .fields-container {
@@ -157,6 +151,11 @@ body {
   border: none;
   margin: 0;
   padding: 0.5vw;
+  #query-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 .query-input:focus {
@@ -167,18 +166,9 @@ body {
 .fields-container-result::-webkit-scrollbar {
   display: none;
 }
-#query-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 
 .query-display-child .toggle-button-group-rc {
   width: 20%;
-}
-
-h1 {
-  color: $blackColor;
 }
 
 .fields-container-result {
@@ -200,12 +190,16 @@ h1 {
   width: 98%;
   overflow-wrap: break-word;
   margin-bottom: 8px;
+  .single-result {
+    word-break: break-all;
+    font-size: 1rem;
+    white-space: pre-wrap;
+  }
 }
 
-.single-result {
-  word-break: break-all;
-  font-size: 1rem;
-  white-space: pre-wrap;
+#toggle-button-cache {
+  position: absolute;
+  right: 5%;
 }
 
 // ALL QUERY/RESULT SELECTORS ABOVE THIS LINE
@@ -216,21 +210,21 @@ h1 {
 .visuals-container {
   min-height: 400px;
   margin-top: 1vh;
-}
-#visuals-header {
-  text-align: center;
-  font-size: 3.5vw;
-  margin-top: 1%;
-}
-.visuals-display {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  padding: 0;
-  margin: 0;
+  #visuals-header {
+    text-align: center;
+    font-size: 3.5vw;
+    margin-top: 1%;
+  }
+  .visuals-display {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+  }
 }
 
-@media (max-width: 1050px) {
+@media (max-width: 1235px) {
   .visuals-display {
     display: flex;
     flex-direction: column;
@@ -274,6 +268,12 @@ h1 {
 .right-visual {
   display: flex;
   padding: 0;
+  .donut-chart {
+    min-width: 250px;
+    padding-bottom: 1vw;
+    margin: 0;
+    margin-left: 0.7vw;
+  }
 }
 
 .hits-misses {
@@ -284,24 +284,17 @@ h1 {
   font-weight: 600;
   line-height: 2;
   width: 250px;
+  #hits {
+    color: $primaryColor;
+  }
+  #misses {
+    color: $errorColor;
+  }
+  #response-time {
+    color: $blackColor;
+  }
 }
 
-#hits {
-  color: $primaryColor;
-}
-#misses {
-  color: $errorColor;
-}
-#response-time {
-  color: $blackColor;
-}
-
-.donut-chart {
-  min-width: 250px;
-  padding-bottom: 1vw;
-  margin: 0;
-  margin-left: 0.7vw;
-}
 // ALL VISUALS/VISCONTAINER SELECTORS ABOVE THIS LINE
 // ALL VISUALS/VISCONTAINER SELECTORS ABOVE THIS LINE
 // ALL VISUALS/VISCONTAINER SELECTORS ABOVE THIS LINE
@@ -314,6 +307,11 @@ h1 {
   width: 100vw;
   height: 100vh;
   text-align: center;
+}
+
+#team-page {
+  display: flex;
+  flex-direction: column;
 }
 
 #team-page h1,
@@ -334,8 +332,10 @@ h1 {
 }
 
 .member-img {
-  width: 280px;
-  height: 280px;
+  width: 70%;
+  height: 70%;
+  // width: 280px;
+  // height: 280px;
   border-radius: 16px;
 }
 
@@ -360,6 +360,8 @@ h1 {
 #about-page {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .about-code {
@@ -367,6 +369,13 @@ h1 {
   border-radius: 6px;
   padding: 12px 6px 12px 6px;
   line-height: 3;
+  font-weight: 100;
+}
+
+.about-magnicache {
+  width: 75%;
+  font-size: 1.2rem;
+  font-weight: 400;
 }
 
 // ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE
