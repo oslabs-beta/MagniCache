@@ -75,14 +75,15 @@ const MetricsContainer: React.FC = () => {
   };
 
   const handleClearCache = () => {
-    fetch('graphql', {
+    fetch(`/graphql`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: '{clearCache}',
-      // delete cache
-    });
+      body: JSON.stringify({
+        query: '{clearCache}',
+      }),
+    })
   };
 
   return (
