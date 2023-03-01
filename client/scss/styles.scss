@@ -44,8 +44,8 @@ body {
   font-size: 1.75em;
 }
 .logo {
-  width: 125px;
-  height: 75px;
+  width: 115px;
+  height: 70px;
   margin-left: -20px;
   transition: transform 0.5s ease-in-out;
 }
@@ -60,7 +60,7 @@ body {
 }
 
 .logo:hover {
-  animation: spin360 2.5s linear infinite ;
+  animation: spin360 2.5s linear infinite;
 }
 
 .metric-result-numbers {
@@ -355,6 +355,18 @@ h1 {
 
 .member-links:hover {
   text-decoration: none;
+}
+
+#about-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.about-code {
+  background-color: #a5a5a570;
+  border-radius: 6px;
+  padding: 12px 6px 12px 6px;
+  line-height: 3;
 }
 
 // ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE
