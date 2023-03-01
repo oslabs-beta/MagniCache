@@ -43,6 +43,29 @@ body {
   color: $secondaryWhite;
   font-size: 1.75em;
 }
+.logo {
+  width: 125px;
+  height: 75px;
+  margin-left: -20px;
+  transition: transform 0.5s ease-in-out;
+}
+
+@keyframes spin360 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.logo:hover {
+  animation: spin360 2.5s linear infinite ;
+}
+
+.metric-result-numbers {
+  color: $blackColor;
+}
 
 // ALL NAV BAR SELECTORS ABOVE THIS LINE
 // ALL NAV BAR SELECTORS ABOVE THIS LINE
@@ -77,6 +100,7 @@ body {
   width: 95%;
   border-radius: $borderRad;
   background-color: rgba(89, 48, 212, 0.412);
+  box-shadow: 12px 12px 15px 1px rgba($color: white, $alpha: 0.4);
 }
 
 .query-container {
@@ -152,7 +176,6 @@ body {
 .query-display-child .toggle-button-group-rc {
   width: 20%;
 }
-
 
 h1 {
   color: $blackColor;
@@ -284,8 +307,6 @@ h1 {
 // ALL VISUALS/VISCONTAINER SELECTORS ABOVE THIS LINE
 // ALL VISUALS/VISCONTAINER SELECTORS ABOVE THIS LINE
 
-
-
 #team-page,
 #about-page,
 #docs-page {
@@ -336,18 +357,7 @@ h1 {
   text-decoration: none;
 }
 
-.logo {
-  width: 125px;
-  height: 75px;
-  margin-left: -20px;
-}
-
-.metric-result-numbers {
-  color: $blackColor;
-}
-
-
-// ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE 
-// ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE 
-// ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE 
-// ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE 
+// ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE
+// ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE
+// ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE
+// ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE
