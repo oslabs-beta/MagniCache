@@ -75,7 +75,6 @@ body {
 .query-container,
 .visuals-container {
   width: 95%;
-  // border: 2px solid $secondaryColor;
   border-radius: $borderRad;
   background-color: rgba(89, 48, 212, 0.412);
 }
@@ -110,7 +109,6 @@ body {
   border-radius: $borderRad;
   width: 95%;
   margin-bottom: 8px;
-  // border: 1.5px solid $primaryColor;
   min-height: 150px;
   max-height: 300px;
   overflow-y: scroll;
@@ -124,7 +122,6 @@ body {
 }
 
 .query-input {
-  // color: $secondaryColor;
   color: $blackColor;
   background-color: $lightTertiaryColor;
   border-radius: $borderRad;
@@ -153,14 +150,9 @@ body {
 }
 
 .query-display-child .toggle-button-group-rc {
-  // border: 3px solid red;
   width: 20%;
 }
 
-[type='radio'] {
-  // this changes the shadow around run and clear buttons
-  // display: none;
-}
 
 h1 {
   color: $blackColor;
@@ -173,7 +165,6 @@ h1 {
   margin-right: 10px;
   border-radius: $borderRad;
   margin-bottom: 8px;
-  // border: 1px solid $blackColor;
   min-height: 162px;
   max-height: 200px;
   overflow-y: scroll;
@@ -186,14 +177,12 @@ h1 {
   width: 98%;
   overflow-wrap: break-word;
   margin-bottom: 8px;
-  // border: 1.5px solid $primaryColor;
 }
 
 .single-result {
   word-break: break-all;
   font-size: 1rem;
   white-space: pre-wrap;
-  // line-height: 1vh;
 }
 
 // ALL QUERY/RESULT SELECTORS ABOVE THIS LINE
@@ -214,11 +203,8 @@ h1 {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  // border: 4px solid red;
   padding: 0;
   margin: 0;
-  // column-gap: 2%;
-  // flex-wrap: wrap;
 }
 
 @media (max-width: 1050px) {
@@ -242,7 +228,6 @@ h1 {
 .left-visual,
 .hits-misses,
 .donut-chart {
-  // background-color: $lightTertiaryColor;
   border-radius: $borderRad;
   padding-left: 8px;
   padding-top: 8px;
@@ -251,14 +236,12 @@ h1 {
 
 .left-visual,
 .right-visual {
-  // border: 4px solid green;
   height: 100%;
   margin: 0.5vw;
 }
 
 .left-visual {
   padding-bottom: 1vw;
-  // margin: 20px;
   width: 60%;
   height: 300px;
   min-width: 540px;
@@ -267,7 +250,6 @@ h1 {
 
 .right-visual {
   display: flex;
-  // column-gap: 5%;
   padding: 0;
 }
 
@@ -292,13 +274,16 @@ h1 {
 }
 
 .donut-chart {
-  // margin-right: 40px;
   min-width: 250px;
   padding-bottom: 1vw;
   margin: 0;
   margin-left: 0.7vw;
 }
 // ALL VISUALS/VISCONTAINER SELECTORS ABOVE THIS LINE
+// ALL VISUALS/VISCONTAINER SELECTORS ABOVE THIS LINE
+// ALL VISUALS/VISCONTAINER SELECTORS ABOVE THIS LINE
+// ALL VISUALS/VISCONTAINER SELECTORS ABOVE THIS LINE
+
 
 
 #team-page,
