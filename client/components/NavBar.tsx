@@ -3,6 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { Link } from 'react-router-dom';
+import logo from './Logo.png';
 
 const NavBar: React.FC = () => {
   // Navbar.Brand is currently using href, which reloads home page onClicking magniCache --> not sure whether this is better or do we want to make it a router link
@@ -12,6 +13,7 @@ const NavBar: React.FC = () => {
       <Container>
         <Navbar.Brand id="nav-title" href="/">
           MagniCache
+          <img src={logo} className="logo" />
         </Navbar.Brand>
         <Nav className="all-nav-links">
           <Nav.Link as={Link} id="about-nav-link" to="/about">

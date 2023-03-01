@@ -86,7 +86,9 @@ const VisualsDisplay = (props: VisualProps) => {
     labels: metrics.map((obj) => {
       if (obj.cacheStatus === 'hit') {
         return 'Cached';
-      } else return 'Uncached';
+      } else if (obj.cacheStatus === 'miss') {
+        return 'Uncached'
+      } 
     }),
     datasets: [
       {

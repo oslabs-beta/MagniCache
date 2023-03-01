@@ -12,6 +12,6 @@
     "target": "ESNext",
     "noImplicitAny": true
   },
-  "include": ["client"],
+  "include": ["client", ".d.ts"],
   "exclude": ["node_modules"]
 }

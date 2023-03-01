@@ -10,14 +10,16 @@ $errorColor: #b3001b;
 $lightTertiaryColor: rgba(214, 251, 255, 0.3);
 
 body {
-  background-color: $lightTertiaryColor;
+  background-image: linear-gradient(
+    $lightTertiaryColor,
+    $secondaryColor,
+    $lightTertiaryColor
+  );
 }
-
-.maintainer {
-  width: 100%;
-  height: 100%;
-  background-color: $lightTertiaryColor;
-}
+// BODY AND COLOR DECLARATIONS ABOVE THIS LINE
+// BODY AND COLOR DECLARATIONS ABOVE THIS LINE
+// BODY AND COLOR DECLARATIONS ABOVE THIS LINE
+// BODY AND COLOR DECLARATIONS ABOVE THIS LINE
 
 .nav {
   border-bottom: 1px solid $blackColor;
@@ -34,12 +36,24 @@ body {
 #about-nav-link,
 #docs-nav-link,
 #team-nav-link {
-  color: $tertiaryColor;
+  color: $secondaryWhite;
 }
 
 #nav-title {
-  color: $tertiaryColor;
+  color: $secondaryWhite;
   font-size: 1.75em;
+}
+
+// ALL NAV BAR SELECTORS ABOVE THIS LINE
+// ALL NAV BAR SELECTORS ABOVE THIS LINE
+// ALL NAV BAR SELECTORS ABOVE THIS LINE
+// ALL NAV BAR SELECTORS ABOVE THIS LINE
+
+.maintainer {
+  font-family: 'Roboto Mono', monospace;
+  width: 100%;
+  height: 100%;
+  background-color: $lightTertiaryColor;
 }
 
 .metrics-container {
@@ -53,22 +67,22 @@ body {
   padding: 1.5%;
 }
 
+// ALL MAINTAINER/MAIN METRICS CONTAINER SELECTORS ABOVE THIS LINE
+// ALL MAINTAINER/MAIN METRICS CONTAINER SELECTORS ABOVE THIS LINE
+// ALL MAINTAINER/MAIN METRICS CONTAINER SELECTORS ABOVE THIS LINE
+// ALL MAINTAINER/MAIN METRICS CONTAINER SELECTORS ABOVE THIS LINE
+
 .query-container,
 .visuals-container {
   width: 95%;
-  border: 2px solid $secondaryColor;
+  // border: 2px solid $secondaryColor;
   border-radius: $borderRad;
-  background-color: rgba(91, 42, 240, 0.15);
+  background-color: rgba(89, 48, 212, 0.412);
 }
 
 .query-container {
   width: 85%;
   margin-bottom: 10px;
-}
-
-.visuals-container {
-  min-height: 400px;
-  margin-top: 1vh;
 }
 
 .query-display-flex {
@@ -96,7 +110,7 @@ body {
   border-radius: $borderRad;
   width: 95%;
   margin-bottom: 8px;
-  border: 1.5px solid $primaryColor;
+  // border: 1.5px solid $primaryColor;
   min-height: 150px;
   max-height: 300px;
   overflow-y: scroll;
@@ -110,7 +124,8 @@ body {
 }
 
 .query-input {
-  color: $secondaryColor;
+  // color: $secondaryColor;
+  color: $blackColor;
   background-color: $lightTertiaryColor;
   border-radius: $borderRad;
   font-size: 1.3vw;
@@ -148,7 +163,7 @@ body {
 }
 
 h1 {
-  color: $secondaryColor;
+  color: $blackColor;
 }
 
 .fields-container-result {
@@ -158,20 +173,20 @@ h1 {
   margin-right: 10px;
   border-radius: $borderRad;
   margin-bottom: 8px;
-  border: 1px solid $blackColor;
+  // border: 1px solid $blackColor;
   min-height: 162px;
   max-height: 200px;
   overflow-y: scroll;
   overflow-x: hidden;
   background-color: $lightTertiaryColor;
-  //
+  color: $blackColor;
   display: flex;
   flex-direction: column;
   justify-content: start;
   width: 98%;
   overflow-wrap: break-word;
   margin-bottom: 8px;
-  border: 1.5px solid $primaryColor;
+  // border: 1.5px solid $primaryColor;
 }
 
 .single-result {
@@ -181,12 +196,20 @@ h1 {
   // line-height: 1vh;
 }
 
+// ALL QUERY/RESULT SELECTORS ABOVE THIS LINE
+// ALL QUERY/RESULT SELECTORS ABOVE THIS LINE
+// ALL QUERY/RESULT SELECTORS ABOVE THIS LINE
+// ALL QUERY/RESULT SELECTORS ABOVE THIS LINE
+
+.visuals-container {
+  min-height: 400px;
+  margin-top: 1vh;
+}
 #visuals-header {
   text-align: center;
   font-size: 3.5vw;
   margin-top: 1%;
 }
-
 .visuals-display {
   display: flex;
   justify-content: space-evenly;
@@ -219,8 +242,7 @@ h1 {
 .left-visual,
 .hits-misses,
 .donut-chart {
-  border: 1.5px solid $primaryColor;
-  background-color: $lightTertiaryColor;
+  // background-color: $lightTertiaryColor;
   border-radius: $borderRad;
   padding-left: 8px;
   padding-top: 8px;
@@ -240,6 +262,7 @@ h1 {
   width: 60%;
   height: 300px;
   min-width: 540px;
+  background-color: $lightTertiaryColor;
 }
 
 .right-visual {
@@ -255,6 +278,7 @@ h1 {
   color: $secondaryColor;
   font-weight: 600;
   line-height: 2;
+  width: 250px;
 }
 
 #hits {
@@ -274,16 +298,8 @@ h1 {
   margin: 0;
   margin-left: 0.7vw;
 }
+// ALL VISUALS/VISCONTAINER SELECTORS ABOVE THIS LINE
 
-/*
-
-
-
-pages
-
-
-
-*/
 
 #team-page,
 #about-page,
@@ -334,3 +350,19 @@ pages
 .member-links:hover {
   text-decoration: none;
 }
+
+.logo {
+  width: 125px;
+  height: 75px;
+  margin-left: -20px;
+}
+
+.metric-result-numbers {
+  color: $blackColor;
+}
+
+
+// ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE 
+// ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE 
+// ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE 
+// ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE 
