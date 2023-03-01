@@ -10,6 +10,7 @@ interface QueryProps {
   fetchTime: number;
   handleClickRun: () => void;
   handleClickClear: () => void;
+  handleClearCache: () => void;
   key: string;
 }
 
@@ -21,6 +22,7 @@ const QueryDisplay = (props: QueryProps) => {
     fetchTime,
     handleClickClear,
     handleClickRun,
+    handleClearCache
   } = props;
 
   return (
@@ -70,12 +72,34 @@ const QueryDisplay = (props: QueryProps) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
+      {/* <div style={{backgroundColor: 'red', width: '150px'}}>hi</div>  this is where the new metric container will live*/}
       <div id="result-display" className="query-display-child">
         <h1 className="query-display-title">Results</h1>
         <div className="fields-container-result">
           <Result queryResponse={queryResponse} />
         </div>
+        <ToggleButtonGroup
+          type="radio"
+          name="options"
+          defaultValue={1}
+          id="toggle-button-cache"
+        >
+          <ToggleButton
+            id="tb5"
+            value={2}
+            style={{
+              borderRadius: '14px',
+              backgroundColor: '#1a8fe3',
+              color: '#d6fbff',
+              border: 'none',
+            }}
+            onClick={handleClearCache}
+          >
+            Clear Cache
+          </ToggleButton>
+        </ToggleButtonGroup>
       </div>
+      {/* Cache metrics container. Cache usage %, cache size, cache eviction policy, cache response time, avg server response time for cached/uncached queries. Use websockets or long polling to fetch said metrics.  */}
     </div>
   );
 };
