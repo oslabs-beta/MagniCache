@@ -48,7 +48,7 @@ const QueryDisplay = (props: QueryProps) => {
               backgroundColor: '#1a8fe3',
               color: '#d6fbff',
               marginRight: '5px',
-              border: '1px solid #5b2af0',
+              border: 'none'
             }}
             onClick={handleClickRun}
           >
@@ -62,7 +62,7 @@ const QueryDisplay = (props: QueryProps) => {
               borderRadius: '14px',
               backgroundColor: '#1a8fe3',
               color: '#d6fbff',
-              border: '1px solid #5b2af0',
+              border: 'none',
             }}
             onClick={handleClickClear}
           >
