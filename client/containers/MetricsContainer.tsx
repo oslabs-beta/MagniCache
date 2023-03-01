@@ -31,7 +31,7 @@ const MetricsContainer: React.FC = () => {
             document.cookie
               .split(';')
               .some((cookie: string): boolean =>
-                cookie.includes('cachestatus=hit')
+                cookie.includes('cacheStatus=hit')
               )
           ) {
             // setCacheData([...cacheData, 'hit']);
@@ -42,7 +42,7 @@ const MetricsContainer: React.FC = () => {
             document.cookie
               .split(';')
               .some((cookie: string): boolean =>
-                cookie.includes('cachestatus=miss')
+                cookie.includes('cacheStatus=miss')
               )
           ) {
             // setCacheData([...cacheData, 'miss']);
