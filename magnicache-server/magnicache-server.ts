@@ -20,8 +20,8 @@ function Magnicache(this: any, schema: any, maxSize: number = 100): void {
 
   // bind the query method for use in other functions
   this.query = this.query.bind(this);
-  
-  this.cache = new Cache(maxSize)
+
+  this.cache = new Cache(maxSize);
 }
 // Class constructors for the linked list and the nodes for the list
 class EvictionNode<T> {
@@ -81,7 +81,7 @@ class Cache<T> {
   // Update the node when it is used and add it to the queue to be further from eviction(possibly not needed)
   deleteNode(node): void {
     if (node === null) throw new Error('node is null');
-    
+
     if (node.next === null) {
       node.prev.next = null;
       this.tail = node.prev;
@@ -180,7 +180,7 @@ Magnicache.prototype.query = function (
         if (this.cache.includes(query)) {
           // output message indicating that the query is cached
           console.log('cache hit');
-          res.cookie('cachestatus', 'hit');
+          res.cookie('cacheStatus', 'hit');
           console.log('cachestatus set hit on res');
 
           // store the cached response
@@ -192,7 +192,7 @@ Magnicache.prototype.query = function (
             compileQueries();
           }
         } else {
-          res.cookie('cachestatus', 'miss');
+          res.cookie('cacheStatus', 'miss');
           console.log('cachestatsus set miss on Res');
           // output message indicating that the query is missing
           console.log('cache miss');
@@ -312,7 +312,5 @@ Magnicache.prototype.magniParser = function (
   // Returning the queries array with all strings
   return queries;
 };
-
-
 
 module.exports = Magnicache;

@@ -17,9 +17,9 @@ const NavBar: React.FC = () => {
           <Nav.Link as={Link} id="about-nav-link" to="/about">
             About
           </Nav.Link>
-          <Nav.Link as={Link} id="docs-nav-link" to="/docs">
+          {/* <Nav.Link as={Link} id="docs-nav-link" to="/docs">
             Docs
-          </Nav.Link>
+          </Nav.Link> */}
           <Nav.Link as={Link} id="team-nav-link" to="/team">
             Team
           </Nav.Link>
