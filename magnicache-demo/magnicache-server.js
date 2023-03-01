@@ -117,7 +117,7 @@ Magnicache.prototype.query = function (req, res, next) {
         if (this_1.cache.has(query_1)) {
           // output message indicating that the query is cached
           console.log('cache hit');
-          res.cookie('cacheStatus', 'hit');
+          res.cookie('cachestatus', 'hit');
           console.log('cacheStatus set hit on res');
           // store the cached response
           queryResponses_1.push(this_1.cache.get(query_1));
@@ -127,8 +127,8 @@ Magnicache.prototype.query = function (req, res, next) {
             compileQueries_1();
           }
         } else {
-          res.cookie('cacheStatus', 'miss');
-          console.log('cachestatsus set miss on Res');
+          res.cookie('cachestatus', 'miss');
+          console.log('cachestatus set miss on Res');
           // output message indicating that the query is missing
           console.log('cache miss');
           // execute the query against graphql

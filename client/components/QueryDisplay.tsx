@@ -48,7 +48,7 @@ const QueryDisplay = (props: QueryProps) => {
               backgroundColor: '#1a8fe3',
               color: '#d6fbff',
               marginRight: '5px',
-              border: 'none'
+              border: 'none',
             }}
             onClick={handleClickRun}
           >
