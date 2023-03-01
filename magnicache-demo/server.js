@@ -45,14 +45,14 @@ const MessageType = new GraphQLObjectType({
     user: {
       type: UserType,
       resolve: async (message) => {
-        const value = [message.sender_id];
-        const query = 'SELECT * FROM users WHERE users.user_id = $1';
-        const data = await db.query(query, value);
-        return data.rows[0];
+        const { user_id, username, password, email } = message;
+        return { user_id, username, password, email };
       },
     },
   }),
 });
+
+//chain queries tg w ; ? -- > TRUE MAN comment
 
 const RootQueryType = new GraphQLObjectType({
   name: 'Query',
@@ -61,9 +61,10 @@ const RootQueryType = new GraphQLObjectType({
     allMessages: {
       type: new GraphQLList(MessageType),
       description: 'all the  messages',
-      resolve: async () => {
+      resolve: async (parent) => {
+        // console.log('parent', parent);
         const query =
-          'SELECT m.*, users.username FROM messages m INNER JOIN users ON users.user_id = m.sender_id';
+          'SELECT m.*, users.* FROM messages m INNER JOIN users ON users.user_id = m.sender_id';
         const data = await db.query(query);
         return data.rows;
       },
@@ -76,7 +77,8 @@ const RootQueryType = new GraphQLObjectType({
       },
       resolve: async (parent, args) => {
         const value = [args.id];
-        const query = 'SELECT m.* FROM messages m WHERE message_id=$1 ';
+        const query =
+          'SELECT m.*, users.* FROM messages m INNER JOIN users ON users.user_id = m.sender_id WHERE message_id=$1';
         const data = await db.query(query, value);
         return data.rows;
       },
