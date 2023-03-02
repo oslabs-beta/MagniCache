@@ -2,14 +2,16 @@
   "compilerOptions": {
     "module": "commonjs",
     "esModuleInterop": true,
-    "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
     "jsx": "react",
     "strict": true,
-    "noEmitOnError": true
+    "noEmitOnError": true,
+    "types": ["react/next"],
+    "target": "ESNext",
+    "noImplicitAny": true
   },
-  "include": ["to-be-added-later"],
-  "exclude": ["node_modules"],
+  "include": ["client", ".d.ts"],
+  "exclude": ["node_modules"]
 }
