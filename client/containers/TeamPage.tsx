@@ -27,7 +27,7 @@ const TeamPage: React.FC = () => {
             <a
               target={'_blank'}
               rel="noopener noferrer"
-              href="https://www.linkedin.com/in/ahmed-chami-664268268/"
+              href="https://www.linkedin.com/in/ahmed-chami-dev/"
               className="member-links"
             >
               LinkedIn

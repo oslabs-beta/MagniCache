@@ -25,14 +25,14 @@ const NavBar: React.FC = () => {
           <Nav.Link as={Link} id="team-nav-link" to="/team">
             Team
           </Nav.Link>
-          <Nav.Link>
+          {/* <Nav.Link>
             <i
               id="moon"
               className="fas fa-moon"
               onClick={() => setNightMode(!nightMode)}
               style={nightMode ? { color: '#1a8fe3' } : { color: 'black' }}
             ></i>
-          </Nav.Link>
+          </Nav.Link> */}
         </Nav>
       </Container>
     </Navbar>
