@@ -23,6 +23,7 @@ function Magnicache(this: any, schema: any, maxSize: number = 100): void {
 }
 // Class constructors for the linked list and the nodes for the list
 class EvictionNode<T> {
+  //TODO learn more about <T>
   key: string;
   value: any;
   next: EvictionNode<any> | null;
@@ -94,6 +95,7 @@ class Cache<T> {
   }
 
   // Get a specific node from the linked list(to return from the cache)
+  // TODO: fix return type
   get(key: string): EvictionNode<T> {
     const node = this.map.get(key);
     // if (this.head === null) return node;
@@ -175,7 +177,7 @@ Magnicache.prototype.query = function (
       // compile all individual query responses
       const compileQueries = () => {
         let response1: {} = {};
-
+        //TODO: clean up -> sematnicize
         for (const queryResponse of queryResponses) {
           response1 = mergeWith(response1, queryResponse);
         }
