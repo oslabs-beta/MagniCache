@@ -10,7 +10,7 @@ import {
   Legend,
   ArcElement,
 } from 'chart.js';
-import { Doughnut, Line, Pie } from 'react-chartjs-2';
+import { Line, Pie } from 'react-chartjs-2';
 import Response from './Response';
 import { Metrics } from '../../types';
 
@@ -28,31 +28,19 @@ ChartJS.register(
 interface VisualProps {
   queryValue: string;
   queryResponse: Object;
-  // fetchTime: number;
-  // cacheData: string[];
-  // lineGraphTimes: number[];
-  // setLineGraphTimes: React.Dispatch<SetStateAction<number[]>>;
-  // lineGraphLabels: string[];
-  // setLineGraphLabels: React.Dispatch<SetStateAction<string[]>>;
   metrics: Metrics[];
   setMetrics: React.Dispatch<SetStateAction<Metrics[]>>;
 }
 
 // Create the charts within this file, response.tsx will take care of the metrics for the cache response
 const VisualsDisplay = (props: VisualProps) => {
-  // const [hits, setHits] = useState(5);
-  // const [misses, setMisses] = useState(5);
   //TODO: Use queryresponse and fetch time to populate data inside visuals
   const {
     queryResponse,
     metrics,
-    // fetchTime,
-    // cacheData,
-    // lineGraphTimes,
-    // lineGraphLabels,
+
   } = props;
   //TODO: refactor this mess
-  // console.log('cache me ousside', cacheData);
   const hits = metrics.reduce((acc: number, curr: Metrics): number => {
     if (curr.cacheStatus === 'hit') {
       acc++;
@@ -65,9 +53,6 @@ const VisualsDisplay = (props: VisualProps) => {
     }
     return acc;
   }, 0);
-  // const misses = cacheData.filter((status) => status === 'misses');
-
-  // console.log(new Date(window.performance.timing.fetchStart).toDateString())
 
   const dataDo = {
     labels: ['Hits', 'Misses'],
