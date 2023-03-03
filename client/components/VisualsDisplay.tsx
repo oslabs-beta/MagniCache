@@ -10,7 +10,7 @@ import {
   Legend,
   ArcElement,
 } from 'chart.js';
-import { Doughnut, Line } from 'react-chartjs-2';
+import { Doughnut, Line, Pie } from 'react-chartjs-2';
 import Response from './Response';
 import { Metrics } from '../../types';
 
@@ -101,7 +101,7 @@ const VisualsDisplay = (props: VisualProps) => {
   };
   return (
     <>
-      <h1 id="visuals-header">Metrics</h1>
+      <h1 id="visuals-header">Response Metrics</h1>
       <div className="visuals-display">
         <div className="left-visual">
           <Line
@@ -120,7 +120,7 @@ const VisualsDisplay = (props: VisualProps) => {
             <Response hits={hits} misses={misses} metrics={metrics} />
           </div>
           <div className="donut-chart">
-            <Doughnut id="doughnut" data={dataDo} />
+            <Pie id="doughnut" data={dataDo} />
           </div>
         </div>
       </div>

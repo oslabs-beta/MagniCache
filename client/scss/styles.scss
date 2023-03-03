@@ -104,6 +104,8 @@ body {
     margin-bottom: 10px;
   }
   .query-display-flex {
+    position: relative;
+    padding-bottom: 5%;
     border-radius: $borderRad;
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -125,7 +127,7 @@ body {
   justify-content: start;
   align-items: start;
   border-radius: $borderRad;
-  width: 95%;
+  width: 100%;
   margin-bottom: 8px;
   min-height: 150px;
   max-height: 300px;
@@ -144,7 +146,7 @@ body {
   background-color: $lightTertiaryColor;
   border-radius: $borderRad;
   font-size: 1.3vw;
-  width: 100%;
+  width: 98%;
   height: 10rem;
   text-align: left;
   resize: none;
@@ -170,6 +172,7 @@ body {
 .query-display-child .toggle-button-group-rc {
   width: 20%;
 }
+
 
 .fields-container-result {
   align-items: start;
@@ -199,7 +202,37 @@ body {
 
 #toggle-button-cache {
   position: absolute;
-  right: 5%;
+  top: 92%;
+}
+
+.extra-metrics-container {
+  margin-top: 13.6%;
+  margin-right: 2%;
+  color: $blackColor;
+  background-color: $lightTertiaryColor;
+  border-radius: $borderRad;
+  height: 155%;
+  max-height: 155%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  padding-left: 12px;
+  padding-top: 20px;
+}
+
+.cache-metrics-title {
+  position: absolute;
+  top: 0;
+  right: 12%;
+  text-align: center;
+    padding: 0.5vw;
+    margin-top: 1vw;
+    font-size: 3vw;
+}
+
+.cache-metric {
+  // line-height: 60px;
 }
 
 // ALL QUERY/RESULT SELECTORS ABOVE THIS LINE

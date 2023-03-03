@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, SetStateAction } from 'react';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Result from './Result';
+import XMetrics from '../containers/XMetrics';
 
 interface QueryProps {
   queryValue: string;
@@ -22,7 +23,7 @@ const QueryDisplay = (props: QueryProps) => {
     fetchTime,
     handleClickClear,
     handleClickRun,
-    handleClearCache
+    handleClearCache,
   } = props;
 
   return (
@@ -72,7 +73,7 @@ const QueryDisplay = (props: QueryProps) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-      {/* <div style={{backgroundColor: 'red', width: '150px'}}>hi</div>  this is where the new metric container will live*/}
+       <XMetrics />
       <div id="result-display" className="query-display-child">
         <h1 className="query-display-title">Results</h1>
         <div className="fields-container-result">
