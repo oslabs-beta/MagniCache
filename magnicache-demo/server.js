@@ -86,6 +86,28 @@ const RootQueryType = new GraphQLObjectType({
   }),
 });
 
+/*
+
+mutation {addMessage(sender_id:12, message:'hello world'){message, message_id}}  ===> adding data
+mutation {editMessage(sender_id:298, message:'hello beautiful people'){sender_id, message_id}} ===> editing data
+---> after 90, run the {allMessages{sender_id}}, {messagebyid(id:30){message}} will NOT run hiwever; {messagebyid(id:30){message_sent_at}}
+
+when u first init magnicache, it creates an obj that looks like;
+Schmea = {
+  Mutaions: {
+    addMessage: MessageType,
+    },
+  Queries: {
+    MessageType: [allMessages, messageById]
+  }
+}
+
+
+
+we can id from the schema the type that is being mutated , and we can id in the cache all nodes that are of that type, what we can do is run the mutations, and subsequently, update all nodes in the cache of that type (this hinges on the assumptions that the schema will return all the data in the mutated table/document)
+
+*/
+
 const RootMutationType = new GraphQLObjectType({
   name: 'Mutation',
   description: 'Mutates Messages',
