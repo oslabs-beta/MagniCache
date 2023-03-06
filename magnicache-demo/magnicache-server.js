@@ -79,6 +79,7 @@ var Cache = /** @class */ (function () {
         this.map["delete"](node.key);
     };
     // Get a specific node from the linked list(to return from the cache)
+    // TODO: fix return type
     Cache.prototype.get = function (key) {
         var node = this.map.get(key);
         // if (this.head === null) return node;
@@ -107,6 +108,15 @@ var Cache = /** @class */ (function () {
     Cache.prototype.includes = function (key) {
         return this.map.has(key);
     };
+    Cache.prototype.count = function () {
+        var counter = 0;
+        var current = this.head;
+        while (current !== null) {
+            counter++;
+            current = current.next;
+        }
+        return counter;
+    };
     return Cache;
 }());
 // Query method takes request, response and next callbacks
@@ -120,6 +130,21 @@ Magnicache.prototype.query = function (req, res, next) {
     if (ast.selectionSet.selections[0].name.value === 'clearCache') {
         this.cache = new Cache(this.maxSize);
         res.locals.queryResponse = { cacheStatus: 'cacheCleared' };
+        return next();
+    }
+    // Need metrics for the length of the cache, one for what is used and for what is left
+    // Create the average response time using long polling possibly
+    // Create and send averages for both the cached and uncached response time
+    // Check if the value of the query is getMetrics, if it is wellc ontinue to create and send the metrics
+    if (ast.selectionSet.selections[0].name.value === 'getMetrics') {
+        // Count how long the cache is currently
+        res.locals.queryResponse = [];
+        res.locals.queryResponse.push({ size: this.cache.count() });
+        var size = res.locals.queryResponse[0].size;
+        // Subtract the size from the maxSize
+        // console.log(this.maxSize)
+        var sizeLeft = this.maxSize - res.locals.queryResponse[0].size;
+        res.locals.queryResponse.push({ sizeLeft: sizeLeft });
         return next();
     }
     // check if the operation is a query
@@ -149,6 +174,7 @@ Magnicache.prototype.query = function (req, res, next) {
             // compile all individual query responses
             var compileQueries_1 = function () {
                 var response1 = {};
+                //TODO: clean up -> sematnicize
                 for (var _i = 0, queryResponses_2 = queryResponses_1; _i < queryResponses_2.length; _i++) {
                     var queryResponse = queryResponses_2[_i];
                     response1 = mergeWith(response1, queryResponse);
@@ -228,6 +254,12 @@ Magnicache.prototype.query = function (req, res, next) {
             });
         });
     }
+};
+// Need metrics for the length of the cache, one for what is used and for what is left
+// Create the average response time using long polling possibly
+// Create and send averages for both the cached and uncached response time
+Magnicache.prototype.extraMetrics = function (req, res, next) {
+    // get the body of the requested query
 };
 // Function that takes an array of selections and generates an array of strings based off of them
 Magnicache.prototype.magniParser = function (selections, queryArray, queries) {

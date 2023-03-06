@@ -6,8 +6,9 @@ import { Metrics } from '../../types';
 const MetricsContainer: React.FC = () => {
   const [queryValue, setQueryValue] = useState('');
   const [queryResponse, setQueryResponse] = useState({});
-  const [fetchTime, setFetchTime] = useState<number>(0);
   const [metrics, setMetrics] = useState<Metrics[]>([]);
+  // Get fetch time from metrics state object
+  let fetchTime = 0;
 
   // TODO:New metrics for cache container
   // ...
@@ -50,7 +51,7 @@ const MetricsContainer: React.FC = () => {
           }
           const endTime = performance.now();
           // setFetchTime(Math.floor(endTime - startTime - 1)); // 20ms
-          let fetchTime = Math.floor(endTime - startTime - 1);
+           let fetchTime = Math.floor(endTime - startTime - 1);
           setMetrics([...metrics, { cacheStatus, fetchTime }]);
           return res.json();
         })

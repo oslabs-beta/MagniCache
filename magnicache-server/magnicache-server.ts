@@ -124,6 +124,16 @@ class Cache<T> {
   includes(key: string) {
     return this.map.has(key);
   }
+
+  count(): number {
+    let counter = 0;
+    let current = this.head;
+    while (current !== null) {
+      counter++;
+      current = current.next;
+    }
+    return counter;
+  }
 }
 // Query method takes request, response and next callbacks
 // as its arguments
@@ -143,6 +153,22 @@ Magnicache.prototype.query = function (
   if (ast.selectionSet.selections[0].name.value === 'clearCache') {
     this.cache = new Cache(this.maxSize);
     res.locals.queryResponse = { cacheStatus: 'cacheCleared' };
+    return next();
+  }
+
+  // Need metrics for the length of the cache, one for what is used and for what is left
+  // Create the average response time using long polling possibly
+  // Create and send averages for both the cached and uncached response time
+  // Check if the value of the query is getMetrics, if it is wellc ontinue to create and send the metrics
+  if (ast.selectionSet.selections[0].name.value === 'getMetrics') {
+    // Count how long the cache is currently
+    res.locals.queryResponse = [];
+    res.locals.queryResponse.push({ size: this.cache.count() });
+    let size = res.locals.queryResponse[0].size;
+    // Subtract the size from the maxSize
+    // console.log(this.maxSize)
+    const sizeLeft: number = this.maxSize - res.locals.queryResponse[0].size;
+    res.locals.queryResponse.push({ sizeLeft: sizeLeft });
     return next();
   }
 
@@ -262,6 +288,17 @@ Magnicache.prototype.query = function (
         });
       });
   }
+};
+
+// Need metrics for the length of the cache, one for what is used and for what is left
+// Create the average response time using long polling possibly
+// Create and send averages for both the cached and uncached response time
+Magnicache.prototype.extraMetrics = function (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  // get the body of the requested query
 };
 
 // Function that takes an array of selections and generates an array of strings based off of them

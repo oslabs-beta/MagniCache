@@ -1,15 +1,4 @@
-import React, { SetStateAction, useEffect } from 'react';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-} from 'chart.js';
+import React, { SetStateAction } from 'react';
 import { Pie, Doughnut } from 'react-chartjs-2';
 
 interface CacheProps {
@@ -18,6 +7,7 @@ interface CacheProps {
   resTime: number;
   avgCached: number | string;
   avgUncached: number | string;
+  fetchTime: number;
 
   // possibly need state update doubt it but adding just in case
   // setUsage: React.Dispatch<SetStateAction<string | number>>
@@ -28,7 +18,7 @@ interface CacheProps {
 }
 
 const CacheMetrics = (props: CacheProps) => {
-  const { usage, size, resTime, avgCached, avgUncached } = props;
+  const { usage, size, resTime, avgCached, avgUncached, fetchTime } = props;
 
   const usageData = {
     labels: ['Space Used', 'Space Left'],
@@ -63,23 +53,21 @@ const CacheMetrics = (props: CacheProps) => {
       <div className="cache-metric">Remaining Capacity: {size} </div>
       <br></br>
 
-      <div className="cache-metric">Total Average Response Time: {resTime}</div>
-      <br></br>
+
 
       <div className="cache-metric">
-        Average Cached Response Time: {avgCached}
+        Average Cached Response Time: {avgCached}ms
       </div>
       <br></br>
 
       <div className="cache-metric">
-        Average Uncached Response Time: {avgUncached}
+        Average Uncached Response Time: {avgUncached}ms
       </div>
       <br></br>
       {/* Possibly add a chart of sorts here? Maybe 2 or 3?  Line graph? bar? Pie?  */}
-      <div className='chart-container'> 
-      <Doughnut  data={usageData} style={{position: 'absolute', left: '50%', right: '50%', marginRight:'1%'}}/>
-      <Pie  data={avgData} style={{position: 'absolute', right: 0}}/>
-      </div>
+        <Pie
+          data={usageData}
+        />
     </div>
   );
 };

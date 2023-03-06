@@ -73,9 +73,12 @@ const QueryDisplay = (props: QueryProps) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-       <XMetrics />
+       <XMetrics 
+       fetchTime = {fetchTime}
+       queryValue={queryValue}
+       />
       <div id="result-display" className="query-display-child">
-        <h1 className="query-display-title">Results</h1>
+        <h1 className="query-result-title">Results</h1>
         <div className="fields-container-result">
           <Result queryResponse={queryResponse} />
         </div>
