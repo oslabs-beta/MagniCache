@@ -15,59 +15,35 @@ interface magnicacheInterface {
   schema: {};
   schemaTree: {
     mutations: {};
-    queries: {};
+    queries: {
+      //name:type
+      //messageById:Message
+      //schemaTree.queries[messageById] -> Message
+    };
   };
   maxSize: any;
   query: any;
   cache: any;
+  schemaParser: (
+    schema: magnicacheInterface['schema']
+  ) => magnicacheInterface['schemaTree'];
 }
 
 // Magnicache class for creating a queryable cache
 function Magnicache(
   this: magnicacheInterface,
-  schema: any,
+  schema: {},
   maxSize: number = 100
 ): void {
-  const schemaParser = (GraphQLSchema) => {
-    //refactor to be able to take on nested types (GraphQLListType)
-    const schemaTree = {
-      queries: {
-        //name:type
-      },
-      mutations: {},
-    };
-    for (const field in schema._queryType._fields) {
-      // console.log(
-      //   'field Type',
-      //   schema._queryType._fields[field].type.ofType.name,
-      //   'field name',
-      //   schema._queryType._fields[field]
-      // );
-      schemaTree.queries[schema._queryType._fields[field].name] =
-        schema._queryType._fields[field].type.ofType.name;
-    }
-    for (const field in schema._mutationType._fields) {
-      // console.log(
-      //   'field Type',
-      //   schema._mutationType._fields[field].type.name,
-      //   'field name',
-      //   schema._mutationType._fields[field].name
-      // );
-      schemaTree.mutations[schema._mutationType._fields[field].name] =
-        schema._mutationType._fields[field].type.name;
-    }
-    console.log(schemaTree);
-    return schemaTree;
-  };
-  schemaParser(schema);
+  this.schemaTree = this.schemaParser(schema);
   // save the provided schema
   this.schema = schema;
   //parse the schema using an inline fn
   this.maxSize = maxSize;
   // bind the query method for use in other functions
   this.query = this.query.bind(this);
-
-  this.cache = new Cache(maxSize);
+  this.cache = new Cache(maxSize, schema);
+  this.schemaParser = this.schemaParser.bind(this);
 }
 // Class constructors for the linked list and the nodes for the list
 class EvictionNode<T> {
@@ -89,11 +65,13 @@ class Cache<T> {
   map: Map<string, any>;
   head: EvictionNode<any> | null;
   tail: EvictionNode<any> | null;
-  constructor(maxSize: number) {
+  schema: {};
+  constructor(maxSize: number, schema: {}) {
     this.maxSize = maxSize;
     this.map = new Map();
     this.head = null;
     this.tail = null;
+    this.schema = schema;
     // Function binding
     this.create = this.create.bind(this);
     this.deleteNode = this.deleteNode.bind(this);
@@ -129,8 +107,12 @@ class Cache<T> {
   deleteNode(node): void {
     // if (node === null) throw new Error('node is null');
     if (node === null) return;
+
     console.log('deleting:', node);
-    if (node.next === null) {
+    if (node.next === null && node.prev === null) {
+      this.head = null;
+      this.tail = null;
+    } else if (node.next === null) {
       node.prev.next = null;
       this.tail = node.prev;
     } else if (node.prev === null) {
@@ -143,13 +125,28 @@ class Cache<T> {
     this.map.delete(node.key);
   }
 
+  validateNode(node): void {
+    if (node === null) return;
+    console.log('revalidating.....');
+    if (node.key === null) return;
+    graphql({ schema: this.schema, source: node.key })
+      .then((result: { error?: {}; data?: {} }) => {
+        if(!result.error) {
+          node.value = result;
+          console.log('validated', node.value);
+        }
+      })
+      .catch((err: {}) => {
+        console.log(err);
+      });
+    return;
+  }
+
   // Get a specific node from the linked list(to return from the cache)
   // TODO: fix return type
   get(key: string): EvictionNode<T> {
-    console.log('cache is', this.head);
     const node = this.map.get(key);
     // if (this.head === null) return node;
-    console.log(node);
     //if the node is at the head, simply return the value
     if (this.head === node) return node.value;
     //if node is at the tail, remove it from the tail
@@ -192,7 +189,7 @@ Magnicache.prototype.query = function (
   } = parse(query);
 
   if (ast.selectionSet.selections[0].name.value === 'clearCache') {
-    this.cache = new Cache(this.maxSize);
+    this.cache = new Cache(this.maxSize, this.schema);
     res.locals.queryResponse = { cacheStatus: 'cacheCleared' };
     return next();
   }
@@ -250,10 +247,8 @@ Magnicache.prototype.query = function (
           console.log('cache hit');
 
           res.cookie('cacheStatus', 'hit');
-          console.log('cachestatus set hit on res');
 
           // store the cached response
-          console.log('query response', this.cache.get(query));
           queryResponses.push(this.cache.get(query));
           // console.log(this.cache)
 
@@ -264,15 +259,17 @@ Magnicache.prototype.query = function (
           }
         } else {
           res.cookie('cacheStatus', 'miss');
-          console.log('cachestatsus set miss on Res');
+          // console.log('cachestatsus set miss on Res');
           // output message indicating that the query is missing
           console.log('cache miss');
 
           // execute the query against graphql
           graphql({ schema: this.schema, source: query })
-            .then((result: {}) => {
+            .then((result: { error?: {}; data?: {} }) => {
               // cache the newest response
-              this.cache.create(query, result);
+              if (!result.error) {
+                this.cache.create(query, result);
+              }
               // this.cache.set(Cache.prototype.createHead())
 
               // store the query response
@@ -328,33 +325,75 @@ Magnicache.prototype.query = function (
         mutationTypes.add(this.schemaTree.mutations[mutationName]);
       }
 
-      for (const mutationType of mutationTypes) {
-        const queryTypes: Set<string> = new Set();
+      // const mutationArray = [...mutationTypes];
+      // for (const mutationType of mutationTypes)
+      mutationTypes.forEach((mutationType) => {
+        console.log('mutation type is:', mutationType);
+        const userQueries: Set<string> = new Set();
 
         for (const query in this.schemaTree.queries) {
-          const queryType = this.schemaTree.queries[query];
-          if (mutationType === queryType) queryTypes.add(queryType);
+          const type = this.schemaTree.queries[query];
+          if (mutationType === type) userQueries.add(query);
         }
 
-        for (const queryType of queryTypes) {
+        // for (const queryType of queryTypes)
+        userQueries.forEach((query) => {
+          console.log('head ', this.cache.head);
+
           for (
             let currentNode = this.cache.head;
             currentNode !== null;
             currentNode = currentNode.next
           ) {
-            if (currentNode.key.includes(queryType)) {
-              this.cache.deleteNode(currentNode);
+            if (currentNode.key.includes(query)) {
+              // console.log('deleting currentNode');
+              // this.cache.deleteNode(currentNode);
+              console.log('validating currentNode');
+              this.cache.validateNode(currentNode);
             }
           }
-        }
-      }
+        });
+      });
     } catch (err) {
       console.log(err);
     }
+    console.log('cache after mutation', this.cache);
   }
 };
 
 // Function that takes an array of selections and generates an array of strings based off of them
+Magnicache.prototype.schemaParser = function (schema) {
+  //refactor to be able to take on nested types (GraphQLListType)
+  const schemaTree = {
+    queries: {
+      //name:type
+    },
+    mutations: {},
+  };
+  for (const field in schema._queryType._fields) {
+    // console.log(
+    //   'field Type',
+    //   schema._queryType._fields[field].type.ofType.name,
+    //   'field name',
+    //   schema._queryType._fields[field]
+    // );
+    schemaTree.queries[schema._queryType._fields[field].name] =
+      schema._queryType._fields[field].type.ofType.name;
+  }
+  for (const field in schema._mutationType._fields) {
+    // console.log(
+    //   'field Type',
+    //   schema._mutationType._fields[field].type.name,
+    //   'field name',
+    //   schema._mutationType._fields[field].name
+    // );
+    schemaTree.mutations[schema._mutationType._fields[field].name] =
+      schema._mutationType._fields[field].type.name;
+  }
+  console.log(schemaTree);
+  return schemaTree;
+};
+
 Magnicache.prototype.magniParser = function (
   selections: {
     kind: string;
