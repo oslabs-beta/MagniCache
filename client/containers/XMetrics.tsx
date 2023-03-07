@@ -2,20 +2,18 @@ import React, { useState, useEffect } from 'react';
 import CacheMetrics from '../components/CacheMetrics';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
+import { Metrics } from '../../types';
 
-interface MetricProps {
-  fetchTime: number;
-  queryValue: string;
-}
 
-const XMetrics = (props: MetricProps) => {
+const XMetrics = () => {
   // Possibly use an object to store all the state
-  const { fetchTime, queryValue } = props;
   const [usage, setUsage] = useState<number | string>(0);
   const [size, setSize] = useState<string | number>(0);
   const [resTime, setResTime] = useState<number>(0);
   const [avgCached, setCached] = useState<number | string>(0);
   const [avgUncached, setUncached] = useState<number | string>(0);
+  const [memTime, setMemtime] = useState<number>(0);
+  // AMAT FORMULA => (hit time) + (miss rate) × (miss time)
 
   const getMetrics = () => {
     fetch(`/graphql`, {
@@ -29,10 +27,11 @@ const XMetrics = (props: MetricProps) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        setUsage(data[0].size);
-        setSize(data[1].sizeLeft);
+        setUsage(data.usage);
+        setSize(data.sizeLeft);
       });
   };
+
 
   // Send a request and populate proper values to be passed down to CacheMetrics
 
@@ -52,7 +51,6 @@ const XMetrics = (props: MetricProps) => {
           resTime={resTime}
           avgCached={avgCached}
           avgUncached={avgUncached}
-          fetchTime={fetchTime}
         />
         {/* <button className="getMetrics" onClick={getMetrics}>
           HIASDNASD
@@ -64,17 +62,19 @@ const XMetrics = (props: MetricProps) => {
           className="toggle-button-group-rc"
         >
           <ToggleButton
-          id="tb5"
-          value={1}
-          style={{
-            borderRadius: '14px',
-            backgroundColor: '#1a8fe3',
-            color: '#d6fbff',
-            marginRight: '5px',
-            border: 'none',
-          }}
-          onClick={getMetrics}
-          >Get Metrics</ToggleButton>
+            id="tb5"
+            value={1}
+            style={{
+              borderRadius: '14px',
+              backgroundColor: '#1a8fe3',
+              color: '#d6fbff',
+              marginRight: '5px',
+              border: 'none',
+            }}
+            onClick={getMetrics}
+          >
+            Get Metrics
+          </ToggleButton>
         </ToggleButtonGroup>
       </div>
     </>

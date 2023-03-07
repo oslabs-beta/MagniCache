@@ -20,6 +20,13 @@ function Magnicache(this: any, schema: any, maxSize: number = 100): void {
   this.query = this.query.bind(this);
 
   this.cache = new Cache(maxSize);
+  this.metrics = {
+    hits: 0,
+    misses: 0,
+    AvgCacheTime: 0,
+    AvgMissTime: 0,
+    AvgMemAccTime: 0,
+  };
 }
 // Class constructors for the linked list and the nodes for the list
 class EvictionNode<T> {
@@ -161,14 +168,27 @@ Magnicache.prototype.query = function (
   // Create and send averages for both the cached and uncached response time
   // Check if the value of the query is getMetrics, if it is wellc ontinue to create and send the metrics
   if (ast.selectionSet.selections[0].name.value === 'getMetrics') {
-    // Count how long the cache is currently
-    res.locals.queryResponse = [];
-    res.locals.queryResponse.push({ size: this.cache.count() });
-    let size = res.locals.queryResponse[0].size;
-    // Subtract the size from the maxSize
-    // console.log(this.maxSize)
-    const sizeLeft: number = this.maxSize - res.locals.queryResponse[0].size;
-    res.locals.queryResponse.push({ sizeLeft: sizeLeft });
+    const usage: number = this.cache.count(); //=> 2 nodes
+    const sizeLeft: number = this.maxSize - usage; //-98
+    // const cacheLatency will come back to
+    // const cacheLatency:number = {
+    // Av.Mem. Access time = h * Tcache + (1-h) * Tmem
+    // where Tcache is the time to access the cache (e.g., 1 cycle) and
+    // Tmem is the time to access main memory (e.g., 100 cycles)
+    const AMAT =
+      this.hits * ((this.AvgMissTime + this.AvgCacheTime) / 2) +
+      (1 - this.hits) * this.AvgMissTime;
+    // }
+    const metrics: {
+      usage: number;
+      sizeLeft: number;
+      AMAT: number;
+    } = {
+      usage,
+      sizeLeft,
+      AMAT,
+    };
+    res.locals.queryResponse = metrics;
     return next();
   }
 
@@ -225,8 +245,10 @@ Magnicache.prototype.query = function (
           console.log('cache hit');
 
           res.cookie('cacheStatus', 'hit');
+          this.metrics.hits++;
           console.log('cachestatus set hit on res');
-
+          //Start a timter
+          const start = Date.now();
           // store the cached response
           console.log('query response', this.cache.get(query));
           queryResponses.push(this.cache.get(query));
@@ -237,8 +259,17 @@ Magnicache.prototype.query = function (
             // if yes, compile all queries
             compileQueries();
           }
+          const end = Date.now();
+          const cacheTime = Math.floor(end - start);
+          console.log(cacheTime);
+          this.metrics.AvgCacheTime = Math.floor(
+            (this.metrics.AvgCacheTime + cacheTime) /
+              (this.metrics.hits + this.metrics.misses)
+          );
         } else {
+          const start = Date.now();
           res.cookie('cacheStatus', 'miss');
+          this.misses++;
           console.log('cachestatsus set miss on Res');
           // output message indicating that the query is missing
           console.log('cache miss');
@@ -261,12 +292,17 @@ Magnicache.prototype.query = function (
             })
             .catch((err: {}) => {
               console.log(err);
-
               // throw an error to the next callback
               return next({
                 log: err,
               });
             });
+          const end = Date.now();
+          const AvgMissTime = Math.floor(end - start);
+          this.metrics.AvgMissTime = Math.floor(
+            (this.metrics.AvgMissTime + AvgMissTime) /
+              (this.metrics.hits + this.metrics.misses)
+          );
         }
       }
     }
@@ -288,17 +324,6 @@ Magnicache.prototype.query = function (
         });
       });
   }
-};
-
-// Need metrics for the length of the cache, one for what is used and for what is left
-// Create the average response time using long polling possibly
-// Create and send averages for both the cached and uncached response time
-Magnicache.prototype.extraMetrics = function (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void {
-  // get the body of the requested query
 };
 
 // Function that takes an array of selections and generates an array of strings based off of them

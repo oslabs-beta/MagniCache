@@ -3,8 +3,11 @@ import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Result from './Result';
 import XMetrics from '../containers/XMetrics';
+import { Metrics } from '../../types';
+
 
 interface QueryProps {
+  metrics: Metrics[]
   queryValue: string;
   setQueryValue: React.Dispatch<React.SetStateAction<string>>;
   queryResponse: Object;
@@ -24,6 +27,7 @@ const QueryDisplay = (props: QueryProps) => {
     handleClickClear,
     handleClickRun,
     handleClearCache,
+    metrics
   } = props;
 
   return (
@@ -73,10 +77,7 @@ const QueryDisplay = (props: QueryProps) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-       <XMetrics 
-       fetchTime = {fetchTime}
-       queryValue={queryValue}
-       />
+       <XMetrics />
       <div id="result-display" className="query-display-child">
         <h1 className="query-result-title">Results</h1>
         <div className="fields-container-result">

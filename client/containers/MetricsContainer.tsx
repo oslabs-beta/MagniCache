@@ -91,6 +91,7 @@ const MetricsContainer: React.FC = () => {
     <div className="metrics-container">
       <div className="query-container">
         <QueryDisplay
+          metrics={metrics}
           key={'A1'}
           queryResponse={queryResponse}
           setQueryValue={setQueryValue}

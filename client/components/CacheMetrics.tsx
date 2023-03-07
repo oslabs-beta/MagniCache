@@ -1,5 +1,7 @@
 import React, { SetStateAction } from 'react';
 import { Pie, Doughnut } from 'react-chartjs-2';
+import { Metrics } from '../../types';
+
 
 interface CacheProps {
   usage: number | string;
@@ -7,9 +9,7 @@ interface CacheProps {
   resTime: number;
   avgCached: number | string;
   avgUncached: number | string;
-  fetchTime: number;
 
-  // possibly need state update doubt it but adding just in case
   // setUsage: React.Dispatch<SetStateAction<string | number>>
   // setSize: React.Dispatch<SetStateAction<number>>
   // setResTime: React.Dispatch<SetStateAction<number>>
@@ -18,7 +18,7 @@ interface CacheProps {
 }
 
 const CacheMetrics = (props: CacheProps) => {
-  const { usage, size, resTime, avgCached, avgUncached, fetchTime } = props;
+  const { usage, size, resTime, avgCached, avgUncached } = props;
 
   const usageData = {
     labels: ['Space Used', 'Space Left'],
@@ -47,13 +47,23 @@ const CacheMetrics = (props: CacheProps) => {
 
   return (
     <div className="cache-metric-container">
+      <div className="cache-metric">
+        {/* TIme it takes cache to retrieve data of any type */}
+        Cache Latency: 
+      </div>
+      <br></br>
+
+      <div className="cache-metric">
+        {/* Average hits over total number of queries */}
+        Average Memory Access Time: 0ms
+      </div>
+      <br></br>
+
       <div className="cache-metric">Cache Capacity Used: {usage}</div>
       <br></br>
 
       <div className="cache-metric">Remaining Capacity: {size} </div>
       <br></br>
-
-
 
       <div className="cache-metric">
         Average Cached Response Time: {avgCached}ms
@@ -68,6 +78,7 @@ const CacheMetrics = (props: CacheProps) => {
         <Pie
           data={usageData}
         />
+        <Doughnut data={avgData}></Doughnut>
     </div>
   );
 };
