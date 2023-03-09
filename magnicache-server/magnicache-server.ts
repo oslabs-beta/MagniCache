@@ -12,6 +12,7 @@ import * as mergeWith from 'lodash/mergeWith';
 // Cache Class, for removing the LRU item in the cache
 
 // Magnicache class for creating a queryable cache
+// TODO: delete the 'this' parameter --> doesn't seem to be necessary
 function Magnicache(this: any, schema: any, maxSize: number = 100): void {
   // save the provided schema
   this.schema = schema;
