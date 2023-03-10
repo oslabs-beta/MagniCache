@@ -122,7 +122,6 @@ body {
   }
 }
 
-
 .fields-container {
   display: flex;
   flex-direction: column;
@@ -148,13 +147,14 @@ body {
   background-color: $lightTertiaryColor;
   border-radius: $borderRad;
   font-size: 1.3vw;
-  width: 98%;
-  height: 10rem;
+  height: 9rem;
   text-align: left;
   resize: none;
   border: none;
   margin: 0;
   padding: 0.5vw;
+  position: absolute;
+  width: 52.5rem;
   #query-box {
     display: flex;
     flex-direction: column;
@@ -202,14 +202,13 @@ body {
 
 .query-result-title {
   text-align: center;
-    padding: 0.5vw;
-    margin-top: 1vw;
-    font-size: 3vw;
-    position: absolute;
-    bottom: 42%;
-    left: 18%;
+  padding: 0.5vw;
+  margin-top: 1vw;
+  font-size: 3vw;
+  position: absolute;
+  bottom: 42%;
+  left: 18%;
 }
-
 
 #toggle-button-cache {
   position: absolute;
@@ -250,7 +249,33 @@ body {
   position: relative;
 }
 
-
+// 1378 pixels maximum
+@media (max-width: 1378px) {
+  #query-box {
+    display: column;
+    flex-direction: row;
+    position: relative;
+  }
+  .fields-container-result {
+    position: absolute;
+    width: 45%;
+    bottom: 10%;
+  }
+  .query-input {
+    width: 92%;
+  }
+  #toggle-button-cache {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 92%;
+  }
+  .query-result-title {
+    position: absolute;
+    bottom: 32%;
+    left: 16%;
+  }
+}
 
 // ALL QUERY/RESULT SELECTORS ABOVE THIS LINE
 // ALL QUERY/RESULT SELECTORS ABOVE THIS LINE

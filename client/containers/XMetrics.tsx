@@ -15,21 +15,23 @@ const XMetrics = () => {
     AvgMemAccTime: 0,
   });
 
-  const getMetrics = () => {
-    fetch(`/graphql`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: '{getMetrics}',
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setMetrics(data);
-      });
-  };
+
+    setTimeout(() => {
+      fetch(`/graphql`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: '{getMetrics}',
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setMetrics(data);
+        });
+  
+    }, 10000);
   return (
     <>
       <div className="extra-metrics-container">
@@ -51,7 +53,6 @@ const XMetrics = () => {
               marginRight: '5px',
               border: 'none',
             }}
-            onClick={getMetrics}
           >
             Get Metrics
           </ToggleButton>
