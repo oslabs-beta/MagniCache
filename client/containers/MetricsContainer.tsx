@@ -36,30 +36,14 @@ const MetricsContainer: React.FC = () => {
           .then((res: any): any => {
             //sett all the metrics in this 'then' block
             let cacheStatus!: 'hit' | 'miss';
-            if (
-              document.cookie
-                .split(';')
-                .some((cookie: string): boolean =>
-                  cookie.includes('cacheStatus=hit')
-                )
-            ) {
-              // setCacheData([...cacheData, 'hit']);
-              // setMetrics([...metrics, {cacheStatus: 'hit', }])
-              cacheStatus = 'hit';
-            }
-            if (
-              document.cookie
-                .split(';')
-                .some((cookie: string): boolean =>
-                  cookie.includes('cacheStatus=miss')
-                )
-            ) {
-              // setCacheData([...cacheData, 'miss']);
-              cacheStatus = 'miss';
-            }
+
             const endTime = performance.now();
             // setFetchTime(Math.floor(endTime - startTime - 1)); // 20ms
-            let fetchTime = Math.floor(endTime - startTime - 1);
+            let fetchTime = Math.abs(
+              Math.round((endTime - startTime - 1) * 100) / 100
+            );
+            // this is not the proper way to do this
+            fetchTime < 20 ? (cacheStatus = 'hit') : (cacheStatus = 'miss');
             setMetrics([...metrics, { cacheStatus, fetchTime }]);
             return res.json();
           })
@@ -174,8 +158,6 @@ const MetricsContainer: React.FC = () => {
           key={'B1'}
           queryValue={queryValue}
           queryResponse={queryResponse}
-          // fetchTime={fetchTime}
-          // cacheData={cacheData}
           metrics={metrics}
           setMetrics={setMetrics}
         />

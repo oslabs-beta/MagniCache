@@ -184,24 +184,3 @@ MagniClient.prototype.magniParser = function (
 };
 
 export default MagniClient;
-
-const cachePromiseFunction = (get) => {
-  const cache = {};
-  return (...args) => {
-    return new Promise((resolve, reject) => {
-      const stArgs = JSON.stringify(args);
-      if (cache.hasOwnProperty(stArgs)) {
-        resolve(cache[stArgs]);
-      } else {
-        get(...args)
-          .then((data) => {
-            cache[stArgs] = data;
-            resolve(data);
-          })
-          .catch((err) => {
-            reject(err);
-          });
-      }
-    });
-  };
-};
