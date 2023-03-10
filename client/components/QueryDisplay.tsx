@@ -16,6 +16,9 @@ interface QueryProps {
   handleClickClear: () => void;
   handleClearCache: () => void;
   key: string;
+  clientMode: boolean;
+  setClientMode: React.Dispatch<React.SetStateAction<boolean>>;
+  handleSwitchMode: () => void;
 }
 
 const QueryDisplay = (props: QueryProps) => {
@@ -27,7 +30,9 @@ const QueryDisplay = (props: QueryProps) => {
     handleClickClear,
     handleClickRun,
     handleClearCache,
-    metrics
+    metrics,
+    handleSwitchMode,
+    clientMode,
   } = props;
 
   return (
@@ -58,6 +63,11 @@ const QueryDisplay = (props: QueryProps) => {
               border: 'none',
             }}
             onClick={handleClickRun}
+            // onClick={
+            //   clientMode
+            //     ? () => console.log('client mode')
+            //     : () => console.log('server mode')
+            // }
           >
             Run
           </ToggleButton>
@@ -89,6 +99,21 @@ const QueryDisplay = (props: QueryProps) => {
           defaultValue={1}
           id="toggle-button-cache"
         >
+          <ToggleButton
+            id="tb6"
+            value={1}
+            style={{
+              borderRadius: '14px',
+              backgroundColor: '#1a8fe3',
+              color: '#d6fbff',
+              border: 'none',
+              marginRight: '10px',
+            }}
+            onClick={handleSwitchMode}
+          >
+            Switch to{' '}
+            {clientMode ? 'Server-side caching' : 'Client-side caching'}
+          </ToggleButton>
           <ToggleButton
             id="tb5"
             value={2}

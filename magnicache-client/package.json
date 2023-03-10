@@ -1,8 +1,8 @@
 {
-  "name": "@magnicache/viz",
+  "name": "magnicache-client",
   "version": "0.0.1",
-  "description": "A metrics visualizer for MagniCache.",
-  "main": "index.js",
+  "description": "Client-side caching layer for GraphQL",
+  "main": "magnicache-client.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,13 +10,17 @@
     "type": "git",
     "url": "git+https://github.com/oslabs-beta/MagniCache.git"
   },
-  "keywords": [
-    "magnicache"
-  ],
   "author": "MagniCache",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/oslabs-beta/MagniCache/issues"
   },
-  "homepage": "https://github.com/oslabs-beta/MagniCache#readme"
+  "homepage": "https://github.com/oslabs-beta/MagniCache#readme",
+  "dependencies": {
+    "localforage": "^1.10.0",
+    "lodash.mergewith": "^4.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.0"
+  }
 }
