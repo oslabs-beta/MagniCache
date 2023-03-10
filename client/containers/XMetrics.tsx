@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import CacheMetrics from '../components/CacheMetrics';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
-import { Metrics } from '../../types';
-
+import { CacheMetricsType } from '../../types';
 
 const XMetrics = () => {
-  // Possibly use an object to store all the state
-  const [usage, setUsage] = useState<number | string>(0);
-  const [size, setSize] = useState<string | number>(0);
-  const [resTime, setResTime] = useState<number>(0);
-  const [avgCached, setCached] = useState<number | string>(0);
-  const [avgUncached, setUncached] = useState<number | string>(0);
-  const [memTime, setMemtime] = useState<number>(0);
-  // AMAT FORMULA => (hit time) + (miss rate) × (miss time)
+  const [metrics, setMetrics] = useState<CacheMetricsType>({
+    cacheUsage: 0,
+    sizeLeft: 0,
+    totalHits: 0,
+    totalMisses: 0,
+    AvgCacheTime: 0,
+    AvgMissTime: 0,
+    AvgMemAccTime: 0,
+  });
 
   const getMetrics = () => {
     fetch(`/graphql`, {
@@ -27,34 +27,14 @@ const XMetrics = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        setUsage(data.usage);
-        setSize(data.sizeLeft);
+        setMetrics(data);
       });
   };
-
-
-  // Send a request and populate proper values to be passed down to CacheMetrics
-
-  //TODO: Create averages for both fetch times, cached and uncached
-
-  // usage will be a number possibly converted to Bytes, same with size
-  // ResTime will be the total average response time of uncached and cached
-  // AvgCached and AvgUncached will be the averages for each result
-
   return (
     <>
       <div className="extra-metrics-container">
         <h1 className="cache-metrics-title">Cache Metrics</h1>
-        <CacheMetrics
-          usage={usage}
-          size={size}
-          resTime={resTime}
-          avgCached={avgCached}
-          avgUncached={avgUncached}
-        />
-        {/* <button className="getMetrics" onClick={getMetrics}>
-          HIASDNASD
-        </button> */}
+        <CacheMetrics metrics={metrics} />
         <ToggleButtonGroup
           type="radio"
           name="options"

@@ -14,8 +14,11 @@ function Magnicache(schema, maxSize) {
     this.query = this.query.bind(this);
     this.cache = new Cache(maxSize);
     this.metrics = {
-        hits: 0,
-        misses: 0,
+        //type this to be a cacheMetrics type
+        cacheUsage: 0,
+        sizeLeft: this.maxSize,
+        totalHits: 0,
+        totalMisses: 0,
         AvgCacheTime: 0,
         AvgMissTime: 0,
         AvgMemAccTime: 0
@@ -90,7 +93,7 @@ var Cache = /** @class */ (function () {
     Cache.prototype.get = function (key) {
         var node = this.map.get(key);
         // if (this.head === null) return node;
-        console.log(node);
+        // console.log(node);
         //if the node is at the head, simply return the value
         if (this.head === node)
             return node.value;
@@ -111,7 +114,7 @@ var Cache = /** @class */ (function () {
         this.head = node;
         return node.value;
     };
-    //check if the cache has the key, only prupose if for semantic sugar
+    //check if the cache has the key, only purpose if for semantic sugar
     Cache.prototype.includes = function (key) {
         return this.map.has(key);
     };
@@ -122,7 +125,7 @@ var Cache = /** @class */ (function () {
             counter++;
             current = current.next;
         }
-        return counter;
+        return this.map.size;
     };
     return Cache;
 }());
@@ -139,27 +142,8 @@ Magnicache.prototype.query = function (req, res, next) {
         res.locals.queryResponse = { cacheStatus: 'cacheCleared' };
         return next();
     }
-    // Need metrics for the length of the cache, one for what is used and for what is left
-    // Create the average response time using long polling possibly
-    // Create and send averages for both the cached and uncached response time
-    // Check if the value of the query is getMetrics, if it is wellc ontinue to create and send the metrics
     if (ast.selectionSet.selections[0].name.value === 'getMetrics') {
-        var usage = this.cache.count(); //=> 2 nodes
-        var sizeLeft = this.maxSize - usage; //-98
-        // const cacheLatency will come back to
-        // const cacheLatency:number = {
-        // Av.Mem. Access time = h * Tcache + (1-h) * Tmem
-        // where Tcache is the time to access the cache (e.g., 1 cycle) and
-        // Tmem is the time to access main memory (e.g., 100 cycles)
-        var AMAT = this.hits * ((this.AvgMissTime + this.AvgCacheTime) / 2) +
-            (1 - this.hits) * this.AvgMissTime;
-        // }
-        var metrics = {
-            usage: usage,
-            sizeLeft: sizeLeft,
-            AMAT: AMAT
-        };
-        res.locals.queryResponse = metrics;
+        res.locals.queryResponse = this.metrics;
         return next();
     }
     // check if the operation is a query
@@ -200,18 +184,30 @@ Magnicache.prototype.query = function (req, res, next) {
                 // proceed to execute the next callback
                 return next();
             };
+            //calculate the AMAT
+            var calcAMAT_1 = function () {
+                //finally, calculate AMAT
+                var hitRate = _this.metrics.totalHits /
+                    (_this.metrics.totalHits + _this.metrics.totalMisses);
+                _this.metrics.AvgMemAccTime = Math.round(hitRate * _this.metrics.AvgCacheTime +
+                    (1 - hitRate) * _this.metrics.AvgMissTime);
+                console.log('amat', _this.metrics.AvgMemAccTime);
+                // Return the calculated average memory access time
+                return _this.metrics.AvgMemAccTime;
+            };
             var _loop_1 = function (query_1) {
                 // check if query is already cached
                 if (this_1.cache.includes(query_1)) {
                     // output message indicating that the query is cached
                     console.log('cache hit');
+                    // add a cookie that the cache was hit
                     res.cookie('cacheStatus', 'hit');
-                    this_1.metrics.hits++;
-                    console.log('cachestatus set hit on res');
+                    //update the metrics with a hit count
+                    this_1.metrics.totalHits++;
                     //Start a timter
-                    var start = Date.now();
+                    var hitStart = Date.now();
                     // store the cached response
-                    console.log('query response', this_1.cache.get(query_1));
+                    // console.log('query response', this.cache.get(query));
                     queryResponses_1.push(this_1.cache.get(query_1));
                     // console.log(this.cache)
                     // check if all queries have been fetched
@@ -219,27 +215,44 @@ Magnicache.prototype.query = function (req, res, next) {
                         // if yes, compile all queries
                         compileQueries_1();
                     }
-                    var end = Date.now();
-                    var cacheTime = Math.floor(end - start);
-                    console.log(cacheTime);
-                    this_1.metrics.AvgCacheTime = Math.floor((this_1.metrics.AvgCacheTime + cacheTime) /
-                        (this_1.metrics.hits + this_1.metrics.misses));
+                    //end the timer and calculate the diff, then update the metrics
+                    var hitEnd = Date.now();
+                    var hitTime = Math.floor(hitEnd - hitStart);
+                    console.log('hit time', hitTime);
+                    this_1.metrics.AvgCacheTime = Math.round((this_1.metrics.AvgCacheTime + hitTime) / this_1.metrics.totalHits);
+                    console.log('average hit time', this_1.metrics.AvgCacheTime);
                 }
                 else {
-                    var start = Date.now();
-                    res.cookie('cacheStatus', 'miss');
-                    this_1.misses++;
-                    console.log('cachestatsus set miss on Res');
-                    // output message indicating that the query is missing
-                    console.log('cache miss');
+                    //start the miss timer
+                    var missStart_1 = Date.now();
                     // execute the query against graphql
                     graphql({ schema: this_1.schema, source: query_1 })
                         .then(function (result) {
                         // cache the newest response
                         _this.cache.create(query_1, result);
                         // this.cache.set(Cache.prototype.createHead())
+                        //update the metrics with the new size
+                        _this.metrics.cacheUsage = _this.cache.count();
                         // store the query response
                         queryResponses_1.push(result);
+                    })
+                        // the below then block will update thte miss time as well as update the AMAT
+                        .then(function () {
+                        res.cookie('cacheStatus', 'miss');
+                        var missEnd = Date.now();
+                        //update the metrics with a missCount
+                        _this.metrics.totalMisses++;
+                        _this.sizeLeft = _this.maxSize - _this.metrics.cacheUsage;
+                        console.log('header sent', res.headersSent);
+                        var missTime = missEnd - missStart_1;
+                        console.log('missTime', missTime);
+                        _this.metrics.AvgMissTime =
+                            (_this.metrics.AvgMissTime + missTime) /
+                                _this.metrics.totalMisses;
+                        // output message indicating that the query is missing
+                        console.log('cache miss');
+                        console.log('average miss time', _this.metrics.AvgMissTime);
+                        console.log('calc res', calcAMAT_1());
                         // check if all queries have been fetched
                         if (queries_2.length === queryResponses_1.length) {
                             // if yes, compile all queries
@@ -252,10 +265,6 @@ Magnicache.prototype.query = function (req, res, next) {
                             log: err
                         });
                     });
-                    var end = Date.now();
-                    var AvgMissTime = Math.floor(end - start);
-                    this_1.metrics.AvgMissTime = Math.floor((this_1.metrics.AvgMissTime + AvgMissTime) /
-                        (this_1.metrics.hits + this_1.metrics.misses));
                 }
             };
             var this_1 = this;
@@ -271,7 +280,7 @@ Magnicache.prototype.query = function (req, res, next) {
         console.log('this is a mutation');
         // Logic for mutation goes here
         this.cache = new Cache(this.maxSize);
-        console.log(this.cache);
+        // console.log(this.cache);
         graphql({ schema: this.schema, source: query })
             .then(function (result) {
             res.locals.queryResponse = result;

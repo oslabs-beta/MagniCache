@@ -1,4 +1,27 @@
 export type Metrics = {
+  // queryMetrics
   fetchTime: number;
   cacheStatus: 'hit' | 'miss';
 };
+
+export type CacheMetricsType = {
+  cacheUsage: number;
+  sizeLeft: number;
+  totalHits: number;
+  totalMisses: number;
+  AvgCacheTime: number;
+  AvgMissTime: number;
+  AvgMemAccTime: number;
+};
+
+/*
+     this.metrics = { //type this to be a cacheMetrics type 
+    cacheUsage: 0,
+    sizeLeft: this.maxSize,
+    totalHits: 0,
+    totalMisses: 0,
+    AvgCacheTime: 0, //for atomic queries only, can change to query as a whole later on
+    AvgMissTime: 0,
+    AvgMemAccTime: 0, // hit rate * cacheTime + miss rate * missTIme
+  };
+    */
