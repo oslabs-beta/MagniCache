@@ -34,13 +34,7 @@ interface VisualProps {
 
 // Create the charts within this file, response.tsx will take care of the metrics for the cache response
 const VisualsDisplay = (props: VisualProps) => {
-  //TODO: Use queryresponse and fetch time to populate data inside visuals
-  const {
-    queryResponse,
-    metrics,
-
-  } = props;
-  //TODO: refactor this mess
+  const { queryResponse, metrics } = props;
   const hits = metrics.reduce((acc: number, curr: Metrics): number => {
     if (curr.cacheStatus === 'hit') {
       acc++;
@@ -72,8 +66,8 @@ const VisualsDisplay = (props: VisualProps) => {
       if (obj.cacheStatus === 'hit') {
         return 'Cached';
       } else if (obj.cacheStatus === 'miss') {
-        return 'Uncached'
-      } 
+        return 'Uncached';
+      }
     }),
     datasets: [
       {
@@ -94,14 +88,12 @@ const VisualsDisplay = (props: VisualProps) => {
             width={1000}
             height={400}
             options={{ responsive: true, maintainAspectRatio: true }}
-            // datasetIdKey="id"
             color="#5b2af0"
             data={dataLine}
           />
         </div>
         <div className="right-visual">
           <div className="hits-misses">
-            {/* Props passed here are for the response container being able to render the metrics associated with the hits and misses from the cache */}
             <Response hits={hits} misses={misses} metrics={metrics} />
           </div>
           <div className="donut-chart">

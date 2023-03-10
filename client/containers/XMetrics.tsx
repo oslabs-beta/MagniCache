@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import CacheMetrics from '../components/CacheMetrics';
-import ToggleButton from 'react-bootstrap/ToggleButton';
-import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import { CacheMetricsType } from '../../types';
 
 const XMetrics = () => {
@@ -15,23 +13,21 @@ const XMetrics = () => {
     AvgMemAccTime: 0,
   });
 
-
-    setTimeout(() => {
-      fetch(`/graphql`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: '{getMetrics}',
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setMetrics(data);
-        });
-  
-    }, 10000);
+  setTimeout(() => {
+    fetch(`/graphql`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: '{getMetrics}',
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setMetrics(data);
+      });
+  }, 10000);
   return (
     <>
       <div className="extra-metrics-container">

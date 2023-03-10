@@ -3,38 +3,24 @@ import QueryDisplay from '../components/QueryDisplay';
 import VisualsDisplay from '../components/VisualsDisplay';
 import { Metrics } from '../../types';
 const MagniClient = require('../magnicache-client.js');
-// import MagniClient from '../magnicache-client.js';
-// import MagniClient from '../magnicache-client';
 const magniClient = new MagniClient();
-// magniClient.query();
 
 const MetricsContainer: React.FC = () => {
   const [queryValue, setQueryValue] = useState('');
   const [queryResponse, setQueryResponse] = useState({});
   const [metrics, setMetrics] = useState<Metrics[]>([]);
-  //clientMode initially false means default is serverside caching,
-  // when client mode is true, that means clientside caching
   const [clientMode, setClientMode] = useState<boolean>(false);
   let fetchTime = 0;
-  // TODO:New metrics for cache container
-  // ...
 
-  // currently, state = server mode
-  // add a toggle button to switch to client mode
   // inside handleclickrun, proceed with functionality depending on whether server mode or client mode is activated
-
   const handleClickRun = () => {
     if (queryValue !== '' && queryValue !== null) {
       if (clientMode) {
-        // magniClient.query(queryValue, '/graphql');
-        // console.log(
-        //   'logging magniclient.query',
-        // );
         const startTime = performance.now();
         magniClient
           .query(queryValue, '/graphql')
           .then((res: any): any => {
-            //sett all the metrics in this 'then' block
+            //set all the metrics in this 'then' block
             let cacheStatus!: 'hit' | 'miss';
             if (
               document.cookie
@@ -43,8 +29,6 @@ const MetricsContainer: React.FC = () => {
                   cookie.includes('cacheStatus=hit')
                 )
             ) {
-              // setCacheData([...cacheData, 'hit']);
-              // setMetrics([...metrics, {cacheStatus: 'hit', }])
               cacheStatus = 'hit';
             }
             if (
@@ -54,11 +38,9 @@ const MetricsContainer: React.FC = () => {
                   cookie.includes('cacheStatus=miss')
                 )
             ) {
-              // setCacheData([...cacheData, 'miss']);
               cacheStatus = 'miss';
             }
             const endTime = performance.now();
-            // setFetchTime(Math.floor(endTime - startTime - 1)); // 20ms
             let fetchTime = Math.floor(endTime - startTime - 1);
             setMetrics([...metrics, { cacheStatus, fetchTime }]);
             return res.json();
@@ -66,11 +48,6 @@ const MetricsContainer: React.FC = () => {
           .then((data: string) => {
             setQueryResponse(data);
           })
-          // .then(() => {
-          //   setLineGraphTimes([...lineGraphTimes, fetchTime]); // [0, 20]
-          //   let newLabel = fetchTime < 100 ? 'Cached' : 'Uncached';
-          //   setLineGraphLabels([...lineGraphLabels, newLabel]);
-          // })
           .catch((err: {}) => console.log(err));
       } else {
         const startTime = performance.now();
@@ -94,8 +71,6 @@ const MetricsContainer: React.FC = () => {
                   cookie.includes('cacheStatus=hit')
                 )
             ) {
-              // setCacheData([...cacheData, 'hit']);
-              // setMetrics([...metrics, {cacheStatus: 'hit', }])
               cacheStatus = 'hit';
             }
             if (
@@ -105,11 +80,9 @@ const MetricsContainer: React.FC = () => {
                   cookie.includes('cacheStatus=miss')
                 )
             ) {
-              // setCacheData([...cacheData, 'miss']);
               cacheStatus = 'miss';
             }
             const endTime = performance.now();
-            // setFetchTime(Math.floor(endTime - startTime - 1)); // 20ms
             let fetchTime = Math.floor(endTime - startTime - 1);
             setMetrics([...metrics, { cacheStatus, fetchTime }]);
             return res.json();
@@ -117,11 +90,6 @@ const MetricsContainer: React.FC = () => {
           .then((data) => {
             setQueryResponse(data);
           })
-          // .then(() => {
-          //   setLineGraphTimes([...lineGraphTimes, fetchTime]); // [0, 20]
-          //   let newLabel = fetchTime < 100 ? 'Cached' : 'Uncached';
-          //   setLineGraphLabels([...lineGraphLabels, newLabel]);
-          // })
           .catch((err) => console.log(err));
       }
     } else {
@@ -134,7 +102,6 @@ const MetricsContainer: React.FC = () => {
   };
 
   const handleClickClear = () => {
-    // TODO: should clear button should also clear the query value?
     setQueryValue('');
     setQueryResponse({});
   };
@@ -174,8 +141,6 @@ const MetricsContainer: React.FC = () => {
           key={'B1'}
           queryValue={queryValue}
           queryResponse={queryResponse}
-          // fetchTime={fetchTime}
-          // cacheData={cacheData}
           metrics={metrics}
           setMetrics={setMetrics}
         />

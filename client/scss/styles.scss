@@ -16,6 +16,7 @@ body {
     $secondaryColor,
     $lightTertiaryColor
   );
+  min-width: 989px;
 }
 // BODY AND COLOR DECLARATIONS ABOVE THIS LINE
 // BODY AND COLOR DECLARATIONS ABOVE THIS LINE
@@ -332,14 +333,14 @@ body {
   }
 }
 
-@media(max-width: 1466px) {
+@media (max-width: 1466px) {
   .extra-metrics-container {
     padding-bottom: 135%;
     width: 90%;
   }
 }
 
-@media(max-width: 1235px) {
+@media (max-width: 1235px) {
   .query-input {
     top: 8%;
   }
@@ -348,12 +349,18 @@ body {
   }
 }
 
-@media(max-width: 1048px) {
+@media (max-width: 1048px) {
   .xtra-dough {
     top: 72%;
   }
   .xtra-pie {
     top: 46%;
+  }
+}
+
+@media(max-wdith: 989px) {
+  .xtra-dough {
+    bottom: 0;
   }
 }
 // ALL QUERY/RESULT SELECTORS ABOVE THIS LINE
@@ -394,7 +401,6 @@ body {
   .single-result {
     font-size: 1.9vw;
   }
-  
 }
 
 .left-visual,
