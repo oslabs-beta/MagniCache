@@ -14,14 +14,19 @@ module.exports = {
     }),
   ],
   devServer: {
+    // port: 8080,
     historyApiFallback: true,
     static: {
       publicPath: '/',
       directory: path.resolve(__dirname, 'build'),
     },
     proxy: {
-      '/**': 'http://localhost:3000',
+      '/**': {
+        target: 'http://localhost:3000/',
+        secure: false,
+      },
     },
+
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
