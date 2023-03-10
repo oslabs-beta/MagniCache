@@ -26,35 +26,27 @@ const MetricsContainer: React.FC = () => {
   const handleClickRun = () => {
     if (queryValue !== '' && queryValue !== null) {
       if (clientMode) {
-        // magniClient.query(queryValue, '/graphql');
-        // console.log(
-        //   'logging magniclient.query',
-        // );
         const startTime = performance.now();
         magniClient
           .query(queryValue, '/graphql')
           .then((res: any): any => {
-            //sett all the metrics in this 'then' block
+            //set all the metrics in this 'then' block
             let cacheStatus!: 'hit' | 'miss';
 
             const endTime = performance.now();
-            // setFetchTime(Math.floor(endTime - startTime - 1)); // 20ms
+
             let fetchTime = Math.abs(
               Math.round((endTime - startTime - 1) * 100) / 100
             );
-            // this is not the proper way to do this
-            fetchTime < 20 ? (cacheStatus = 'hit') : (cacheStatus = 'miss');
+            res[1].uncached === true
+              ? (cacheStatus = 'miss')
+              : (cacheStatus = 'hit');
             setMetrics([...metrics, { cacheStatus, fetchTime }]);
-            return res.json();
+            return res[0].json();
           })
           .then((data: string) => {
             setQueryResponse(data);
           })
-          // .then(() => {
-          //   setLineGraphTimes([...lineGraphTimes, fetchTime]); // [0, 20]
-          //   let newLabel = fetchTime < 100 ? 'Cached' : 'Uncached';
-          //   setLineGraphLabels([...lineGraphLabels, newLabel]);
-          // })
           .catch((err: {}) => console.log(err));
       } else {
         const startTime = performance.now();
@@ -78,8 +70,6 @@ const MetricsContainer: React.FC = () => {
                   cookie.includes('cacheStatus=hit')
                 )
             ) {
-              // setCacheData([...cacheData, 'hit']);
-              // setMetrics([...metrics, {cacheStatus: 'hit', }])
               cacheStatus = 'hit';
             }
             if (
@@ -115,6 +105,8 @@ const MetricsContainer: React.FC = () => {
 
   const handleSwitchMode = () => {
     setClientMode(!clientMode);
+    setMetrics([]);
+    setQueryResponse({});
   };
 
   const handleClickClear = () => {
