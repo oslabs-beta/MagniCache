@@ -6,7 +6,6 @@ interface ResponseProps {
   hits: number;
   misses: number;
   metrics: Metrics[];
-  // fetchTime: number;
 }
 
 const Response = (props: ResponseProps) => {
