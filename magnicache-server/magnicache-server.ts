@@ -8,7 +8,7 @@ const { parse } = require('graphql/language/parser');
 import { Response, Request, NextFunction } from 'express';
 import { CacheMetricsType } from './../types';
 
-import * as mergeWith from 'lodash/mergeWith';
+import * as mergeWith from 'lodash.mergewith';
 
 // Cache Class, for removing the LRU item in the cache
 
@@ -91,7 +91,7 @@ class Cache<T> {
 
   // Update the node when it is used and add it to the queue to be further from eviction(possibly not needed)
   deleteNode(node): void {
-    if (node === null) throw new Error('node is null');
+    if (node === null) throw new Error('ERROR in deleteNode: node is null');
 
     if (node.next === null) {
       node.prev.next = null;
@@ -270,9 +270,9 @@ Magnicache.prototype.query = function (
           const missStart = Date.now();
           // execute the query against graphql
           graphql({ schema: this.schema, source: query })
-            .then((result: {}) => {
+            .then((result: { err?: {}; data?: {} }) => {
               // cache the newest response
-              this.cache.create(query, result);
+              if (!result.err) this.cache.create(query, result);
               // this.cache.set(Cache.prototype.createHead())
 
               //update the metrics with the new size
