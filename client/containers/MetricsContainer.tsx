@@ -11,12 +11,11 @@ const magniClient = new MagniClient();
 const MetricsContainer: React.FC = () => {
   const [queryValue, setQueryValue] = useState('');
   const [queryResponse, setQueryResponse] = useState({});
-  const [fetchTime, setFetchTime] = useState<number>(0);
   const [metrics, setMetrics] = useState<Metrics[]>([]);
   //clientMode initially false means default is serverside caching,
   // when client mode is true, that means clientside caching
   const [clientMode, setClientMode] = useState<boolean>(false);
-
+  let fetchTime = 0;
   // TODO:New metrics for cache container
   // ...
 
@@ -156,6 +155,7 @@ const MetricsContainer: React.FC = () => {
     <div className="metrics-container">
       <div className="query-container">
         <QueryDisplay
+          metrics={metrics}
           key={'A1'}
           queryResponse={queryResponse}
           setQueryValue={setQueryValue}
