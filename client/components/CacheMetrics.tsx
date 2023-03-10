@@ -44,38 +44,37 @@ const CacheMetrics = (props: CacheProps) => {
 
   return (
     <div className="cache-metric-container">
-      <div className="cache-metric">
-        Cache Latency: {'none'}
-      </div>
-      <br></br>
-
       <div className="cache-metric">Cache Capacity Used: {cacheUsage}</div>
       <br></br>
 
-      <div className="cache-metric">Remaining Capacity: {sizeLeft - cacheUsage}</div>
+      <div className="cache-metric">
+        Remaining Capacity: {sizeLeft - cacheUsage}
+      </div>
       <br></br>
 
       <div className="cache-metric">Total Hits: {totalHits}</div>
       <br></br>
-
       <div className="cache-metric">Total Misses: {totalMisses}</div>
       <br></br>
+      <div className="half-metrics">
+        <div className="cache-metric">Average Cache Time: {AvgCacheTime}ms</div>
+        <br></br>
 
-      <div className="cache-metric">Average Cache Time: {AvgCacheTime}ms</div>
-      <br></br>
+        <div className="cache-metric">
+          Average Miss Response Time: {AvgMissTime}ms
+        </div>
+        <br></br>
 
-      <div className="cache-metric">
-        Average Miss Response Time: {AvgMissTime}ms
+        <div className="cache-metric">
+          Average Memory Access Time: {AvgMemAccTime}ms
+        </div>
+        <br></br>
       </div>
-      <br></br>
 
-      <div className="cache-metric">
-        Average Memory Access Time: {AvgMemAccTime}ms
+      <div className="new-charts">
+        <Pie data={usageData} className="xtra-pie" />
+        <Doughnut data={avgData} className="xtra-dough" />
       </div>
-      <br></br>
-
-      <Pie data={usageData} />
-      <Doughnut data={avgData}></Doughnut>
     </div>
   );
 };

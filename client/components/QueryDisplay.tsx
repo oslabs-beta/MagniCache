@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, SetStateAction } from 'react';
+import React from 'react';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Result from './Result';
@@ -63,11 +63,6 @@ const QueryDisplay = (props: QueryProps) => {
               border: 'none',
             }}
             onClick={handleClickRun}
-            // onClick={
-            //   clientMode
-            //     ? () => console.log('client mode')
-            //     : () => console.log('server mode')
-            // }
           >
             Run
           </ToggleButton>
@@ -129,7 +124,6 @@ const QueryDisplay = (props: QueryProps) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-      {/* Cache metrics container. Cache usage %, cache size, cache eviction policy, cache response time, avg server response time for cached/uncached queries. Use websockets or long polling to fetch said metrics.  */}
     </div>
   );
 };

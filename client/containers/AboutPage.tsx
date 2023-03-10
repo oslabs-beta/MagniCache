@@ -4,12 +4,6 @@ const AboutPage: React.FC = () => {
   return (
     <div id="about-page">
       <h1>About Magnicache</h1>
-      {/* <p>
-        GraphQL is a query language that allows developers to communicate with APIs with more efficiency and flexibility than they can with traditional rest APIs. GraphQL allows the client to specify exactly what data it needs and it offers a single endpoint for multiple queries. 
-      </p> */}
-      {/* <p>
-        While GraphQL provides several benefits, a complex GraphQL query 
-      </p> */}
       <div className="about-magnicache">
         <p>
           MagniCache is a lightweight Express middleware caching solution.
