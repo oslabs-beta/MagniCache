@@ -6,9 +6,9 @@ import {
   LinearScale,
   PointElement,
   LineElement,
-  // Title,
-  // Tooltip,
-  // Legend,
+  Title,
+  Tooltip,
+  Legend,
 } from 'chart.js';
 import { Line, Pie } from 'react-chartjs-2';
 import Response from './Response';
@@ -19,10 +19,10 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
-  LineElement
-  // Title,
-  // Tooltip,
-  // Legend
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
 );
 
 interface VisualProps {
