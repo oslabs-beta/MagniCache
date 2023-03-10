@@ -38,7 +38,6 @@ MagniClient.prototype.get = function (query) {
   var value = localStorage.getItem(query);
   if (value === null) return {};
   // move the key to the end of the cache array
-  // .splice(start, deleteCount, item1)
   var index = this.cache.indexOf(query);
   this.cache.splice(index, 1);
   this.cache.push(query);
@@ -70,8 +69,10 @@ MagniClient.prototype.query = function (query, endpoint) {
         }
         //whereas in server we saved response on res.locals to send back to client, here we just update the client side cache
         console.log(response);
-        resolve(response);
+        resolve([response, { uncached: uncached_1 }]);
+        // resolve(response);
       };
+      var uncached_1 = false;
       var _loop_1 = function (query_1) {
         // check if query is already cached
         if (_this.cache.includes(query_1)) {
@@ -85,6 +86,7 @@ MagniClient.prototype.query = function (query, endpoint) {
         } else {
           // if query is not cached
           console.log('client side cache miss');
+          uncached_1 = true;
           fetch(endpoint, {
             method: 'POST',
             body: JSON.stringify({ query: query_1 }),
@@ -105,6 +107,7 @@ MagniClient.prototype.query = function (query, endpoint) {
             })
             ['catch'](function (err) {
               console.log(err);
+              reject(err);
             });
         }
       };

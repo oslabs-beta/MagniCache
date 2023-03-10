@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useContext, SetStateAction } from 'react';
 import {
   Chart as ChartJS,
+  ArcElement,
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
+  // Title,
+  // Tooltip,
+  // Legend,
 } from 'chart.js';
 import { Line, Pie } from 'react-chartjs-2';
 import Response from './Response';
@@ -19,10 +19,10 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
+  LineElement
+  // Title,
+  // Tooltip,
+  // Legend
 );
 
 interface VisualProps {
@@ -34,7 +34,9 @@ interface VisualProps {
 
 // Create the charts within this file, response.tsx will take care of the metrics for the cache response
 const VisualsDisplay = (props: VisualProps) => {
+
   const { queryResponse, metrics } = props;
+
   const hits = metrics.reduce((acc: number, curr: Metrics): number => {
     if (curr.cacheStatus === 'hit') {
       acc++;
@@ -75,6 +77,7 @@ const VisualsDisplay = (props: VisualProps) => {
         data: metrics.map((obj) => obj.fetchTime),
         borderColor: '#5b2af0',
         backgroundColor: '#5b2af0',
+        tension: 0.3,
       },
     ],
   };

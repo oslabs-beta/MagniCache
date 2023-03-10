@@ -12,7 +12,9 @@ const MetricsContainer: React.FC = () => {
   const [clientMode, setClientMode] = useState<boolean>(false);
   let fetchTime = 0;
 
+
   // inside handleclickrun, proceed with functionality depending on whether server mode or client mode is activated
+
   const handleClickRun = () => {
     if (queryValue !== '' && queryValue !== null) {
       if (clientMode) {
@@ -22,28 +24,19 @@ const MetricsContainer: React.FC = () => {
           .then((res: any): any => {
             //set all the metrics in this 'then' block
             let cacheStatus!: 'hit' | 'miss';
-            if (
-              document.cookie
-                .split(';')
-                .some((cookie: string): boolean =>
-                  cookie.includes('cacheStatus=hit')
-                )
-            ) {
-              cacheStatus = 'hit';
-            }
-            if (
-              document.cookie
-                .split(';')
-                .some((cookie: string): boolean =>
-                  cookie.includes('cacheStatus=miss')
-                )
-            ) {
-              cacheStatus = 'miss';
-            }
+
+
             const endTime = performance.now();
-            let fetchTime = Math.floor(endTime - startTime - 1);
+
+            let fetchTime = Math.abs(
+              Math.round((endTime - startTime - 1) * 100) / 100
+            );
+            res[1].uncached === true
+              ? (cacheStatus = 'miss')
+              : (cacheStatus = 'hit');
+
             setMetrics([...metrics, { cacheStatus, fetchTime }]);
-            return res.json();
+            return res[0].json();
           })
           .then((data: string) => {
             setQueryResponse(data);
@@ -99,6 +92,8 @@ const MetricsContainer: React.FC = () => {
 
   const handleSwitchMode = () => {
     setClientMode(!clientMode);
+    setMetrics([]);
+    setQueryResponse({});
   };
 
   const handleClickClear = () => {
