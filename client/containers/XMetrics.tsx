@@ -37,26 +37,6 @@ const XMetrics = () => {
       <div className="extra-metrics-container">
         <h1 className="cache-metrics-title">Cache Metrics</h1>
         <CacheMetrics metrics={metrics} />
-        <ToggleButtonGroup
-          type="radio"
-          name="options"
-          defaultValue={1}
-          className="toggle-button-group-rc"
-        >
-          <ToggleButton
-            id="tb5"
-            value={1}
-            style={{
-              borderRadius: '14px',
-              backgroundColor: '#1a8fe3',
-              color: '#d6fbff',
-              marginRight: '5px',
-              border: 'none',
-            }}
-          >
-            Get Metrics
-          </ToggleButton>
-        </ToggleButtonGroup>
       </div>
     </>
   );
