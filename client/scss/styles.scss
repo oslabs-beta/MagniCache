@@ -16,6 +16,7 @@ body {
     $secondaryColor,
     $lightTertiaryColor
   );
+  min-width: 989px;
 }
 // BODY AND COLOR DECLARATIONS ABOVE THIS LINE
 // BODY AND COLOR DECLARATIONS ABOVE THIS LINE
@@ -106,10 +107,11 @@ body {
   }
   .query-display-flex {
     position: relative;
-    padding-bottom: 5%;
+    padding-bottom: 10%;
     border-radius: $borderRad;
     display: grid;
     grid-template-columns: 1fr 1fr;
+    padding-right: 6%;
     .query-display-child {
       padding-left: 1.5%;
     }
@@ -121,7 +123,6 @@ body {
     font-size: 3vw;
   }
 }
-
 
 .fields-container {
   display: flex;
@@ -148,13 +149,15 @@ body {
   background-color: $lightTertiaryColor;
   border-radius: $borderRad;
   font-size: 1.3vw;
-  width: 98%;
-  height: 10rem;
+  height: 9rem;
   text-align: left;
   resize: none;
   border: none;
   margin: 0;
   padding: 0.5vw;
+  position: absolute;
+  top: 15%;
+  width: 44vw;
   #query-box {
     display: flex;
     flex-direction: column;
@@ -191,8 +194,10 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: start;
-  width: 98%;
+  width: 48%;
   overflow-wrap: break-word;
+  position: absolute;
+  bottom: 10%;
   .single-result {
     word-break: break-all;
     font-size: 1rem;
@@ -202,23 +207,21 @@ body {
 
 .query-result-title {
   text-align: center;
-    padding: 0.5vw;
-    margin-top: 1vw;
-    font-size: 3vw;
-    position: absolute;
-    bottom: 42%;
-    left: 18%;
+  padding: 0.5vw;
+  margin-top: 1vw;
+  font-size: 3vw;
+  position: absolute;
+  bottom: 45%;
+  left: 16%;
 }
-
 
 #toggle-button-cache {
   position: absolute;
-  top: 93.5%;
+  top: 92%;
 }
 
 .extra-metrics-container {
   margin-top: 14%;
-  margin-right: 1%;
   color: $blackColor;
   background-color: $lightTertiaryColor;
   border-radius: $borderRad;
@@ -227,9 +230,10 @@ body {
   flex-direction: column;
   align-items: start;
   justify-content: start;
-  padding-left: 12px;
+  padding-left: 18px;
   padding-top: 20px;
   padding-bottom: 2%;
+  margin-left: 20%;
 }
 
 .cache-metrics-title {
@@ -242,16 +246,123 @@ body {
   font-size: 3vw;
 }
 
-.cache-metric {
-  // line-height: 60px;
+.xtra-dough {
+  position: absolute;
+  right: 8%;
+  top: 45%;
 }
 
-.get-container {
-  position: relative;
+.half-metrics {
+  position: absolute;
+  right: 8%;
+  top: 18.5%;
 }
 
+// 1378 pixels maximum
+@media (max-width: 1771px) {
+  #query-box {
+    display: column;
+    flex-direction: row;
+    position: relative;
+  }
+  .query-input {
+    width: 92%;
+    top: 16%;
+  }
+  .query-result-title {
+    position: absolute;
+    bottom: 50%;
+    left: 16%;
+  }
+  .fields-container-result {
+    position: absolute;
+    width: 45%;
+    bottom: 16%;
+  }
+  #toggle-button-cache {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 86%;
+  }
+  .xtra-dough {
+    right: 6%;
+    top: 44%;
+  }
+  .half-metrics {
+    top: 17.5%;
+    right: 7%;
+  }
+}
 
+@media (max-width: 1645px) {
+  .xtra-dough {
+    top: 69%;
+    left: 57%;
+    scale: 1.2;
+  }
+  .xtra-pie {
+    position: absolute;
+    bottom: 36%;
+    left: 57%;
+    scale: 1.2;
+  }
+  .extra-metrics-container {
+    padding-bottom: 90%;
+    width: 65%;
+    height: 100%;
+  }
+  .cache-metrics-title {
+    left: 55%;
+  }
+  .half-metrics {
+    top: 30%;
+    left: 57.7%;
+  }
+  #toggle-button-cache {
+    top: 72%;
+  }
+  .query-input {
+    top: 10%;
+  }
+  .query-result-title {
+    bottom: 55%;
+  }
+  .fields-container-result {
+    bottom: 30%;
+  }
+}
 
+@media (max-width: 1466px) {
+  .extra-metrics-container {
+    padding-bottom: 135%;
+    width: 90%;
+  }
+}
+
+@media (max-width: 1235px) {
+  .query-input {
+    top: 8%;
+  }
+  .half-metrics {
+    top: 28%;
+  }
+}
+
+@media (max-width: 1048px) {
+  .xtra-dough {
+    top: 72%;
+  }
+  .xtra-pie {
+    top: 46%;
+  }
+}
+
+@media(max-wdith: 989px) {
+  .xtra-dough {
+    bottom: 0;
+  }
+}
 // ALL QUERY/RESULT SELECTORS ABOVE THIS LINE
 // ALL QUERY/RESULT SELECTORS ABOVE THIS LINE
 // ALL QUERY/RESULT SELECTORS ABOVE THIS LINE
