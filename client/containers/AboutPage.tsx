@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Component to render about pages and info for MagniCache
 const AboutPage: React.FC = () => {
   return (
     <div id="about-page">

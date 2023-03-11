@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import CacheMetrics from '../components/CacheMetrics';
 import { CacheMetricsType } from '../../types';
 
+// Component for creating and rendering container for extra metrics(CacheMetrics)
 const XMetrics = () => {
+  // Declare and type(Very specific) properties onto our metrics object
   const [metrics, setMetrics] = useState<CacheMetricsType>({
     cacheUsage: 0,
     sizeLeft: 0,
@@ -13,6 +15,7 @@ const XMetrics = () => {
     AvgMemAccTime: 0,
   });
 
+  // long polling function to send a request to retrieve the metrics from the server
   setTimeout(() => {
     fetch(`/graphql`, {
       method: 'POST',

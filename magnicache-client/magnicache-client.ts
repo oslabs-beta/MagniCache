@@ -1,5 +1,5 @@
 const { parse } = require('graphql/language/parser');
-import * as mergeWith from 'lodash.mergeWith';
+import * as mergeWith from 'lodash.mergewith';
 
 function MagniClient(maxSize: number = 40): void {
   this.maxSize = maxSize;
@@ -71,8 +71,10 @@ MagniClient.prototype.query = function (query: string, endpoint: string) {
         //whereas in server we saved response on res.locals to send back to client, here we just update the client side cache
         console.log(response);
         resolve([response, { uncached }]);
+
       };
       let uncached = false; // cache hit
+
       for (const query of queries) {
         // check if query is already cached
         if (this.cache.includes(query)) {
@@ -87,8 +89,10 @@ MagniClient.prototype.query = function (query: string, endpoint: string) {
           }
         } else {
           // if query is not cached
+
           console.log('Client-side cache miss!');
           uncached = true; // cache miss
+
           fetch(endpoint, {
             method: 'POST',
             body: JSON.stringify({ query }),
@@ -97,8 +101,8 @@ MagniClient.prototype.query = function (query: string, endpoint: string) {
             },
           })
             .then((data) => data.json())
-            .then((result: {}) => {
-              this.set(query, result);
+            .then((result: { err?: {}; data?: {} }) => {
+              if (!result.err) this.set(query, result);
               queryResponses.push(result);
 
               if (queries.length === queryResponses.length) {

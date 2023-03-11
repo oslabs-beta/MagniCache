@@ -5,7 +5,7 @@ import Result from './Result';
 import XMetrics from '../containers/XMetrics';
 import { Metrics } from '../../types';
 
-
+// Create an interface for props to be destructered
 interface QueryProps {
   metrics: Metrics[]
   queryValue: string;
@@ -21,6 +21,7 @@ interface QueryProps {
   handleSwitchMode: () => void;
 }
 
+// Destructure all props from the props object
 const QueryDisplay = (props: QueryProps) => {
   const {
     queryValue,
