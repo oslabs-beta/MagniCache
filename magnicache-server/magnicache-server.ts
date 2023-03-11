@@ -297,9 +297,10 @@ Magnicache.prototype.query = function (
               this.metrics.totalMisses++;
               this.sizeLeft = this.maxSize - this.metrics.cacheUsage;
               const missTime = Date.now() - missStart;
-              this.metrics.AvgMissTime =
-                (this.metrics.AvgMissTime + missTime) /
-                this.metrics.totalMisses;
+              this.metrics.AvgMissTime = Math.round(
+                (this.metrics.AvgMissTime + missTime) / this.metrics.totalMisses
+              );
+              this.metrics.AvgMissTime == Math.round(this.metrics.AvgMissTime);
               console.log('calc res', calcAMAT());
               // check if all queries have been fetched
               if (queries.length === queryResponses.length) {
