@@ -26,6 +26,8 @@ const CacheMetrics = (props: CacheProps) => {
         backgroundColor: ['#5b2af0', '#00CC99'],
         borderColor: ['white'],
         borderWidth: 1,
+        maintainAspectRatio: true,
+        responsive: true,
       },
     ],
   };
@@ -38,6 +40,8 @@ const CacheMetrics = (props: CacheProps) => {
         backgroundColor: ['#5b2af0', '#b3001b'],
         borderColor: ['white'],
         borderWidth: 1,
+        maintainAspectRatio: true,
+        responsive: true,
       },
     ],
   };
@@ -70,11 +74,8 @@ const CacheMetrics = (props: CacheProps) => {
         </div>
         <br></br>
       </div>
-
-      <div className="new-charts">
-        <Pie data={usageData} className="xtra-pie" />
-        <Doughnut data={avgData} className="xtra-dough" />
-      </div>
+      <Pie data={usageData} className="xtra-pie" />
+      <Doughnut data={avgData} className="xtra-dough" />
     </div>
   );
 };
