@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Component for adding and rendering team page 
 const TeamPage: React.FC = () => {
   return (
     <div id="team-page">

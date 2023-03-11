@@ -5,6 +5,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import { Link } from 'react-router-dom';
 import logo from '../assets/Logo.png';
 
+// NavBar created with Bootstrap Navbar, Container, .Brand, .Link
 const NavBar: React.FC = () => {
   return (
     <Navbar className="nav">

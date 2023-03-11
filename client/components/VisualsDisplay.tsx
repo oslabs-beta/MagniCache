@@ -6,25 +6,29 @@ import {
   LinearScale,
   PointElement,
   LineElement,
-  Title,
-  Tooltip,
+  // Title,
+  // Tooltip,
   Legend,
 } from 'chart.js';
 import { Line, Pie } from 'react-chartjs-2';
 import Response from './Response';
 import { Metrics } from '../../types';
 
+
+// Register necessary elements from Chartjs
 ChartJS.register(
   ArcElement,
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
-  Title,
-  Tooltip,
+
+  // Title
+  // Tooltip,
   Legend
 );
 
+// Declare interface for props to be passed down to VisualsDisplay
 interface VisualProps {
   queryValue: string;
   queryResponse: Object;
@@ -35,8 +39,11 @@ interface VisualProps {
 // Create the charts within this file, response.tsx will take care of the metrics for the cache response
 const VisualsDisplay = (props: VisualProps) => {
 
-  const { queryResponse, metrics } = props;
+  // Destructure metrics off of props
+  // const { queryResponse, metrics } = props;
+  const { metrics } = props;
 
+  // Functions to get the amounts of hits and misses
   const hits = metrics.reduce((acc: number, curr: Metrics): number => {
     if (curr.cacheStatus === 'hit') {
       acc++;
@@ -50,6 +57,7 @@ const VisualsDisplay = (props: VisualProps) => {
     return acc;
   }, 0);
 
+  // Data for graph/pie chart
   const dataDo = {
     labels: ['Hits', 'Misses'],
     datasets: [
