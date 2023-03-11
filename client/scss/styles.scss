@@ -461,6 +461,7 @@ body {
     width: 95%;
     margin-left: 10%;
   }
+  
 }
 
 @media (max-width: 1510px) {
@@ -479,25 +480,26 @@ body {
     padding-bottom: 90%;
     width: 65%;
     height: 100%;
+    margin-right: -100px;
   }
   .cache-metrics-title {
-    left: 55%;
+    left: 46%;
   }
   .half-metrics {
     top: 30%;
     left: 53.1%;
   }
   #toggle-button-cache {
-    top: 72%;
+    top: 64%;
   }
   .query-input {
     top: 10%;
   }
   .query-result-title {
-    bottom: 65%;
+    bottom: 63%;
   }
   .fields-container-result {
-    bottom: 45%;
+    bottom: 38%;
   }
 }
 
@@ -508,6 +510,9 @@ body {
   }
   .query-input {
     top: 8%;
+  }
+  .cache-metrics-title {
+    left: 57%;
   }
 }
 
@@ -543,7 +548,7 @@ body {
 
 @media (max-width: 1072px) {
   .query-result-title {
-    top: 23%;
+    top: 29%;
   }
 }
 

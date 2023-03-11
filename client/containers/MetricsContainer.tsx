@@ -16,18 +16,18 @@ const MetricsContainer: React.FC = () => {
   // Globally scope fetchtime variable
   let fetchTime = 0;
 
-
   // inside handleclickrun, proceed with functionality depending on whether server mode or client mode is activated
   const handleClickRun = () => {
     if (queryValue !== '' && queryValue !== null) {
       if (clientMode) {
+        console.log('first response', queryResponse);
+
         const startTime = performance.now();
         magniClient
           .query(queryValue, '/graphql')
           .then((res: any): any => {
             //set all the metrics in this 'then' block
             let cacheStatus!: 'hit' | 'miss';
-
 
             const endTime = performance.now();
 
@@ -39,12 +39,13 @@ const MetricsContainer: React.FC = () => {
               : (cacheStatus = 'hit');
 
             setMetrics([...metrics, { cacheStatus, fetchTime }]);
-            return res[0].json();
+            return res[0];
           })
-          .then((data: string) => {
+          .then((data: {}) => {
             setQueryResponse(data);
           })
           .catch((err: {}) => console.log(err));
+        console.log('second response', queryResponse);
       } else {
         const startTime = performance.now();
         // this fetch should only be invoked if server mode is activated
@@ -83,7 +84,7 @@ const MetricsContainer: React.FC = () => {
             setMetrics([...metrics, { cacheStatus, fetchTime }]);
             return res.json();
           })
-          .then((data) => {
+          .then((data: {}) => {
             setQueryResponse(data);
           })
           .catch((err) => console.log(err));
@@ -95,6 +96,7 @@ const MetricsContainer: React.FC = () => {
 
   // Function to handle switching between client and server side caching
   const handleSwitchMode = () => {
+    console.log('mode switched');
     setClientMode(!clientMode);
     setMetrics([]);
     setQueryResponse({});
