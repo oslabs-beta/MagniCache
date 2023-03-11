@@ -33,7 +33,13 @@ const MagniCache = require('@magnicache/server');
 const magnicache = new MagniCache(schema);
 ```
 
-4. Insert magnicache.query into the middleware chain for your '/graphql' route.
+4. Ensure that all incoming requests with JSON payloads are parsed via express.json().
+
+```js
+app.use(express.json());
+```
+
+5. Insert magnicache.query into the middleware chain for your '/graphql' route.
 
 ```js
 app.use('/graphql', magnicache.query, (req, res) =>
@@ -73,10 +79,10 @@ MIT
 
 ## Contributors
 
-Ahmed Chami
+Ahmed Chami / <a href="https://github.com/Achami64">Github</a> / <a href="https://www.linkedin.com/in/ahmed-chami-dev/">LinkedIn</a>
 
-Aria Soltankhah
+Aria Soltankhah / <a href="https://github.com/ariasoltank">Github</a> / <a href="https://www.linkedin.com/in/ariasol/">LinkedIn</a>
 
-Truman Miller
+Truman Miller / <a href="https://github.com/trumanmiller">Github</a> / <a href="https://www.linkedin.com/in/truman-miller/">LinkedIn</a>
 
-Yousuf Elkhoga
+Yousuf Elkhoga / <a href="https://github.com/yousuf-e">Github</a> / <a href="https://www.linkedin.com/in/yousufelkhoga/">LinkedIn</a>
