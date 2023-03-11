@@ -13,6 +13,7 @@ const MetricsContainer: React.FC = () => {
   const [queryResponse, setQueryResponse] = useState({});
   const [metrics, setMetrics] = useState<Metrics[]>([]);
   const [clientMode, setClientMode] = useState<boolean>(false);
+  const [isThrottled, setThrottle] = useState<boolean>(false);
   // Globally scope fetchtime variable
   let fetchTime = 0;
 
@@ -94,6 +95,24 @@ const MetricsContainer: React.FC = () => {
     }
   };
 
+    const handleRunThrottle = () => {
+      // If the function is still in a throttle return
+      if (isThrottled) {
+        return;
+      }
+      // Reassign throttle to be true if 'if' statement fails
+      setThrottle(true);
+
+      // AFter one second se tthe throttle back to false
+      setTimeout(() => {
+        setThrottle(false);
+      }, 1000);
+
+      // Invoke handle click run
+      handleClickRun();
+    }
+
+
   // Function to handle switching between client and server side caching
   const handleSwitchMode = () => {
     console.log('mode switched');
@@ -132,7 +151,7 @@ const MetricsContainer: React.FC = () => {
           queryValue={queryValue}
           fetchTime={fetchTime}
           handleClickClear={handleClickClear}
-          handleClickRun={handleClickRun}
+          handleClickRun={handleRunThrottle}
           handleClearCache={handleClearCache}
           clientMode={clientMode}
           setClientMode={setClientMode}
