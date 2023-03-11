@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState } from 'react';
 import QueryDisplay from '../components/QueryDisplay';
 import VisualsDisplay from '../components/VisualsDisplay';
 import { Metrics } from '../../types';
@@ -13,24 +13,27 @@ const MetricsContainer: React.FC = () => {
   let fetchTime = 0;
 
   // inside handleclickrun, proceed with functionality depending on whether server mode or client mode is activated
+
   const handleClickRun = () => {
     if (queryValue !== '' && queryValue !== null) {
       if (clientMode) {
         const startTime = performance.now();
         magniClient
           .query(queryValue, '/graphql')
+          // TODO: to clean up, try destructuring array in .then parameters
           .then((res: any): any => {
             //set all the metrics in this 'then' block
             let cacheStatus!: 'hit' | 'miss';
 
             const endTime = performance.now();
-            let fetchTime = Math.abs(
-              Math.round((endTime - startTime - 1) * 100) / 100
-            );
-            // this is not the proper way to do this
-            fetchTime < 20 ? (cacheStatus = 'hit') : (cacheStatus = 'miss');
+
+            let fetchTime = Math.round((endTime - startTime) * 100) / 100;
+            res[1].uncached === true
+              ? (cacheStatus = 'miss')
+              : (cacheStatus = 'hit');
+
             setMetrics([...metrics, { cacheStatus, fetchTime }]);
-            return res.json();
+            return res[0];
           })
           .then((data: string) => {
             setQueryResponse(data);
@@ -86,6 +89,8 @@ const MetricsContainer: React.FC = () => {
 
   const handleSwitchMode = () => {
     setClientMode(!clientMode);
+    setMetrics([]);
+    setQueryResponse({});
   };
 
   const handleClickClear = () => {
