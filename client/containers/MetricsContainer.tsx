@@ -2,19 +2,22 @@ import React, { useState, useEffect, useContext } from 'react';
 import QueryDisplay from '../components/QueryDisplay';
 import VisualsDisplay from '../components/VisualsDisplay';
 import { Metrics } from '../../types';
+
+// Import and create a new instance of the magnicache client function
 const MagniClient = require('../magnicache-client.js');
 const magniClient = new MagniClient();
 
 const MetricsContainer: React.FC = () => {
+  // Create state variables for the query, the response, the metrics, and if it is on client or server mode
   const [queryValue, setQueryValue] = useState('');
   const [queryResponse, setQueryResponse] = useState({});
   const [metrics, setMetrics] = useState<Metrics[]>([]);
   const [clientMode, setClientMode] = useState<boolean>(false);
+  // Globally scope fetchtime variable
   let fetchTime = 0;
 
 
   // inside handleclickrun, proceed with functionality depending on whether server mode or client mode is activated
-
   const handleClickRun = () => {
     if (queryValue !== '' && queryValue !== null) {
       if (clientMode) {
@@ -90,17 +93,20 @@ const MetricsContainer: React.FC = () => {
     }
   };
 
+  // Function to handle switching between client and server side caching
   const handleSwitchMode = () => {
     setClientMode(!clientMode);
     setMetrics([]);
     setQueryResponse({});
   };
 
+  // Function to clear query response from display
   const handleClickClear = () => {
     setQueryValue('');
     setQueryResponse({});
   };
 
+  // Function for clearing cache at the click of a clear cache button
   const handleClearCache = () => {
     fetch(`/graphql`, {
       method: 'POST',
