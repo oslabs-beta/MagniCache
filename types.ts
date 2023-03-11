@@ -1,3 +1,5 @@
+import { Response, Request, NextFunction } from 'express';
+
 export type Metrics = {
   // queryMetrics
   fetchTime: number;
@@ -12,6 +14,25 @@ export type CacheMetricsType = {
   AvgCacheTime: number;
   AvgMissTime: number;
   AvgMemAccTime: number;
+};
+
+export type MagnicacheType = {
+  schema: {};
+  maxSize: number;
+  query: (req: Request, res: Response, next: NextFunction) => void;
+  cache: {};
+  metrics: CacheMetricsType;
+  schemaTree: {
+    mutations: {};
+    queries: {
+      //name:type
+      //messageById:Message
+      //schemaTree.queries[messageById] -> Message
+    };
+  };
+  schemaParser: (
+    schema: MagnicacheType['schema']
+  ) => MagnicacheType['schemaTree'];
 };
 
 /*

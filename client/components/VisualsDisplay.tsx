@@ -35,6 +35,7 @@ interface VisualProps {
 
 // Create the charts within this file, response.tsx will take care of the metrics for the cache response
 const VisualsDisplay = (props: VisualProps) => {
+
   const { queryResponse, metrics } = props;
 
   const hits = metrics.reduce((acc: number, curr: Metrics): number => {
