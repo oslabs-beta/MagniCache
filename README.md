@@ -1,6 +1,5 @@
-# Ma
+# MagniCache
 
-gniCache
 <img src="./assets/RoundLogo.png">
 
 ## What is MagniCache?
