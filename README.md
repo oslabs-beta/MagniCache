@@ -1,7 +1,7 @@
 # MagniCache
 
 <p align="center">
-  <img src="./assets/RoundLogo.png">
+  <img src="./assets/RoundLogo.png" width="35%">
 </p>
 
 ## What is MagniCache?
@@ -12,33 +12,40 @@ MagniCache is a lightweight and performant GraphQL caching solution. Packaged an
 
 MagniCache is unique in its exceptional efficiency. MagniCache's caching algorithm methodically parses GraphQL queries and divides them into atomic components, allowing for systematic and fully coherent caching of queries and improvements in performance. Unlike other GraphQL caching layers, subsequent GraphQL queries do not have to be exact duplicates of cached queries in order to benefit from cached response speeds. In addition, MagniCache was developed with compactness as the priority, so you can rest assured that implementing MagniCache into your projects will add zero unnecessary bulk.
 
+<p align="center">
+  <img src="./assets/Readme-graph.jpg" width="80%">
+  <p align="center">Caching of queries leads to nearly instantaneous response times</p>
+</p>
+
 ## How to use MagniCache
 
-### Demo Magnicache
+<a href="linkedin.com/company/magnicache">Click here to demo MagniCache!</a>
 
-<a href="linkedin.com/company/magnicache">Click here to try out MagniCache!</a>
+Type your GraphQL queries in the Query field on the left and click Run. Check out the query response and metrics below to observe caching in action!
+
+<br>
 
 ## Installing MagniCache
 
 ### Server-Side Caching
 
 ```bash
-  npm i @magnicache/server
+npm i @magnicache/server
 ```
 
 ### Client-Side Caching
 
 ```bash
-  npm i @magnicache/client
+npm i @magnicache/client
 ```
 
 ## Documentation
 
-Follow the links to decide how to implement MagniCache into your project.
+After deciding on how to implement MagniCache into your project, follow the links below for detailed installation steps.
 
 <ul>
-<li>[@magnicache/server](https://github.com/oslabs-beta/MagniCache/blob/dev/magnicache-server/README.md)</li>
-<li><a>[@magnicache/server](https://github.com/oslabs-beta/MagniCache/blob/dev/magnicache-client/README.md)</a></li>
+<li><a href="https://github.com/oslabs-beta/MagniCache/blob/dev/magnicache-server/README.md">@magnicache/server</a></li>
+<li><a href="https://github.com/oslabs-beta/MagniCache/blob/dev/magnicache-client/README.md">@magnicache/client</a></li>
 </ul>
 
 ## How to Contribute
@@ -51,7 +58,7 @@ As an Open Source Product, we are always welcoming contributions! To be apart of
 
 3. Once you have finished contributing to your feature branch, add and commit all changes.
 
-4. Locally merge your branch with with the dev branch.
+4. Locally merge your branch with with the `dev` branch.
 
 5. Push your branch to GitHub and open a pull request.
 
@@ -68,11 +75,3 @@ Aria Soltankhah / <a href="https://github.com/ariasoltank">Github</a> / <a href=
 Truman Miller / <a href="https://github.com/trumanmiller">Github</a> / <a href="https://www.linkedin.com/in/truman-miller/">LinkedIn</a>
 
 Yousuf Elkhoga / <a href="https://github.com/yousuf-e">Github</a> / <a href="https://www.linkedin.com/in/yousufelkhoga/">LinkedIn</a>
-
-[Ahmed Chami](https://www.linkedin.com/in/ahmed-chami/)
-
-[Aria Soltankhah](https://www.linkedin.com/in/ariasol/)
-
-[Truman Miller](https://www.linkedin.com/in/truman-miller)
-
-[Yousuf Elkhoga](https://www.linkedin.com/in/yousufelkhoga/)
