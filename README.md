@@ -56,11 +56,13 @@ As an Open Source Product, we are always welcoming contributions! To be apart of
 
 5. Push your branch to GitHub and open a pull request.
 
+
 ## License
 
 MIT
 
 ## Contributors
+
 
 Ahmed Chami / <a href="https://github.com/Achami64">Github</a> / <a href="https://www.linkedin.com/in/ahmed-chami-dev/">LinkedIn</a>
 
@@ -69,3 +71,13 @@ Aria Soltankhah / <a href="https://github.com/ariasoltank">Github</a> / <a href=
 Truman Miller / <a href="https://github.com/trumanmiller">Github</a> / <a href="https://www.linkedin.com/in/truman-miller/">LinkedIn</a>
 
 Yousuf Elkhoga / <a href="https://github.com/yousuf-e">Github</a> / <a href="https://www.linkedin.com/in/yousufelkhoga/">LinkedIn</a>
+
+
+[Ahmed Chami](https://www.linkedin.com/in/ahmed-chami/)
+
+[Aria Soltankhah](https://www.linkedin.com/in/ariasol/)
+
+[Truman Miller](https://www.linkedin.com/in/truman-miller)
+
+[Yousuf Elkhoga](https://www.linkedin.com/in/yousufelkhoga/)
+
