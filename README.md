@@ -1,6 +1,8 @@
 # MagniCache
 
-<img src="./assets/RoundLogo.png">
+<p align="center">
+  <img src="./assets/RoundLogo.png">
+</p>
 
 ## What is MagniCache?
 
@@ -24,8 +26,6 @@ MagniCache is unique in its exceptional efficiency. MagniCache's caching algorit
   npm i @magnicache/server
 ```
 
-<br>
-
 ### Client-Side Caching
 
 ```bash
@@ -37,8 +37,8 @@ MagniCache is unique in its exceptional efficiency. MagniCache's caching algorit
 Follow the links to decide how to implement MagniCache into your project.
 
 <ul>
-<li><a>@magnicache/server</a></li>
-<li><a>@magnicache/client</a></li>
+<li>[@magnicache/server](https://github.com/oslabs-beta/MagniCache/blob/dev/magnicache-server/README.md)</li>
+<li><a>[@magnicache/server](https://github.com/oslabs-beta/MagniCache/blob/dev/magnicache-client/README.md)</a></li>
 </ul>
 
 ## How to Contribute
