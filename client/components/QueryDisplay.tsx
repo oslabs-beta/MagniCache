@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Result from './Result';
@@ -7,7 +7,7 @@ import { Metrics } from '../../types';
 
 // Create an interface for props to be destructered
 interface QueryProps {
-  metrics: Metrics[]
+  metrics: Metrics[];
   queryValue: string;
   setQueryValue: React.Dispatch<React.SetStateAction<string>>;
   queryResponse: Object;
@@ -27,14 +27,73 @@ const QueryDisplay = (props: QueryProps) => {
     queryValue,
     setQueryValue,
     queryResponse,
-    fetchTime,
     handleClickClear,
     handleClickRun,
     handleClearCache,
-    metrics,
     handleSwitchMode,
     clientMode,
   } = props;
+
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (
+    e: React.KeyboardEvent
+  ): void => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+
+      const textArea = textAreaRef.current;
+      if (!textArea) return;
+
+      const { selectionStart, selectionEnd } = textArea;
+
+      const newValue =
+        textArea.value.substring(0, selectionStart) +
+        '  ' +
+        textArea.value.substring(selectionEnd);
+
+      textArea.value = newValue;
+      textArea.selectionStart = textArea.selectionEnd = selectionStart + 1;
+      setQueryValue(newValue);
+    } else if (e.key === '{') {
+      const textArea = textAreaRef.current;
+      if (!textArea) return;
+      const { selectionStart, selectionEnd } = textArea;
+
+      const newValue =
+        textArea.value.substring(0, selectionStart) +
+        '}' +
+        textArea.value.substring(selectionEnd);
+      textArea.value = newValue;
+      textArea.selectionStart = textArea.selectionEnd = selectionStart;
+      setQueryValue(newValue);
+    } else if (e.key === '(') {
+      const textArea = textAreaRef.current;
+      if (!textArea) return;
+      const { selectionStart, selectionEnd } = textArea;
+
+      const newValue =
+        textArea.value.substring(0, selectionStart) +
+        ')' +
+        textArea.value.substring(selectionEnd);
+      textArea.value = newValue;
+      textArea.selectionStart = textArea.selectionEnd = selectionStart;
+      setQueryValue(newValue);
+    } else if (e.key === 'Enter') {
+      const textArea = textAreaRef.current;
+      if (!textArea) return;
+      const { selectionStart, selectionEnd } = textArea;
+      if (textArea.value[selectionStart - 1] === '{') {
+        const newValue =
+          textArea.value.substring(0, selectionStart) +
+          '\n' +
+          textArea.value.substring(selectionEnd);
+        textArea.value = newValue;
+        textArea.selectionStart = textArea.selectionEnd = selectionStart;
+        setQueryValue(newValue);
+      }
+    }
+  };
 
   return (
     <div className="query-display-flex">
@@ -42,9 +101,11 @@ const QueryDisplay = (props: QueryProps) => {
         <h1 className="query-display-title">Query</h1>
         <div className="fields-container">
           <textarea
+            ref={textAreaRef}
             className="query-input"
             value={queryValue}
             onChange={(e) => setQueryValue(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <ToggleButtonGroup
@@ -83,7 +144,7 @@ const QueryDisplay = (props: QueryProps) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-       <XMetrics />
+      <XMetrics />
       <div id="result-display" className="query-display-child">
         <h1 className="query-result-title">Results</h1>
         <div className="fields-container-result">
