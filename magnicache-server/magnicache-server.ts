@@ -354,9 +354,8 @@ Magnicache.prototype.query = function (
         });
       })
       .catch((err) => {
-        throw new Error(
-          'ERROR executing graphql mutation' + JSON.stringify(err)
-        );
+        console.error(err);
+        return err;
       });
   }
 };
@@ -433,11 +432,11 @@ Magnicache.prototype.magniParser = function (
 };
 
 Magnicache.prototype.schemaParser = function (schema) {
-  // TODO :refactor to be able to take on nested types (GraphQLListType)
+  // TODO :refactor to be able to store multiple types for each query
 
   const schemaTree = {
     queries: {
-      // allMessages:[Messages,Users]
+      //Ex: allMessages:Messages
     },
     mutations: {},
   };
@@ -452,11 +451,15 @@ Magnicache.prototype.schemaParser = function (schema) {
   graphql({ schema: this.schema, source: IntrospectionQuery })
     .then((result: any) => {
       // console.log(result.data.__schema.queryType);
-      for (const field of result.data.__schema.queryType.fields) {
-        schemaTree.queries[field.name] = typeFinder(field.type);
+      if (result.data.__schema.queryType) {
+        for (const field of result.data.__schema.queryType.fields) {
+          schemaTree.queries[field.name] = typeFinder(field.type);
+        }
       }
-      for (const field of result.data.__schema.mutationType.fields) {
-        schemaTree.mutations[field.name] = typeFinder(field.type);
+      if (result.data.__schema.mutationType) {
+        for (const field of result.data.__schema.mutationType.fields) {
+          schemaTree.mutations[field.name] = typeFinder(field.type);
+        }
       }
     })
     .then(() => {
@@ -464,7 +467,9 @@ Magnicache.prototype.schemaParser = function (schema) {
     })
     // throw error to express global error handler
     .catch((err: {}) => {
-      throw new Error(`ERROR executing graphql query` + JSON.stringify(err));
+      console.error(err);
+      // throw new Error(`ERROR executing graphql query` + JSON.stringify(err));
+      return err;
     });
 
   return schemaTree;
