@@ -3,7 +3,7 @@ const { parse } = require('graphql/language/parser');
 import { Response, Request, NextFunction } from 'express';
 import { MagnicacheType } from './../types';
 import * as mergeWith from 'lodash.mergewith';
-
+const { IntrospectionQuery } = require('./IntrospectionQuery');
 // TODO?: type "this" more specifically
 // TODO?: add query type to linked list => refactor mutations
 // TODO?: rename EvictionNode => Node
@@ -357,9 +357,8 @@ Magnicache.prototype.query = function (
         });
       })
       .catch((err) => {
-        throw new Error(
-          'ERROR executing graphql mutation' + JSON.stringify(err)
-        );
+        console.error(err);
+        return err;
       });
   }
 };
@@ -436,19 +435,46 @@ Magnicache.prototype.magniParser = function (
 };
 
 Magnicache.prototype.schemaParser = function (schema) {
-  // refactor to be able to take on nested types (GraphQLListType)
+  // TODO :refactor to be able to store multiple types for each query
+
   const schemaTree = {
-    queries: {},
+    queries: {
+      //Ex: allMessages:Messages
+    },
     mutations: {},
   };
-  for (const field in schema._queryType._fields) {
-    schemaTree.queries[schema._queryType._fields[field].name] =
-      schema._queryType._fields[field].type.ofType.name;
-  }
-  for (const field in schema._mutationType._fields) {
-    schemaTree.mutations[schema._mutationType._fields[field].name] =
-      schema._mutationType._fields[field].type.name;
-  }
+
+  const typeFinder = (type) => {
+    console.log('field', type);
+    if (type.name === null) return typeFinder(type.ofType);
+    return type.name;
+  };
+
+  // TODO: Type the result for the schema
+  graphql({ schema: this.schema, source: IntrospectionQuery })
+    .then((result: any) => {
+      // console.log(result.data.__schema.queryType);
+      if (result.data.__schema.queryType) {
+        for (const field of result.data.__schema.queryType.fields) {
+          schemaTree.queries[field.name] = typeFinder(field.type);
+        }
+      }
+      if (result.data.__schema.mutationType) {
+        for (const field of result.data.__schema.mutationType.fields) {
+          schemaTree.mutations[field.name] = typeFinder(field.type);
+        }
+      }
+    })
+    .then(() => {
+      console.log('schemaTree', schemaTree);
+    })
+    // throw error to express global error handler
+    .catch((err: {}) => {
+      console.error(err);
+      // throw new Error(`ERROR executing graphql query` + JSON.stringify(err));
+      return err;
+    });
+
   return schemaTree;
 };
 

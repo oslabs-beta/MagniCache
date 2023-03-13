@@ -1,15 +1,18 @@
-const { parse } = require('graphql/language/parser');
-import * as mergeWith from 'lodash.mergewith';
-
-function MagniClient(maxSize: number = 40): void {
+'use strict';
+exports.__esModule = true;
+var parse = require('graphql/language/parser').parse;
+var mergeWith = require('lodash.mergewith');
+function MagniClient(maxSize) {
+  if (maxSize === void 0) {
+    maxSize = 40;
+  }
   this.maxSize = maxSize;
   // bind the method contexts
   this.query = this.query.bind(this);
   this.set = this.set.bind(this);
   this.get = this.get.bind(this);
-
   // instantiate our cache;
-  const cache = localStorage.getItem('MagniClient');
+  var cache = localStorage.getItem('MagniClient');
   if (cache === null) {
     this.cache = [];
     localStorage.setItem('MagniClient', JSON.stringify(this.cache));
@@ -18,144 +21,128 @@ function MagniClient(maxSize: number = 40): void {
     this.cache = Array.from(new Set(JSON.parse(cache)));
   }
 }
-
-MagniClient.prototype.set = function (query: string, value: {}): void {
+MagniClient.prototype.set = function (query, value) {
   // add query to cache array (most recent is the back of the array)
   this.cache.push(query);
-
   // add value to localstorage
   localStorage.setItem(query, JSON.stringify(value));
   // check cache length, prune if nessesary
   while (this.cache.length > this.maxSize) {
     // remove least recent from front of array
-    const itemToRemove = this.cache.shift();
+    var itemToRemove = this.cache.shift();
     localStorage.removeItem(itemToRemove);
   }
   localStorage.setItem('MagniClient', JSON.stringify(this.cache));
 };
-
-MagniClient.prototype.get = function (query: string): {} {
+MagniClient.prototype.get = function (query) {
   // get value from localstorage
-  const value = localStorage.getItem(query);
+  var value = localStorage.getItem(query);
   if (value === null) return {};
   // move the key to the end of the cache array
-  const index = this.cache.indexOf(query);
+  var index = this.cache.indexOf(query);
   this.cache.splice(index, 1);
   this.cache.push(query);
   localStorage.setItem('MagniClient', JSON.stringify(this.cache));
   // return value
   return JSON.parse(value);
 };
-
-MagniClient.prototype.query = function (query: string, endpoint: string) {
-  return new Promise((resolve, reject) => {
+MagniClient.prototype.query = function (query, endpoint) {
+  var _this = this;
+  return new Promise(function (resolve, reject) {
     // parse query to obtain AST
-    const {
-      definitions: [ast],
-    } = parse(query);
-
+    var ast = parse(query).definitions[0];
     // check that the operation is a query
     if (ast.operation === 'query') {
       // get the selection set
-      const queries: string[] = this.magniParser(ast.selectionSet.selections);
-
+      var queries_2 = _this.magniParser(ast.selectionSet.selections);
       //store the query results
-      const queryResponses: {}[] = [];
-
+      var queryResponses_1 = [];
       // compile all individual query responses
-      const compileQueries = () => {
-        let response: {} = {};
-
-        for (const queryResponse of queryResponses) {
+      var compileQueries_1 = function () {
+        var response = {};
+        for (
+          var _i = 0, queryResponses_2 = queryResponses_1;
+          _i < queryResponses_2.length;
+          _i++
+        ) {
+          var queryResponse = queryResponses_2[_i];
           response = mergeWith(response, queryResponse);
         }
         //whereas in server we saved response on res.locals to send back to client, here we just update the client side cache
         console.log(response);
-        resolve([response, { uncached }]);
+        resolve([response, { uncached: uncached_1 }]);
       };
-      let uncached = false; // cache hit
-
-      for (const query of queries) {
+      var uncached_1 = false; // cache hit
+      var _loop_1 = function (query_1) {
         // check if query is already cached
-        if (this.cache.includes(query)) {
+        if (_this.cache.includes(query_1)) {
           console.log('Client-side cache hit');
           //store cached response
-
-          queryResponses.push(this.get(query));
-
+          queryResponses_1.push(_this.get(query_1));
           // check if all queries have been fetched
-          if (queries.length === queryResponses.length) {
-            compileQueries();
+          if (queries_2.length === queryResponses_1.length) {
+            compileQueries_1();
           }
         } else {
           // if query is not cached
-
           console.log('Client-side cache miss');
-          uncached = true; // cache miss
-
+          uncached_1 = true; // cache miss
           fetch(endpoint, {
             method: 'POST',
-            body: JSON.stringify({ query }),
+            body: JSON.stringify({ query: query_1 }),
             headers: {
               'content-type': 'application/json',
             },
           })
-            .then((data) => data.json())
-            .then((result: { err?: {}; data?: {} }) => {
-              if (!result.err) this.set(query, result);
-              queryResponses.push(result);
-
-              if (queries.length === queryResponses.length) {
-                compileQueries();
+            .then(function (data) {
+              return data.json();
+            })
+            .then(function (result) {
+              if (!result.err) _this.set(query_1, result);
+              queryResponses_1.push(result);
+              if (queries_2.length === queryResponses_1.length) {
+                compileQueries_1();
               }
             })
-            .catch((err: {}) => {
+            ['catch'](function (err) {
               console.log(err);
               reject(err);
             });
         }
+      };
+      for (var _i = 0, queries_1 = queries_2; _i < queries_1.length; _i++) {
+        var query_1 = queries_1[_i];
+        _loop_1(query_1);
       }
     }
   });
 };
-
-MagniClient.prototype.magniParser = function (
-  selections: {
-    kind: string;
-    name: {
-      kind: string;
-      value: string;
-    };
-    arguments: {
-      kind: string;
-      name: {
-        kind: string;
-        value: string;
-      };
-      value: {
-        kind: string;
-        value: string;
-      };
-    }[];
-    selectionSet?: {
-      kind: string;
-      selections: typeof selections;
-    };
-  }[],
-  queryArray: (string | string[])[] = [],
-  queries: string[] = []
-): string[] {
+MagniClient.prototype.magniParser = function (selections, queryArray, queries) {
+  var _a;
+  if (queryArray === void 0) {
+    queryArray = [];
+  }
+  if (queries === void 0) {
+    queries = [];
+  }
   // Looping through the selections to build the queries array
-  for (const selection of selections) {
+  for (var _i = 0, selections_1 = selections; _i < selections_1.length; _i++) {
+    var selection = selections_1[_i];
     // add current query to queryArray
     queryArray.push(selection.name.value);
     // if a query has arguments, format and add to query array
-    if (selection.arguments?.length > 0) {
-      const argumentArray: string[] = [];
-
+    if (
+      ((_a = selection.arguments) === null || _a === void 0
+        ? void 0
+        : _a.length) > 0
+    ) {
+      var argumentArray = [];
       // looping through the arguments to add them to the argument array
-      for (const argument of selection.arguments) {
-        argumentArray.push(`${argument.name.value}:${argument.value.value}`);
+      for (var _b = 0, _c = selection.arguments; _b < _c.length; _b++) {
+        var argument = _c[_b];
+        argumentArray.push(
+          ''.concat(argument.name.value, ':').concat(argument.value.value)
+        );
       }
       queryArray.push([argumentArray.join(',')]);
     }
@@ -164,17 +151,16 @@ MagniClient.prototype.magniParser = function (
       // recursively invoke magniParser passing in selections array
       this.magniParser(selection.selectionSet.selections, queryArray, queries);
     } else {
-      let string = ``;
+      var string = '';
       // if query array looks like this: ['messageById', ['id:4'], 'message']
       // formated query will look like this: {allMessages(id:4){message}}
-
       // looping through the query array in reverse to build the query string
-      for (let i = queryArray.length - 1; i >= 0; i--) {
+      for (var i = queryArray.length - 1; i >= 0; i--) {
         // arguments are put into an array and need to be formatted differently
         if (Array.isArray(queryArray[i])) {
-          string = `(${queryArray[i][0]})${string}`;
+          string = '('.concat(queryArray[i][0], ')').concat(string);
         } else {
-          string = `{${queryArray[i] + string}}`;
+          string = '{'.concat(queryArray[i] + string, '}');
         }
       }
       // adding the completed query to the queries array
@@ -187,4 +173,4 @@ MagniClient.prototype.magniParser = function (
   return queries;
 };
 
-export default MagniClient;
+module.exports = MagniClient;
