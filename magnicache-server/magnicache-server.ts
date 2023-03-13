@@ -179,8 +179,11 @@ Magnicache.prototype.query = function (
 ): void {
   // get graphql query from request body
   const { query } = req.body;
-
-  // parse the query into an AST, deconstructing the part we use
+  // if query is null, send back a 400 code
+  if (query === null || query === '') {
+    res.send(400);
+  }
+  // parse the query into an AST
   const {
     definitions: [ast],
   } = parse(query);

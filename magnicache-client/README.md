@@ -1,3 +1,4 @@
+
 ## How to use @magnicache/client in your graphQL client
 
 1. Install MagniCache Client.
@@ -40,3 +41,4 @@ magniClient.query(
 [Truman Miller](https://www.linkedin.com/in/truman-miller)
 
 [Yousuf Elkhoga](https://www.linkedin.com/in/yousufelkhoga/)
+
