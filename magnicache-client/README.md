@@ -1,10 +1,15 @@
+# @magnicache/client
+
+@magnicache/client is a tool that provides near instantaneous response times for GraphQL queries by utilizing the browser's localStorage.
+
+<br>
 
 ## How to use @magnicache/client in your graphQL client
 
 1. Install MagniCache Client.
 
 ```bash
-  npm i @magnicache/client
+npm i @magnicache/client
 ```
 
 2. Import MagniCache.
@@ -29,7 +34,9 @@ magniClient.query(
         eyeColor
         height
     }
-}`, '/graphql');
+}`,
+  '/graphql'
+);
 ```
 
 ## Contributors
@@ -41,4 +48,3 @@ magniClient.query(
 [Truman Miller](https://www.linkedin.com/in/truman-miller)
 
 [Yousuf Elkhoga](https://www.linkedin.com/in/yousufelkhoga/)
-
