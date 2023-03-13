@@ -27,15 +27,19 @@ For iterations, it may be useful to highlight any major new features here
 const MagniCache = require('@magnicache/server');
 ```
 
-3. Declare a new instance of MagniCache, passing in your GraphQL schema.
+3. Declare a new instance of MagniCache, passing in your GraphQL schema, and optionally a cache capacity.
 
 ```js
-const magnicache = new MagniCache(schema);
+const magnicache = new MagniCache(schema, maxSize);
 ```
 
 4. Insert magnicache.query into the middleware chain for your '/graphql' route.
+   
+   - Ensuring all request bodies are parsed
 
 ```js
+app.use(express.json());
+
 app.use('/graphql', magnicache.query, (req, res) =>
   res.status(200).send(res.locals.queryResponse)
 );
@@ -71,7 +75,9 @@ magniClient.query(
         eyeColor
         height
     }
-}`, '/graphql');
+}`,
+  '/graphql'
+);
 ```
 
 ## License

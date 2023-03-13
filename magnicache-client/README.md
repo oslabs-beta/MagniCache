@@ -1,4 +1,4 @@
-## How to use @magnicache/client in your graphQL client
+## How to use @magnicache/client in your GraphQL client
 
 1. Install MagniCache Client.
 
@@ -21,14 +21,7 @@ const magniClient = new MagniClient(maxSize);
 4. Invoke magniclient.query, passing in the query string and the graphql endpoint.
 
 ```js
-magniClient.query(
-  `query {
-    person(personID: 1) {
-        name
-        eyeColor
-        height
-    }
-}`, '/graphql');
+magniClient.query(queryString, endpoint);
 ```
 
 ## Contributors

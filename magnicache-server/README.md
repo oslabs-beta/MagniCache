@@ -1,4 +1,4 @@
-## How to use @magnicache/server in your graphQL api
+## How to use @magnicache/server in your GraphQL API
 
 1. Install MagniCache Server.
 
@@ -12,15 +12,15 @@
 const MagniCache = require('@magnicache/server');
 ```
 
-3. Declare a new instance of MagniCache, passing in your GraphQL schema.
+3. Declare a new instance of MagniCache, passing in your GraphQL schema, and optionally a cache capacity.
 
 ```js
-const magnicache = new MagniCache(schema);
+const magnicache = new MagniCache(schema, maxSize);
 ```
 
 4. Insert magnicache.query into the middleware chain for your '/graphql' route.
 
-   - Ensuring all request body's are parsed
+   - Ensuring all request bodies are parsed
 
 ```js
 app.use(express.json());
