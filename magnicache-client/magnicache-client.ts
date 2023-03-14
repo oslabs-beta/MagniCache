@@ -8,7 +8,7 @@ function MagniClient(maxSize: number = 40): void {
   this.set = this.set.bind(this);
   this.get = this.get.bind(this);
 
-  // instatiate our cache;
+  // instantiate our cache;
   const cache = localStorage.getItem('MagniClient');
   if (cache === null) {
     this.cache = [];
@@ -21,6 +21,7 @@ function MagniClient(maxSize: number = 40): void {
 MagniClient.prototype.set = function (query: string, value: {}): void {
   // add query to cache array (most recent is the back of the array)
   this.cache.push(query);
+
   // add value to localstorage
   localStorage.setItem(query, JSON.stringify(value));
   // check cache length, prune if nessesary
@@ -70,13 +71,14 @@ MagniClient.prototype.query = function (query: string, endpoint: string) {
         //whereas in server we saved response on res.locals to send back to client, here we just update the client side cache
         console.log(response);
         resolve([response, { uncached }]);
-        // resolve(response);
+
       };
-      let uncached = false;
+      let uncached = false; // cache hit
+
       for (const query of queries) {
         // check if query is already cached
         if (this.cache.includes(query)) {
-          console.log('Client side cache hit');
+          console.log('Client-side cache hit!');
           //store cached response
 
           queryResponses.push(this.get(query));
@@ -87,8 +89,10 @@ MagniClient.prototype.query = function (query: string, endpoint: string) {
           }
         } else {
           // if query is not cached
-          console.log('client side cache miss');
-          uncached = true;
+
+          console.log('Client-side cache miss!');
+          uncached = true; // cache miss
+
           fetch(endpoint, {
             method: 'POST',
             body: JSON.stringify({ query }),
@@ -102,7 +106,6 @@ MagniClient.prototype.query = function (query: string, endpoint: string) {
               queryResponses.push(result);
 
               if (queries.length === queryResponses.length) {
-                console.log('this is the final compile queries');
                 compileQueries();
               }
             })
@@ -143,7 +146,7 @@ MagniClient.prototype.magniParser = function (
   queries: string[] = []
 ): string[] {
   //Logging that the parser is running
-  console.log('parsing');
+  console.log('Parsing the query...');
 
   // Looping through the selections to build the queries array
   for (const selection of selections) {

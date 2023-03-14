@@ -4,14 +4,20 @@ import { Response, Request, NextFunction } from 'express';
 import { MagnicacheType } from './../types';
 import * as mergeWith from 'lodash.mergewith';
 
-// TODO: type "this" more specifically
+// TODO?: type "this" more specifically
+// TODO?: add query type to linked list => refactor mutations
+// TODO?: rename EvictionNode => Node
+// TODO?: put Cache.validate on Magnicache prototype, only store schema once
+
 function Magnicache(this: MagnicacheType, schema: {}, maxSize = 100): void {
   // save the provided schema
   this.schema = schema;
   // max size of cache in atomized queries
   this.maxSize = maxSize;
   // instantiate doublely linked list to handle caching
-  this.cache = new Cache(maxSize);
+  this.cache = new Cache(maxSize, schema);
+
+  this.schemaTree = this.schemaParser(schema);
 
   this.metrics = {
     cacheUsage: 0,
@@ -24,6 +30,7 @@ function Magnicache(this: MagnicacheType, schema: {}, maxSize = 100): void {
   };
   // bind method(s)
   this.query = this.query.bind(this);
+  this.schemaParser = this.schemaParser.bind(this);
 }
 // linked list node constructor
 class EvictionNode<T> {
@@ -45,11 +52,13 @@ class Cache<T> {
   map: Map<string, any>; // map stores references to linked list nodes
   head: EvictionNode<any> | null;
   tail: EvictionNode<any> | null;
-  constructor(maxSize: number) {
+  schema: {};
+  constructor(maxSize: number, schema: {}) {
     this.maxSize = maxSize;
     this.map = new Map();
     this.head = null;
     this.tail = null;
+    this.schema = schema;
 
     // method binding
     this.create = this.create.bind(this);
@@ -113,9 +122,9 @@ class Cache<T> {
     // SHOULD NEVER RUN: get should only be invoked when node is known to exist
     if (node === null)
       throw new Error('ERROR in MagniCache.cache.get: node is null');
-    //if the node is at the head, simply return the value
+    // if the node is at the head, simply return the value
     if (this.head === node) return node.value;
-    //if node is at the tail, remove it from the tail
+    // if node is at the tail, remove it from the tail
     if (this.tail === node) {
       this.tail = node.prev;
       node.prev.next = null;
@@ -133,7 +142,26 @@ class Cache<T> {
     return node.value;
   }
 
-  // syntactic sugar to check if cache has a key,
+  validate(node): void {
+    if (node?.key === null)
+      throw new Error('ERROR in MagniCache.cache.validate: invalid node');
+    graphql({ schema: this.schema, source: node.key })
+      .then((result: { error?: {}; data?: {} }) => {
+        if (!result.error) {
+          node.value = result;
+        } else {
+          this.delete(node);
+        }
+      })
+      .catch((err: {}) => {
+        throw new Error(
+          'ERROR in MagniCache.cache.validate: error executing graphql query'
+        );
+      });
+    return;
+  }
+
+  // syntactic sugar to check if cache has a key
   includes(key: string): boolean {
     return this.map.has(key);
   }
@@ -159,7 +187,7 @@ Magnicache.prototype.query = function (
 
   // if query is for 'clearCache', clear the cache and return next
   if (ast.selectionSet.selections[0].name.value === 'clearCache') {
-    this.cache = new Cache(this.maxSize);
+    this.cache = new Cache(this.maxSize, this.schema);
     res.locals.queryResponse = { cacheStatus: 'cacheCleared' };
     return next();
   }
@@ -203,7 +231,7 @@ Magnicache.prototype.query = function (
         return next();
       };
 
-      //calculate the average memory access time
+      // calculate the average memory access time
       const calcAMAT = () => {
         // calculate cache hit rate
         const hitRate =
@@ -247,7 +275,7 @@ Magnicache.prototype.query = function (
             (this.metrics.AvgCacheTime + hitTime) / this.metrics.totalHits
           );
         } else {
-          //start the miss timer
+          // start the miss timer
           const missStart = Date.now();
           // execute the query
           graphql({ schema: this.schema, source: query })
@@ -255,7 +283,7 @@ Magnicache.prototype.query = function (
               // if no error, cache response
               if (!result.err) this.cache.create(query, result);
 
-              //update the metrics with the new size
+              // update the metrics with the new size
               this.metrics.cacheUsage = this.cache.count();
 
               // store the query response
@@ -265,7 +293,7 @@ Magnicache.prototype.query = function (
             .then(() => {
               // add a cookie indicating that the cache was missed
               res.cookie('cacheStatus', 'miss');
-              //update the metrics with a missCount
+              // update the metrics with a missCount
               this.metrics.totalMisses++;
               this.sizeLeft = this.maxSize - this.metrics.cacheUsage;
               const missTime = Date.now() - missStart;
@@ -290,11 +318,40 @@ Magnicache.prototype.query = function (
     }
     // if not a query
   } else if (ast.operation === 'mutation') {
-    this.cache = new Cache(this.maxSize);
+    // first execute mutation normally
     graphql({ schema: this.schema, source: query })
       .then((result: {}) => {
         res.locals.queryResponse = result;
         return next();
+      })
+      .then(() => {
+        // get all mutation types, utilizing a set to avoid duplicates
+        const mutationTypes: Set<string> = new Set();
+        for (const mutation of ast.selectionSet.selections) {
+          const mutationName = mutation.name.value;
+          mutationTypes.add(this.schemaTree.mutations[mutationName]);
+        }
+        // for every mutation type, get every corresponding query type
+        mutationTypes.forEach((mutationType) => {
+          const userQueries: Set<string> = new Set();
+
+          for (const query in this.schemaTree.queries) {
+            const type = this.schemaTree.queries[query];
+            if (mutationType === type) userQueries.add(query);
+          }
+
+          userQueries.forEach((query) => {
+            for (
+              let currentNode = this.cache.head;
+              currentNode !== null;
+              currentNode = currentNode.next
+            ) {
+              if (currentNode.key.includes(query)) {
+                this.cache.validate(currentNode);
+              }
+            }
+          });
+        });
       })
       .catch((err) => {
         throw new Error(
@@ -373,6 +430,23 @@ Magnicache.prototype.magniParser = function (
   }
   // returning the array of individual querys
   return queries;
+};
+
+Magnicache.prototype.schemaParser = function (schema) {
+  // refactor to be able to take on nested types (GraphQLListType)
+  const schemaTree = {
+    queries: {},
+    mutations: {},
+  };
+  for (const field in schema._queryType._fields) {
+    schemaTree.queries[schema._queryType._fields[field].name] =
+      schema._queryType._fields[field].type.ofType.name;
+  }
+  for (const field in schema._mutationType._fields) {
+    schemaTree.mutations[schema._mutationType._fields[field].name] =
+      schema._mutationType._fields[field].type.name;
+  }
+  return schemaTree;
 };
 
 module.exports = Magnicache;

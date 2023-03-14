@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState } from 'react';
 import QueryDisplay from '../components/QueryDisplay';
 import VisualsDisplay from '../components/VisualsDisplay';
 import { Metrics } from '../../types';
@@ -26,21 +26,27 @@ const MetricsContainer: React.FC = () => {
         const startTime = performance.now();
         magniClient
           .query(queryValue, '/graphql')
+          // TODO: to clean up, try destructuring array in .then parameters
           .then((res: any): any => {
             //set all the metrics in this 'then' block
             let cacheStatus!: 'hit' | 'miss';
 
             const endTime = performance.now();
 
-            let fetchTime = Math.abs(
-              Math.round((endTime - startTime - 1) * 100) / 100
-            );
+            let fetchTime = Math.round((endTime - startTime) * 100) / 100;
+
             res[1].uncached === true
               ? (cacheStatus = 'miss')
               : (cacheStatus = 'hit');
 
             setMetrics([...metrics, { cacheStatus, fetchTime }]);
+
             return res[0];
+
+
+            return res[0];
+
+
           })
           .then((data: {}) => {
             setQueryResponse(data);

@@ -22,6 +22,17 @@ export type MagnicacheType = {
   query: (req: Request, res: Response, next: NextFunction) => void;
   cache: {};
   metrics: CacheMetricsType;
+  schemaTree: {
+    mutations: {};
+    queries: {
+      //name:type
+      //messageById:Message
+      //schemaTree.queries[messageById] -> Message
+    };
+  };
+  schemaParser: (
+    schema: MagnicacheType['schema']
+  ) => MagnicacheType['schemaTree'];
 };
 
 /*
