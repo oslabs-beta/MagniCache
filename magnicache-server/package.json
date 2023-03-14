@@ -4,7 +4,8 @@
   "description": "Server side caching for GraphQL",
   "main": "magnicache-server.js",
   "scripts": {
-    "test": "jest magnicache-server.echo \"Error: no test.ts specified\" && exit 1"
+    "test-server": "jest --rootDir=../__tests__ magnicache-server.test.ts",
+    "test-client": "jest --rootDir=../__tests__ magnicache-client.test.ts"
   },
   "repository": {
     "type": "git",
@@ -13,6 +14,12 @@
   "dependencies": {
     "graphql": ">= 14.0.0",
     "lodash.mergewith": "^4.6.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.4.0",
+    "jest": "^29.5.0",
+    "pg": "^8.10.0",
+    "ts-jest": "^29.0.5"
   },
   "author": "MagniCache",
   "license": "MIT",
@@ -31,10 +38,6 @@
     "middleware",
     "express-middleware",
     "lightweight",
-    "@types/jest": "^29.4.0",
-    "jest": "^29.5.0",
-    "pg": "^8.10.0",
-    "ts-jest": "^29.0.5",
     "localstorage",
     "magnicache",
     "performance",
