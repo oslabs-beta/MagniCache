@@ -1,5 +1,5 @@
 [build]
- command="npm run build"
- publish="."
+ command=" npm install && cd client && npm install && cd ../magnicache-client && npm install cd ../magnicache-demo && npm install &&  cd ../magnicache-server && npm install && npm run build"
+ publish="build"
  [dev]
  command="npm run dev"
