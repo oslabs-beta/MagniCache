@@ -1,0 +1,6 @@
+[build]
+ command="docker build -t magni-prod ."
+ publish="."
+ [dev]
+ command="docker run -p 8080:8080 magni-prod"
+ 
