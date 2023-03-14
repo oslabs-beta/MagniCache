@@ -8,7 +8,7 @@
     "jsx": "react",
     "strict": true,
     "noEmitOnError": true,
-    "types": ["react/next", "node"],
+    "types": ["react/next", "node", "jest"],
     "target": "ESNext",
     "noImplicitAny": true
   },
