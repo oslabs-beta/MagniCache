@@ -1,6 +1,5 @@
 [build]
- command="docker build -t magni-prod ."
+ command="npm run build"
  publish="."
  [dev]
- command="docker run -p 8080:8080 magni-prod"
- 
+ command="npm run dev"
