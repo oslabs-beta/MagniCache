@@ -1,7 +1,7 @@
 'use strict';
 exports.__esModule = true;
 var parse = require('graphql/language/parser').parse;
-var mergeWith = require('lodash.mergeWith');
+var mergeWith = require('lodash.mergewith');
 function MagniClient(maxSize) {
   if (maxSize === void 0) {
     maxSize = 40;
