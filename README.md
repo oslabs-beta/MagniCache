@@ -1,71 +1,59 @@
 # MagniCache
 
-<img src="./assets/OGLOGO.png">
+<img src="./assets/RoundLogo.png">
 
-MagniCache is a lightweight GraphQL caching solution. Packaged and shipped as two separate npm packages, MagniCache can be implemented seamlessly into projects as an Express middleware for server-side caching of queries and mutations, or as a localStorage manipulation device for client-side caching.
+## What is MagniCache?
 
-What does your product do?
-What problem does it solve?
-What are its most important features (i.e. what makes it stand out)?
-For iterations, it may be useful to highlight any major new features here
+MagniCache is a lightweight and performant GraphQL caching solution. Packaged and shipped as two separate npm packages, MagniCache can be implemented seamlessly into projects as an Express middleware for server-side caching of queries and mutations, or as a localStorage manipulation device for client-side caching.
 
-(deprecated) MagniCache is a lightweight GraphQL caching solution. Imported as a package from npm, MagniCache can be inserted into the middleware chain for a GraphQL endpoint to intercept GraphQL requests and scan the cache for previously executed queries. Queries present in the cache will return the cached result to the client, improving response speeds and overall GraphQL performance.
+## Why use MagniCache?
 
-## How to install MagniCache
+MagniCache is unique in its exceptional efficiency. MagniCache's caching algorithm methodically parses GraphQL queries and divides them into atomic components, allowing for systematic and fully coherent caching of queries and improvements in performance. Unlike other GraphQL caching layers, subsequent GraphQL queries do not have to be exact duplicates of cached queries in order to benefit from cached response speeds. In addition, MagniCache was developed with compactness as the priority, so you can rest assured that implementing MagniCache into your projects will add zero unnecessary bulk.
 
-### Server-side Caching
+## How to use MagniCache
 
-1. Install MagniCache Server.
+### Demo Magnicache
+
+<a href="linkedin.com/company/magnicache">Click here to try out MagniCache!</a>
+
+## Installing MagniCache
+
+### Server-Side Caching
 
 ```bash
   npm i @magnicache/server
 ```
 
-2. Import MagniCache.
+<br>
 
-```js
-const MagniCache = require('@magnicache/server');
-```
-
-3. Declare a new instance of MagniCache, passing in your GraphQL schema.
-
-```js
-const magnicache = new MagniCache(schema);
-```
-
-4. Insert magnicache.query into the middleware chain for your '/graphql' route.
-
-```js
-app.use('/graphql', magnicache.query, (req, res) =>
-  res.status(200).send(res.locals.queryResponse)
-);
-```
-
-### Client-side Caching
-
-1. Install MagniCache Client.
+### Client-Side Caching
 
 ```bash
   npm i @magnicache/client
 ```
 
-2. Import MagniCache.
+## Documentation
 
-```js
-const MagniClient = require('@magnicache/client');
-```
+Follow the links to decide how to implement MagniCache into your project.
 
-3. Declare a new instance of MagniClient, optionally passing in a cache capacity.
+<ul>
+<li><a>@magnicache/server</a></li>
+<li><a>@magnicache/client</a></li>
+</ul>
 
-```js
-const magniClient = new MagniClient(maxSize);
-```
+## How to Contribute
 
-4. Invoke magniclient.query, passing in the query string and the graphql endpoint.
+As an Open Source Product, we are always welcoming contributions! To be apart of MagniCache, you can follow the steps below:
 
-```js
-'TBD .....';
-```
+1. Fork this repository, copying the `dev` branch
+
+2. Create your feature branch from `dev`
+
+3. Once you have finished contributing to your feature branch, add and commit all changes.
+
+4. Locally merge your branch with with the dev branch.
+
+5. Push your branch to GitHub and open a pull request.
 
 ## License
 
@@ -73,10 +61,18 @@ MIT
 
 ## Contributors
 
-Ahmed Chami
+Ahmed Chami / <a href="https://github.com/Achami64">Github</a> / <a href="https://www.linkedin.com/in/ahmed-chami-dev/">LinkedIn</a>
 
-Aria Soltankhah
+Aria Soltankhah / <a href="https://github.com/ariasoltank">Github</a> / <a href="https://www.linkedin.com/in/ariasol/">LinkedIn</a>
 
-Truman Miller
+Truman Miller / <a href="https://github.com/trumanmiller">Github</a> / <a href="https://www.linkedin.com/in/truman-miller/">LinkedIn</a>
 
-Yousuf Elkhoga
+Yousuf Elkhoga / <a href="https://github.com/yousuf-e">Github</a> / <a href="https://www.linkedin.com/in/yousufelkhoga/">LinkedIn</a>
+
+[Ahmed Chami](https://www.linkedin.com/in/ahmed-chami/)
+
+[Aria Soltankhah](https://www.linkedin.com/in/ariasol/)
+
+[Truman Miller](https://www.linkedin.com/in/truman-miller)
+
+[Yousuf Elkhoga](https://www.linkedin.com/in/yousufelkhoga/)
