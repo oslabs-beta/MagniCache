@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-var graphql = require('graphql').graphql;
+var _a = require('graphql'), GraphQLSchema = _a.GraphQLSchema, graphql = _a.graphql;
 var parse = require('graphql/language/parser').parse;
 var mergeWith = require("lodash.mergewith");
 var IntrospectionQuery = require('./IntrospectionQuery').IntrospectionQuery;
@@ -10,6 +10,9 @@ var IntrospectionQuery = require('./IntrospectionQuery').IntrospectionQuery;
 // TODO?: put Cache.validate on Magnicache prototype, only store schema once
 function Magnicache(schema, maxSize) {
     if (maxSize === void 0) { maxSize = 100; }
+    if (!this.schemaIsValid(schema)) {
+        throw new Error('This schema is invalid. Please ensure that the passed in schema is an instance of GraphQLSchema, and that you are using a graphql package of version 14.0.0 or later');
+    }
     // save the provided schema
     this.schema = schema;
     // max size of cache in atomized queries
@@ -161,7 +164,11 @@ Magnicache.prototype.query = function (req, res, next) {
     var _this = this;
     // get graphql query from request body
     var query = req.body.query;
-    // parse the query into an AST, deconstructing the part we use
+    // if query is null, send back a 400 code
+    if (query === null || query === '') {
+        res.send(400);
+    }
+    // parse the query into an AST
     var ast = parse(query).definitions[0];
     // if query is for 'clearCache', clear the cache and return next
     if (ast.selectionSet.selections[0].name.value === 'clearCache') {
@@ -257,9 +264,8 @@ Magnicache.prototype.query = function (req, res, next) {
                         _this.metrics.totalMisses++;
                         _this.sizeLeft = _this.maxSize - _this.metrics.cacheUsage;
                         var missTime = Date.now() - missStart_1;
-                        _this.metrics.AvgMissTime =
-                            (_this.metrics.AvgMissTime + missTime) /
-                                _this.metrics.totalMisses;
+                        _this.metrics.AvgMissTime = Math.round((_this.metrics.AvgMissTime + missTime) / _this.metrics.totalMisses);
+                        _this.metrics.AvgMissTime == Math.round(_this.metrics.AvgMissTime);
                         console.log('calc res', calcAMAT_1());
                         // check if all queries have been fetched
                         if (queries_2.length === queryResponses_1.length) {
@@ -312,7 +318,8 @@ Magnicache.prototype.query = function (req, res, next) {
                 });
             });
         })["catch"](function (err) {
-            throw new Error('ERROR executing graphql mutation' + JSON.stringify(err));
+            console.error(err);
+            return err;
         });
     }
 };
@@ -364,10 +371,10 @@ Magnicache.prototype.magniParser = function (selections, queryArray, queries) {
     return queries;
 };
 Magnicache.prototype.schemaParser = function (schema) {
-    // TODO :refactor to be able to take on nested types (GraphQLListType)
+    // TODO :refactor to be able to store multiple types for each query
     var schemaTree = {
         queries: {
-        // allMessages:[Messages,Users]
+        //Ex: allMessages:Messages
         },
         mutations: {}
     };
@@ -381,20 +388,29 @@ Magnicache.prototype.schemaParser = function (schema) {
     graphql({ schema: this.schema, source: IntrospectionQuery })
         .then(function (result) {
         // console.log(result.data.__schema.queryType);
-        for (var _i = 0, _a = result.data.__schema.queryType.fields; _i < _a.length; _i++) {
-            var field = _a[_i];
-            schemaTree.queries[field.name] = typeFinder(field.type);
+        if (result.data.__schema.queryType) {
+            for (var _i = 0, _a = result.data.__schema.queryType.fields; _i < _a.length; _i++) {
+                var field = _a[_i];
+                schemaTree.queries[field.name] = typeFinder(field.type);
+            }
         }
-        for (var _b = 0, _c = result.data.__schema.mutationType.fields; _b < _c.length; _b++) {
-            var field = _c[_b];
-            schemaTree.mutations[field.name] = typeFinder(field.type);
+        if (result.data.__schema.mutationType) {
+            for (var _b = 0, _c = result.data.__schema.mutationType.fields; _b < _c.length; _b++) {
+                var field = _c[_b];
+                schemaTree.mutations[field.name] = typeFinder(field.type);
+            }
         }
     })
         .then(function () {
         console.log('schemaTree', schemaTree);
     })["catch"](function (err) {
-        throw new Error("ERROR executing graphql query" + JSON.stringify(err));
+        console.error(err);
+        // throw new Error(`ERROR executing graphql query` + JSON.stringify(err));
+        return err;
     });
     return schemaTree;
+};
+Magnicache.prototype.schemaIsValid = function (schema) {
+    return schema instanceof GraphQLSchema;
 };
 module.exports = Magnicache;
