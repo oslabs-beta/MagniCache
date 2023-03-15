@@ -42,11 +42,6 @@ const MetricsContainer: React.FC = () => {
             setMetrics([...metrics, { cacheStatus, fetchTime }]);
 
             return res[0];
-
-
-            return res[0];
-
-
           })
           .then((data: {}) => {
             setQueryResponse(data);
@@ -101,23 +96,22 @@ const MetricsContainer: React.FC = () => {
     }
   };
 
-    const handleRunThrottle = () => {
-      // If the function is still in a throttle return
-      if (isThrottled) {
-        return;
-      }
-      // Reassign throttle to be true if 'if' statement fails
-      setThrottle(true);
-
-      // AFter one second se tthe throttle back to false
-      setTimeout(() => {
-        setThrottle(false);
-      }, 1000);
-
-      // Invoke handle click run
-      handleClickRun();
+  const handleRunThrottle = () => {
+    // If the function is still in a throttle return
+    if (isThrottled) {
+      return;
     }
+    // Reassign throttle to be true if 'if' statement fails
+    setThrottle(true);
 
+    // AFter one second se tthe throttle back to false
+    setTimeout(() => {
+      setThrottle(false);
+    }, 1000);
+
+    // Invoke handle click run
+    handleClickRun();
+  };
 
   // Function to handle switching between client and server side caching
   const handleSwitchMode = () => {
