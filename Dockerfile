@@ -8,5 +8,5 @@ RUN cd magnicache-client && npm install
 RUN cd magnicache-demo && npm install
 RUN cd magnicache-server && npm install
 COPY . .
-EXPOSE 8080
-CMD [ "node" "./magnicache-server/server.js" ]
+EXPOSE 3000
+CMD [ "node" "./magnicache-demo/server.js" ]
