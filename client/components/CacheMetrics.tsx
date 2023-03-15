@@ -68,11 +68,9 @@ const CacheMetrics = (props: CacheProps) => {
 
       <div className="cache-metric">Total Hits: {totalHits}</div>
       <br></br>
+      <div className="half-metrics">
       <div className="cache-metric">Total Misses: {totalMisses}</div>
       <br></br>
-      <div className="half-metrics">
-        <div className="cache-metric">Average Cache Time: {AvgCacheTime}ms</div>
-        <br></br>
 
         <div className="cache-metric">
           Average Miss Response Time: {Math.round(AvgMissTime)}ms

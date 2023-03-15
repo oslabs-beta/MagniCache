@@ -260,6 +260,7 @@ Magnicache.prototype.query = function (req, res, next) {
                         _this.metrics.AvgMissTime = Math.round((_this.metrics.AvgMissTime + missTime) / _this.metrics.totalMisses);
                         _this.metrics.AvgMissTime == Math.round(_this.metrics.AvgMissTime);
                         console.log('calc res', calcAMAT_1());
+                        calcAMAT_1();
                         // check if all queries have been fetched
                         if (queries_2.length === queryResponses_1.length) {
                             // compile all queries

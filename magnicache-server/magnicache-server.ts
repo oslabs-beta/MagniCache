@@ -309,7 +309,7 @@ Magnicache.prototype.query = function (
                 (this.metrics.AvgMissTime + missTime) / this.metrics.totalMisses
               );
               this.metrics.AvgMissTime == Math.round(this.metrics.AvgMissTime);
-              console.log('calc res', calcAMAT());
+              calcAMAT();
               // check if all queries have been fetched
               if (queries.length === queryResponses.length) {
                 // compile all queries

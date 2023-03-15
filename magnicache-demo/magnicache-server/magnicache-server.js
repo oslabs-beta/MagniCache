@@ -240,7 +240,6 @@ Magnicache.prototype.query = function (req, res, next) {
                     // calculate the hit time
                     var hitTime = Math.floor(Date.now() - hitStart);
                     // update the metrics object
-                    this_1.metrics.AvgCacheTime = Math.round((this_1.metrics.AvgCacheTime + hitTime) / this_1.metrics.totalHits);
                 }
                 else {
                     // start the miss timer
