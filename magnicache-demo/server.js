@@ -20,9 +20,12 @@ const PORT = 3000;
 app.use(express.json());
 // app.use(cookieParser());
 
-app.get('/', (req, res) => {
+app.get(['/', '/demo', '/info', '/team'], (req, res) => {
+  // express.static(path.join(__dirname, '../client'));
   res.status(200).sendFile(path.join(__dirname, '../client/index.html'));
 });
+
+app.use(express.static(path.join(__dirname, '../build')));
 
 const UserType = new GraphQLObjectType({
   name: 'User',
