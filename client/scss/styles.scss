@@ -359,6 +359,22 @@ body {
   padding-top: 3%;
 }
 
+.docs-flexbox {
+  display: flex;
+  justify-content: space-around;
+  margin: 2%;
+}
+
+.docs-item {
+  width: 45%;
+}
+
+.docs-title {
+  margin-bottom: 5%;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
 #team-description {
   margin: 4%;
 }
@@ -398,7 +414,7 @@ body {
 #about-page {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 }
 
@@ -414,6 +430,7 @@ body {
   width: 75%;
   font-size: 1.2rem;
   font-weight: 400;
+  margin-top: 10%;
 }
 
 // ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE
@@ -461,7 +478,6 @@ body {
     width: 95%;
     margin-left: 10%;
   }
-  
 }
 
 @media (max-width: 1510px) {
@@ -571,7 +587,6 @@ body {
 }
 
 @media (min-width: 1920px) {
-
 }
 
 // ALL MEDIA QUERIES ABOVE THIS LINE
