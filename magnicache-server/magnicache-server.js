@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-var graphql = require('graphql').graphql;
+var _a = require('graphql'), GraphQLSchema = _a.GraphQLSchema, graphql = _a.graphql;
 var parse = require('graphql/language/parser').parse;
 var mergeWith = require("lodash.mergewith");
 var IntrospectionQuery = require('./IntrospectionQuery').IntrospectionQuery;
@@ -10,6 +10,9 @@ var IntrospectionQuery = require('./IntrospectionQuery').IntrospectionQuery;
 // TODO?: put Cache.validate on Magnicache prototype, only store schema once
 function Magnicache(schema, maxSize) {
     if (maxSize === void 0) { maxSize = 100; }
+    if (!this.schemaIsValid(schema)) {
+        throw new Error('This schema is invalid. Please ensure that the passed in schema is an instance of GraphQLSchema, and that you are using a graphql package of version 14.0.0 or later');
+    }
     // save the provided schema
     this.schema = schema;
     // max size of cache in atomized queries
@@ -161,7 +164,11 @@ Magnicache.prototype.query = function (req, res, next) {
     var _this = this;
     // get graphql query from request body
     var query = req.body.query;
-    // parse the query into an AST, deconstructing the part we use
+    // if query is null, send back a 400 code
+    if (query === null || query === '') {
+        res.send(400);
+    }
+    // parse the query into an AST
     var ast = parse(query).definitions[0];
     // if query is for 'clearCache', clear the cache and return next
     if (ast.selectionSet.selections[0].name.value === 'clearCache') {
@@ -404,5 +411,7 @@ Magnicache.prototype.schemaParser = function (schema) {
     });
     return schemaTree;
 };
-
+Magnicache.prototype.schemaIsValid = function (schema) {
+    return schema instanceof GraphQLSchema;
+};
 module.exports = Magnicache;
