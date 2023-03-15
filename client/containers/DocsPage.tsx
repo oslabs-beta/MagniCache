@@ -4,7 +4,7 @@ import React from 'react';
 const DocsPage: React.FC = () => {
   return (
     <div id="docs-page">
-      <h1>Documentation</h1>
+      <h1>Installation</h1>
       <div className="docs-flexbox">
         <div className="docs-server docs-item">
           <h5 className="docs-title">Server-Side Caching</h5>

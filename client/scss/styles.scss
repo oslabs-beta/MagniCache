@@ -31,10 +31,11 @@ body {
   .all-nav-links {
     display: flex;
     justify-content: right;
-    #about-nav-link,
-    #docs-nav-link,
+    #demo-nav-link,
+    #install-nav-link,
     #team-nav-link {
       color: $secondaryWhite;
+      margin-right: 4%;
     }
   }
   #nav-title {
