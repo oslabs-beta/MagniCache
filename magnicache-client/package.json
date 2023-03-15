@@ -1,6 +1,6 @@
 {
   "name": "@magnicache/client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Client-side caching layer for GraphQL",
   "main": "magnicache-client.js",
   "scripts": {
