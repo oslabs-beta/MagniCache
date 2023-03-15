@@ -9,7 +9,13 @@ const magniClient = new MagniClient();
 
 const MetricsContainer: React.FC = () => {
   // Create state variables for the query, the response, the metrics, and if it is on client or server mode
-  const [queryValue, setQueryValue] = useState('');
+  const [queryValue, setQueryValue] = useState(`query{
+    allMessages{
+      message
+      message_id
+      sender_id
+    }
+  }`);
   const [queryResponse, setQueryResponse] = useState({});
   const [metrics, setMetrics] = useState<Metrics[]>([]);
   const [clientMode, setClientMode] = useState<boolean>(false);
