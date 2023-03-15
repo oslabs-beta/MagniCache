@@ -1,24 +1,10 @@
 const MagniCache = require('../magnicache-server/magnicache-server.ts');
 const schema = require('../magnicache-server/schema.js');
 import { NextFunction, Request, Response } from 'express';
+const { IntrospectionQuery } = require('./IntrospectionQuery');
+const { graphql } = require('graphql');
 
-let data;
-
-// describe('MagniCache set up', () => {
-//   it('Should return an "invalid schema" error when invoked with an invalid schema', () => {
-//     // expect(new MagniCache('invalid~schema')).toThrow(Error);
-
-//     // const testThrowingError = () => {
-//     //   new MagniCache('invalid~schema');
-//     // };
-
-//     // expect(() => testThrowingError()).toThrowError();
-//   });
-//   // it('Should return an Magnicache object when invoked with an invalid schema', () => {
-//   //   expect(new MagniCache('invalid~schema')).toBeInstanceOf(MagniCache);
-//   // });
-// });
-
+//TODO: Set up proper error handling for invalid params
 describe('MagniCache Setup', () => {
   let magnicache: any;
   beforeEach((done) => {
@@ -56,34 +42,65 @@ describe('Magnicache.query execution', () => {
     done();
   });
 
-  xit('responds when missing query property', async () => {
+  //TODO: make the error handling for this better
+  it('responds when missing query property', async () => {
     const expectedRes = {
-      queryResponse: 'missing query body',
+      queryResponse: 'Invalid query',
     };
 
     mockReq = {
-      body: { query: '{customers{name}}' },
+      body: {},
     };
 
     await magnicache.query(mockReq as Request, mockRes as Response, nextFn);
     expect(mockRes.locals!.queryResponse).toBe(expectedRes.queryResponse);
   });
 
-  xit('responds with a message when query body is empty', () => {});
-
-  it('returns the right data when the query is one field ', async () => {
-    const data = {};
+  it('responds with a message when query value is empty', () => {
     const expectedRes = {
-      locals: { queryResponse: '{<returned db data via graphql>}' },
+      queryResponse: 'Invalid query',
     };
 
-    const mockReq = {
-      body: { query: 'query{customers{name}}' },
+    mockReq = {
+      body: { query: '' },
+    };
+
+    magnicache.query(mockReq as Request, mockRes as Response, nextFn);
+    expect(mockRes.locals!.queryResponse).toBe(expectedRes.queryResponse);
+  });
+
+  it('responds with a schema when query value is the Introspection query', async () => {
+    const expectedRes = {
+      queryResponse: { data: { __schema: {} } },
+    };
+
+    mockReq = {
+      body: { query: IntrospectionQuery },
     };
 
     await magnicache.query(mockReq as Request, mockRes as Response, nextFn);
-    console.log(mockRes);
-    expect(mockRes.locals!.queryResponse).toEqual(
+    expect(mockRes.locals!.queryResponse.data).toHaveProperty('__schema');
+  });
+
+  it('returns the right data when the query is one field ', async () => {
+    // let data = await graphql(schema, 'query{customers{name}}');
+
+    const expectedRes = {
+      locals: { queryResponse: 'data' },
+    };
+
+    const mockReq: Partial<Request> = {
+      body: { query: 'query{customers{name}}' },
+    };
+
+    const mockRes: any = {
+      json: jest.fn(),
+      cookie: jest.fn(),
+      locals: { queryResponse: '' },
+    };
+
+    await magnicache.query(mockReq as Request, mockRes as Response, nextFn);
+    expect(mockRes.locals.queryResponse).toEqual(
       expectedRes.locals.queryResponse
     );
   });

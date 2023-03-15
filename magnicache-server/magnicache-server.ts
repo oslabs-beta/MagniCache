@@ -180,15 +180,32 @@ Magnicache.prototype.query = function (
   next: NextFunction
 ): void {
   // get graphql query from request body
+
   const { query } = req.body;
+
   // if query is null, send back a 400 code
-  if (query === null || query === '') {
-    res.locals.queryResponse = 'missing query body';
-  }
+  // if (query === null || query === '') {
+  //   res.locals.queryResponse = 'missing query body';
+  //   return next();
+  // }
+
+  //TODO: Make sure to handle the error from parse if it is an invalid query
+
   // parse the query into an AST
-  const {
-    definitions: [ast],
-  } = parse(query);
+  // let ast;
+  let ast: any;
+
+  try {
+    const {
+      definitions: [parsedAst],
+    } = parse(query);
+
+    ast = parsedAst;
+  } catch (error) {
+    res.locals.queryResponse = 'Invalid query';
+    return next();
+    console.error('An error occurred while parsing the query:', error);
+  }
 
   // if query is for 'clearCache', clear the cache and return next
   if (ast.selectionSet.selections[0].name.value === 'clearCache') {
@@ -449,7 +466,7 @@ Magnicache.prototype.schemaParser = function (schema: typeof this.schema) {
   // TODO: type 'type'
   // TODO: refactor to ensure there isn't an infinite loop
   const typeFinder = (type: any): string => {
-    console.log('field', type);
+    // console.log('field', type);
     if (type.name === null) return typeFinder(type.ofType);
     return type.name;
   };
@@ -470,7 +487,7 @@ Magnicache.prototype.schemaParser = function (schema: typeof this.schema) {
       }
     })
     .then(() => {
-      console.log('schemaTree', schemaTree);
+      // console.log('schemaTree', schemaTree);
     })
     // throw error to express global error handler
     .catch((err: {}) => {
