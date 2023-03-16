@@ -2,7 +2,8 @@ const path = require('path');
 const express = require('express');
 const app = express();
 const db = require('./db-model.js');
-const MagniCache = require('./magnicache-server.js');
+const MagniCache = require('./magnicache-server/magnicache-server.js');
+// const MagniCache = require('@magnicache/server');
 
 const {
   GraphQLNonNull,
@@ -19,9 +20,12 @@ const PORT = 3000;
 app.use(express.json());
 // app.use(cookieParser());
 
-app.get('/', (req, res) => {
+app.get(['/', '/demo', '/info', '/team'], (req, res) => {
+  // express.static(path.join(__dirname, '../client'));
   res.status(200).sendFile(path.join(__dirname, '../client/index.html'));
 });
+
+app.use(express.static(path.join(__dirname, '../build')));
 
 const UserType = new GraphQLObjectType({
   name: 'User',
@@ -153,6 +157,10 @@ app.use((err, req, res, next) => {
   return res.status(errorObj.status).json(errorObj.message);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on PORT ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Server listening on PORT ${PORT}`);
+  });
+}
+
+module.exports = app;

@@ -1,9 +1,13 @@
-import React, { useState, useEffect, useContext, SetStateAction } from 'react';
+import React, { useRef } from 'react';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Result from './Result';
+import XMetrics from '../containers/XMetrics';
+import { Metrics } from '../../types';
 
+// Create an interface for props to be destructered
 interface QueryProps {
+  metrics: Metrics[];
   queryValue: string;
   setQueryValue: React.Dispatch<React.SetStateAction<string>>;
   queryResponse: Object;
@@ -12,18 +16,84 @@ interface QueryProps {
   handleClickClear: () => void;
   handleClearCache: () => void;
   key: string;
+  clientMode: boolean;
+  setClientMode: React.Dispatch<React.SetStateAction<boolean>>;
+  handleSwitchMode: () => void;
 }
 
+// Destructure all props from the props object
 const QueryDisplay = (props: QueryProps) => {
   const {
     queryValue,
     setQueryValue,
     queryResponse,
-    fetchTime,
     handleClickClear,
     handleClickRun,
-    handleClearCache
+    handleClearCache,
+    handleSwitchMode,
+    clientMode,
   } = props;
+
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (
+    e: React.KeyboardEvent
+  ): void => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+
+      const textArea = textAreaRef.current;
+      if (!textArea) return;
+
+      const { selectionStart, selectionEnd } = textArea;
+
+      const newValue =
+        textArea.value.substring(0, selectionStart) +
+        '  ' +
+        textArea.value.substring(selectionEnd);
+
+      textArea.value = newValue;
+      textArea.selectionStart = textArea.selectionEnd = selectionStart + 1;
+      setQueryValue(newValue);
+    } else if (e.key === '{') {
+      const textArea = textAreaRef.current;
+      if (!textArea) return;
+      const { selectionStart, selectionEnd } = textArea;
+
+      const newValue =
+        textArea.value.substring(0, selectionStart) +
+        '}' +
+        textArea.value.substring(selectionEnd);
+      textArea.value = newValue;
+      textArea.selectionStart = textArea.selectionEnd = selectionStart;
+      setQueryValue(newValue);
+    } else if (e.key === '(') {
+      const textArea = textAreaRef.current;
+      if (!textArea) return;
+      const { selectionStart, selectionEnd } = textArea;
+
+      const newValue =
+        textArea.value.substring(0, selectionStart) +
+        ')' +
+        textArea.value.substring(selectionEnd);
+      textArea.value = newValue;
+      textArea.selectionStart = textArea.selectionEnd = selectionStart;
+      setQueryValue(newValue);
+    } else if (e.key === 'Enter') {
+      const textArea = textAreaRef.current;
+      if (!textArea) return;
+      const { selectionStart, selectionEnd } = textArea;
+      if (textArea.value[selectionStart - 1] === '{') {
+        const newValue =
+          textArea.value.substring(0, selectionStart) +
+          '\n' +
+          textArea.value.substring(selectionEnd);
+        textArea.value = newValue;
+        textArea.selectionStart = textArea.selectionEnd = selectionStart;
+        setQueryValue(newValue);
+      }
+    }
+  };
 
   return (
     <div className="query-display-flex">
@@ -31,9 +101,11 @@ const QueryDisplay = (props: QueryProps) => {
         <h1 className="query-display-title">Query</h1>
         <div className="fields-container">
           <textarea
+            ref={textAreaRef}
             className="query-input"
             value={queryValue}
             onChange={(e) => setQueryValue(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <ToggleButtonGroup
@@ -72,9 +144,9 @@ const QueryDisplay = (props: QueryProps) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-      {/* <div style={{backgroundColor: 'red', width: '150px'}}>hi</div>  this is where the new metric container will live*/}
+      <XMetrics />
       <div id="result-display" className="query-display-child">
-        <h1 className="query-display-title">Results</h1>
+        <h1 className="query-result-title">Results</h1>
         <div className="fields-container-result">
           <Result queryResponse={queryResponse} />
         </div>
@@ -84,6 +156,21 @@ const QueryDisplay = (props: QueryProps) => {
           defaultValue={1}
           id="toggle-button-cache"
         >
+          <ToggleButton
+            id="tb6"
+            value={1}
+            style={{
+              borderRadius: '14px',
+              backgroundColor: '#1a8fe3',
+              color: '#d6fbff',
+              border: 'none',
+              marginRight: '10px',
+            }}
+            onClick={handleSwitchMode}
+          >
+            Switch to{' '}
+            {clientMode ? 'Server-side caching' : 'Client-side caching'}
+          </ToggleButton>
           <ToggleButton
             id="tb5"
             value={2}
@@ -99,7 +186,6 @@ const QueryDisplay = (props: QueryProps) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-      {/* Cache metrics container. Cache usage %, cache size, cache eviction policy, cache response time, avg server response time for cached/uncached queries. Use websockets or long polling to fetch said metrics.  */}
     </div>
   );
 };

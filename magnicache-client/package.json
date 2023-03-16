@@ -1,0 +1,40 @@
+{
+  "name": "@magnicache/client",
+  "version": "1.0.1",
+  "description": "Client-side caching layer for GraphQL",
+  "main": "magnicache-client.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oslabs-beta/MagniCache.git"
+  },
+  "author": "MagniCache",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/oslabs-beta/MagniCache/issues"
+  },
+  "keywords": [
+    "cache",
+    "caching",
+    "graphQL",
+    "client",
+    "clientside",
+    "client-side",
+    "lightweight",
+    "localstorage",
+    "magnicache",
+    "magniClient",
+    "query",
+    "performance",
+    "API",
+    "optimization",
+    "response time",
+    "scalability"
+  ],
+  "homepage": "https://github.com/oslabs-beta/MagniCache#readme",
+  "dependencies": {
+    "lodash.mergewith": "^4.6.2"
+  }
+}

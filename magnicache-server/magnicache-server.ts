@@ -1,31 +1,47 @@
-const {
-  graphql,
-  GraphQLSchema,
-  GraphQLObjectType,
-  GraphQLString,
-} = require('graphql');
+const { GraphQLSchema, graphql } = require('graphql');
 const { parse } = require('graphql/language/parser');
 import { Response, Request, NextFunction } from 'express';
+import { MagnicacheType } from './../types';
+// import * as mergeWith from 'lodash.mergewith';
+const mergeWith = require('lodash.mergewith');
+const { IntrospectionQuery } = require('./IntrospectionQuery');
+// TODO?: type "this" more specifically
+// TODO?: add query type to linked list => refactor mutations
+// TODO?: rename EvictionNode => Node
+// TODO?: put Cache.validate on Magnicache prototype, only store schema once
 
-import * as mergeWith from 'lodash/mergeWith';
-
-// Cache Class, for removing the LRU item in the cache
-
-// Magnicache class for creating a queryable cache
-function Magnicache(this: any, schema: any, maxSize: number = 100): void {
+function Magnicache(this: MagnicacheType, schema: {}, maxSize = 100): void {
+  if (!this.schemaIsValid(schema)) {
+    throw new Error(
+      'This schema is invalid. Please ensure that the passed in schema is an instance of GraphQLSchema, and that you are using a graphql package of version 14.0.0 or later'
+    );
+  }
   // save the provided schema
   this.schema = schema;
+  // max size of cache in atomized queries
   this.maxSize = maxSize;
-  // bind the query method for use in other functions
-  this.query = this.query.bind(this);
+  // instantiate doublely linked list to handle caching
+  this.cache = new Cache(maxSize, schema);
 
-  this.cache = new Cache(maxSize);
+  this.schemaTree = this.schemaParser(schema);
+
+  this.metrics = {
+    cacheUsage: 0,
+    sizeLeft: this.maxSize,
+    totalHits: 0,
+    totalMisses: 0,
+    AvgCacheTime: 0, // for atomic queries only, can change to query as a whole later on
+    AvgMissTime: 0,
+    AvgMemAccTime: 0, // hit rate * cacheTime + miss rate * missTIme, still for atomic queries only
+  };
+  // bind method(s)
+  this.query = this.query.bind(this);
+  this.schemaParser = this.schemaParser.bind(this);
 }
-// Class constructors for the linked list and the nodes for the list
+// linked list node constructor
 class EvictionNode<T> {
-  //TODO learn more about <T>
-  key: string;
-  value: any;
+  key: string; // atomized query
+  value: any; // query return value
   next: EvictionNode<any> | null;
   prev: EvictionNode<any> | null;
   constructor(key: string, value: T) {
@@ -36,74 +52,87 @@ class EvictionNode<T> {
   }
 }
 
+// linked list constructor
 class Cache<T> {
   maxSize: number;
-  map: Map<string, any>;
+  map: Map<string, any>; // map stores references to linked list nodes
   head: EvictionNode<any> | null;
   tail: EvictionNode<any> | null;
-  constructor(maxSize: number) {
+  schema: {};
+  constructor(maxSize: number, schema: {}) {
     this.maxSize = maxSize;
     this.map = new Map();
     this.head = null;
     this.tail = null;
-    // Function binding
+    this.schema = schema;
+
+    // method binding
     this.create = this.create.bind(this);
-    this.deleteNode = this.deleteNode.bind(this);
+    this.delete = this.delete.bind(this);
     this.get = this.get.bind(this);
     this.includes = this.includes.bind(this);
   }
 
-  // Insert a node at the head of the list/evict least recently used node
-  create(key: string, value: object): EvictionNode<string> {
-    // Create a new instance of eviction cache. Max size can be determined later..........
-    // const cache = new Cache<string>(size);
-    // Create a new node to add
+  // insert a node at the head of the list && if maxsize is reached, evict least recently used node
+  create(key: string, value: object): EvictionNode<T> {
+    // Create a new node
     const newNode = new EvictionNode<any>(key, value);
-    // IF there is no head of the linked list create one, same with the tai;
+
+    // add node to map
     this.map.set(key, newNode);
 
+    // if linked list is empty, set at head && tail
     if (!this.head) {
       this.head = newNode;
-      if (!this.tail) this.tail = newNode;
-    }
-    // else we want to add a next node to our newNode, which should be the head of the Cache
-    else {
+      this.tail = newNode;
+      // otherwise add new node at head of list
+    } else {
       newNode.next = this.head;
       this.head.prev = newNode;
       this.head = newNode;
     }
-    // Check if the size of our eviction cache's cache is greater than the largest value. If so, delete the tail
-    if (this.map.size > this.maxSize) this.deleteNode(this.tail);
+    // check cache size, prune tail if necessary
+    if (this.map.size > this.maxSize) this.delete(this.tail);
+
     return newNode;
   }
 
-  // Update the node when it is used and add it to the queue to be further from eviction(possibly not needed)
-  deleteNode(node): void {
-    if (node === null) throw new Error('node is null');
-
-    if (node.next === null) {
+  // remove node from linked list
+  // TODO: type node
+  delete(node: any): void {
+    // SHOULD NEVER RUN: delete should only be invoked when node is known to exist
+    if (node === null)
+      throw new Error('ERROR in MagniCache.cache.delete: node is null');
+    if (node.next === null && node.prev === null) {
+      this.head = null;
+      this.tail = null;
+      // if node is at tail
+    } else if (node.next === null) {
       node.prev.next = null;
       this.tail = node.prev;
+      // if node is at head
     } else if (node.prev === null) {
       node.next.prev = null;
       this.head = node.next;
+      // if node is not head of tail;
     } else {
       node.prev.next = node.next;
       node.next.prev = node.prev;
     }
+    // remove node from map
     this.map.delete(node.key);
   }
 
-  // Get a specific node from the linked list(to return from the cache)
-  // TODO: fix return type
-  get(key: string): EvictionNode<T> {
-    const node = this.map.get(key);
-    // if (this.head === null) return node;
-    console.log(node);
-    //if the node is at the head, simply return the value
-    if (this.head === node) return node.value;
-    //if node is at the tail, remove it from the tail
-    if (this.tail === node) {
+  // retrieve node from linked list
+  get(key: string): string {
+    const node: EvictionNode<T> = this.map.get(key);
+    // SHOULD NEVER RUN: get should only be invoked when node is known to exist
+    if (node === null)
+      throw new Error('ERROR in MagniCache.cache.get: node is null');
+    // if the node is at the head, simply return the value
+    if (node.prev === null) return node.value;
+    // if node is at the tail, remove it from the tail
+    else if (node.next === null) {
       this.tail = node.prev;
       node.prev.next = null;
       // if node is neither, remove it
@@ -111,7 +140,7 @@ class Cache<T> {
       node.prev.next = node.next;
       node.next.prev = node.prev;
     }
-    //move the current head down one in the LL, move the current node to the head
+    // move the current head down one in the LL, move the current node to the head
     this.head!.prev = node;
     node.prev = null;
     node.next = this.head;
@@ -119,152 +148,247 @@ class Cache<T> {
 
     return node.value;
   }
+  // TODO: type node
+  validate(node: any): void {
+    if (node?.key === null)
+      throw new Error('ERROR in MagniCache.cache.validate: invalid node');
+    graphql({ schema: this.schema, source: node.key })
+      .then((result: { error?: {}; data?: {} }) => {
+        if (!result.error) {
+          node.value = result;
+        } else {
+          this.delete(node);
+        }
+      })
+      .catch((err: {}) => {
+        throw new Error(
+          'ERROR in MagniCache.cache.validate: error executing graphql query'
+        );
+      });
+    return;
+  }
 
-  //check if the cache has the key, only prupose if for semantic sugar
-  includes(key: string) {
+  // syntactic sugar to check if cache has a key
+  includes(key: string): boolean {
     return this.map.has(key);
   }
+  // syntactic sugar to get linked list length
+  count(): number {
+    return this.map.size;
+  }
 }
-// Query method takes request, response and next callbacks
-// as its arguments
+
+// used in middleware chain
 Magnicache.prototype.query = function (
   req: Request,
   res: Response,
   next: NextFunction
 ): void {
-  // get the body of the requested query
+  // get graphql query from request body
+
   const { query } = req.body;
 
-  // parse the query into an AST
-  const {
-    definitions: [ast],
-  } = parse(query);
+  // if query is null, send back a 400 code
+  // if (query === null || query === '') {
+  //   res.locals.queryResponse = 'missing query body';
+  //   return next();
+  // }
 
+  //TODO: Make sure to handle the error from parse if it is an invalid query
+
+  // parse the query into an AST
+  // let ast;
+  let ast: any;
+
+  try {
+    const {
+      definitions: [parsedAst],
+    } = parse(query);
+
+    ast = parsedAst;
+  } catch (error) {
+    res.locals.queryResponse = 'Invalid query';
+    return next();
+    console.error('An error occurred while parsing the query:', error);
+  }
+
+  // if query is for 'clearCache', clear the cache and return next
   if (ast.selectionSet.selections[0].name.value === 'clearCache') {
-    this.cache = new Cache(this.maxSize);
+    this.cache = new Cache(this.maxSize, this.schema);
     res.locals.queryResponse = { cacheStatus: 'cacheCleared' };
     return next();
   }
 
-  // check if the operation is a query
-  // and not some other type of mutation
+  // if query is for metrics, attach metrics to locals and return next
+  if (ast.selectionSet.selections[0].name.value === 'getMetrics') {
+    res.locals.queryResponse = this.metrics;
+    return next();
+  }
+
+  // check if the operation type is a query
   if (ast.operation === 'query') {
+    // if query is for the schema, bypass cache and execute query as normal
     if (ast.selectionSet.selections[0].name.value === '__schema') {
-      // execute the graphl query against the schema
       graphql({ schema: this.schema, source: query })
         .then((result: {}) => {
-          // assign the result to the response locals
           res.locals.queryResponse = result;
-
-          // proceed to execute the next callback
           return next();
         })
+        // throw error to express global error handler
         .catch((err: {}) => {
-          console.log(err);
-
-          // throw an error to the next callback
-          return next({
-            log: err,
-          });
+          throw new Error(
+            'ERROR executing graphql query' + JSON.stringify(err)
+          );
         });
     } else {
-      // get the selection set
+      // parse the ast into usable graphql querys
       const queries: string[] = this.magniParser(ast.selectionSet.selections);
 
-      // store the query results
       const queryResponses: {}[] = [];
-
-      // compile all individual query responses
+      // compile all queryResponses into one object that is return to requester
       const compileQueries = () => {
-        let response1: {} = {};
-        //TODO: clean up -> sematnicize
+        // merge all responses into one object
+        let response: {} = {};
         for (const queryResponse of queryResponses) {
-          response1 = mergeWith(response1, queryResponse);
+          response = mergeWith(response, queryResponse);
         }
 
         // assign the combined result to the response locals
-        res.locals.queryResponse = response1;
-
-        // console.log(this.cache);
-
-        // proceed to execute the next callback
+        res.locals.queryResponse = response;
         return next();
+      };
+
+      // calculate the average memory access time
+      const calcAMAT = () => {
+        // calculate cache hit rate
+        const hitRate =
+          this.metrics.totalHits /
+          (this.metrics.totalHits + this.metrics.totalMisses);
+
+        // calculate average memory access time and update metrics object
+        this.metrics.AvgMemAccTime = Math.round(
+          hitRate * this.metrics.AvgCacheTime +
+            (1 - hitRate) * this.metrics.AvgMissTime
+        );
+
+        // Return the calculated metric
+        return this.metrics.AvgMemAccTime;
       };
 
       // loop through the individual queries and execute them in turn
       for (const query of queries) {
         // check if query is already cached
         if (this.cache.includes(query)) {
-          // output message indicating that the query is cached
-          console.log('cache hit');
-
+          // add a cookie indicating that the cache was hit
+          // will be overwritten by any following querys
           res.cookie('cacheStatus', 'hit');
-          console.log('cachestatus set hit on res');
-
-          // store the cached response
-          console.log('query response', this.cache.get(query));
+          // update the metrics with a hit count
+          this.metrics.totalHits++;
+          // Start a timter
+          const hitStart = Date.now();
+          // retrieve the data from cache and add to queryResponses array
           queryResponses.push(this.cache.get(query));
-          // console.log(this.cache)
 
           // check if all queries have been fetched
           if (queries.length === queryResponses.length) {
-            // if yes, compile all queries
+            // compile all queries
             compileQueries();
           }
-        } else {
-          res.cookie('cacheStatus', 'miss');
-          console.log('cachestatsus set miss on Res');
-          // output message indicating that the query is missing
-          console.log('cache miss');
 
-          // execute the query against graphql
+          // calculate the hit time
+          const hitTime = Math.floor(Date.now() - hitStart);
+          // update the metrics object
+          this.metrics.AvgCacheTime = Math.round(
+            (this.metrics.AvgCacheTime + hitTime) / this.metrics.totalHits
+          );
+        } else {
+          // start the miss timer
+          const missStart = Date.now();
+          // execute the query
           graphql({ schema: this.schema, source: query })
-            .then((result: {}) => {
-              // cache the newest response
-              this.cache.create(query, result);
-              // this.cache.set(Cache.prototype.createHead())
+            .then((result: { err?: {}; data?: {} }) => {
+              // if no error, cache response
+              if (!result.err) this.cache.create(query, result);
+
+              // update the metrics with the new size
+              this.metrics.cacheUsage = this.cache.count();
 
               // store the query response
               queryResponses.push(result);
-
+            })
+            // update miss time as well as update the average memory access time
+            .then(() => {
+              // add a cookie indicating that the cache was missed
+              res.cookie('cacheStatus', 'miss');
+              // update the metrics with a missCount
+              this.metrics.totalMisses++;
+              this.sizeLeft = this.maxSize - this.metrics.cacheUsage;
+              const missTime = Date.now() - missStart;
+              this.metrics.AvgMissTime = Math.round(
+                (this.metrics.AvgMissTime + missTime) / this.metrics.totalMisses
+              );
+              this.metrics.AvgMissTime == Math.round(this.metrics.AvgMissTime);
+              calcAMAT();
               // check if all queries have been fetched
               if (queries.length === queryResponses.length) {
-                // if yes, compile all queries
+                // compile all queries
                 compileQueries();
               }
             })
             .catch((err: {}) => {
-              console.log(err);
-
-              // throw an error to the next callback
-              return next({
-                log: err,
-              });
+              throw new Error(
+                'ERROR executing graphql query' + JSON.stringify(err)
+              );
             });
         }
       }
     }
-    // not a query!!
+    // if not a query
   } else if (ast.operation === 'mutation') {
-    console.log('this is a mutation');
-    // Logic for mutation goes here
-    this.cache = new Cache(this.maxSize);
-    console.log(this.cache);
+    // first execute mutation normally
     graphql({ schema: this.schema, source: query })
       .then((result: {}) => {
         res.locals.queryResponse = result;
         return next();
       })
-      .catch((err) => {
-        console.log(err);
-        return next({
-          log: err,
+      .then(() => {
+        // get all mutation types, utilizing a set to avoid duplicates
+        const mutationTypes: Set<string> = new Set();
+        for (const mutation of ast.selectionSet.selections) {
+          const mutationName = mutation.name.value;
+          mutationTypes.add(this.schemaTree.mutations[mutationName]);
+        }
+        // for every mutation type, get every corresponding query type
+        mutationTypes.forEach((mutationType) => {
+          const userQueries: Set<string> = new Set();
+
+          for (const query in this.schemaTree.queries) {
+            const type = this.schemaTree.queries[query];
+            if (mutationType === type) userQueries.add(query);
+          }
+
+          userQueries.forEach((query) => {
+            for (
+              let currentNode = this.cache.head;
+              currentNode !== null;
+              currentNode = currentNode.next
+            ) {
+              if (currentNode.key.includes(query)) {
+                this.cache.validate(currentNode);
+              }
+            }
+          });
         });
+      })
+      // TODO: type err
+      .catch((err: any) => {
+        console.error(err);
+        return err;
       });
   }
 };
 
-// Function that takes an array of selections and generates an array of strings based off of them
+// invoked with AST as an argument, returns an array of graphql schemas
 Magnicache.prototype.magniParser = function (
   selections: {
     kind: string;
@@ -291,46 +415,97 @@ Magnicache.prototype.magniParser = function (
   queryArray: (string | string[])[] = [],
   queries: string[] = []
 ): string[] {
-  //Logging that the parser is running
-  console.log('parsing');
-
   // Looping through the selections to build the queries array
   for (const selection of selections) {
+    // add current query to queryArray
     queryArray.push(selection.name.value);
-    if (selection.arguments?.length > 0) {
+
+    // if a query has arguments, format and add to query array
+    if (selection.arguments.length > 0) {
       const argumentArray: string[] = [];
 
       // looping through the arguments to add them to the argument array
       for (const argument of selection.arguments) {
         argumentArray.push(`${argument.name.value}:${argument.value.value}`);
       }
-      //['id:4','name:john']
+
       queryArray.push([argumentArray.join(',')]);
     }
-    // Checking for a selection set in the selection
+    // if there is a selectionSet property, there are more deeply nested queries
     if (selection.selectionSet) {
+      // recursively invoke magniParser passing in selections array
       this.magniParser(selection.selectionSet.selections, queryArray, queries);
     } else {
-      let string = ``;
-      //{allMessages(id:4){message}}
-      // Ex:  ['messageById', ['id:4'], ['name:yousuf'], 'message']
-      // would give {messageById(id:4,name:yousuf){message}}
-      // Looping through the query array to build the string
+      let queryString = ``;
+      // if query array looks like this: ['messageById', ['id:4'], 'message']
+      // formated query will look like this: {allMessages(id:4){message}}
+
+      // looping through the query array in reverse to build the query string
       for (let i = queryArray.length - 1; i >= 0; i--) {
+        // arguments are put into an array and need to be formatted differently
         if (Array.isArray(queryArray[i])) {
-          string = `(${queryArray[i][0]})${string}`;
+          queryString = `(${queryArray[i][0]})${queryString}`;
         } else {
-          string = `{${queryArray[i] + string}}`;
+          queryString = `{${queryArray[i] + queryString}}`;
         }
       }
-      // Adding the final string to the queries array
-      queries.push(string);
+      // adding the completed query to the queries array
+      queries.push(queryString);
     }
-    // Removing the element from the query array
+    // remove last element, as it's not wanted on next iteration
     queryArray.pop();
   }
-  // Returning the queries array with all strings
+  // returning the array of individual querys
   return queries;
+};
+
+Magnicache.prototype.schemaParser = function (schema: typeof this.schema) {
+  // TODO: refactor to be able to store multiple types for each query
+  // TODO: stricter types for schemaTree
+  const schemaTree: { queries: any; mutations: any } = {
+    queries: {
+      //Ex: allMessages:Messages
+    },
+    mutations: {},
+  };
+  // TODO: type 'type'
+  // TODO: refactor to ensure there isn't an infinite loop
+  const typeFinder = (type: any): string => {
+    // console.log('field', type);
+    if (type.name === null) return typeFinder(type.ofType);
+    return type.name;
+  };
+
+  // TODO: Type the result for the schema
+  graphql({ schema: this.schema, source: IntrospectionQuery })
+    .then((result: any) => {
+      // console.log(result.data.__schema.queryType);
+      if (result.data.__schema.queryType) {
+        for (const field of result.data.__schema.queryType.fields) {
+          schemaTree.queries[field.name] = typeFinder(field.type);
+        }
+      }
+      if (result.data.__schema.mutationType) {
+        for (const field of result.data.__schema.mutationType.fields) {
+          schemaTree.mutations[field.name] = typeFinder(field.type);
+        }
+      }
+    })
+    .then(() => {
+      // console.log('schemaTree', schemaTree);
+    })
+    // throw error to express global error handler
+    .catch((err: {}) => {
+      console.error(err);
+      // throw new Error(`ERROR executing graphql query` + JSON.stringify(err));
+      return err;
+    });
+
+  return schemaTree;
+};
+
+Magnicache.prototype.schemaIsValid = function (schema) {
+  return schema instanceof GraphQLSchema;
 };
 
 module.exports = Magnicache;

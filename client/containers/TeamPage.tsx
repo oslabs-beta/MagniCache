@@ -1,17 +1,18 @@
 import React from 'react';
+import ahmed from '../assets/ahm.png';
+import aria from '../assets/aria.png';
+import truman from '../assets/tru.png';
+import yousuf from '../assets/you.png';
 
+// Component for adding and rendering team page
 const TeamPage: React.FC = () => {
   return (
     <div id="team-page">
       <h1>Our Team</h1>
-      <p id="team-description">The team that made MagniCache possible.</p>
+      <p id="team-description">The team that contributed to MagniCache.</p>
       <div id="team-members">
         <div className="member">
-          <img
-            className="member-img"
-            src="https://news.artnet.com/app/news-upload/2021/09/Yuga-Labs-Bored-Ape-Yacht-Club-4466.jpg"
-            alt=""
-          />
+          <img className="member-img" src={ahmed} alt="" />
           <p className="member-name">Ahmed Chami</p>
           <p>
             <a
@@ -27,7 +28,7 @@ const TeamPage: React.FC = () => {
             <a
               target={'_blank'}
               rel="noopener noferrer"
-              href="https://www.linkedin.com/in/ahmed-chami-664268268/"
+              href="https://www.linkedin.com/in/ahmed-chami-dev/"
               className="member-links"
             >
               LinkedIn
@@ -35,11 +36,7 @@ const TeamPage: React.FC = () => {
           </p>
         </div>
         <div className="member">
-          <img
-            className="member-img"
-            src="https://images.wsj.net/im-491396?width=700&height=700"
-            alt=""
-          />
+          <img className="member-img" src={aria} alt="" />
           <p className="member-name">Aria Soltankhah</p>
           <p>
             <a
@@ -63,11 +60,7 @@ const TeamPage: React.FC = () => {
           </p>
         </div>
         <div className="member">
-          <img
-            className="member-img"
-            src="https://dmn-dallas-news-prod.cdn.arcpublishing.com/resizer/S4M0CdQhrn3l6L5kKA0--avlY00=/930x0/smart/filters:no_upscale()/cloudfront-us-east-1.images.arcpublishing.com/dmn/VDA2OKJUXJDSRNL76H44LQFNWY.jpg"
-            alt=""
-          />
+          <img className="member-img" src={truman} alt="" />
           <p className="member-name">Truman Miller</p>
           <p>
             <a
@@ -91,11 +84,7 @@ const TeamPage: React.FC = () => {
           </p>
         </div>
         <div className="member">
-          <img
-            className="member-img"
-            src="https://www.artnews.com/wp-content/uploads/2022/01/unnamed-2.png?w=631"
-            alt=""
-          />
+          <img className="member-img" src={yousuf} alt="" />
           <p className="member-name">Yousuf Elkhoga</p>
           <p>
             <a

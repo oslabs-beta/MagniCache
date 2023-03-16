@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React from 'react';
 import { Metrics } from '../../types';
-import ToggleButton from 'react-bootstrap/ToggleButton';
-import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
+
+// Declare an interface for props to be destructured
 interface ResponseProps {
   hits: number;
   misses: number;
   metrics: Metrics[];
-  // fetchTime: number;
 }
 
 const Response = (props: ResponseProps) => {
+  // Destructure hits misses and metrics from the props object
   const { hits, misses, metrics } = props;
   return (
     <div className="res-metrics">
