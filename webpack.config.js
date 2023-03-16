@@ -26,7 +26,6 @@ module.exports = {
         secure: false,
       },
     },
-
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
@@ -72,5 +71,8 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
+  },
+  externals: {
+    pg: 'commonjs pg',
   },
 };

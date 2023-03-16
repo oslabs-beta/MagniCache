@@ -1,49 +1,26 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 // Component to render about pages and info for MagniCache
 const AboutPage: React.FC = () => {
   return (
     <div id="about-page">
-      <h1>About Magnicache</h1>
       <div className="about-magnicache">
         <p>
-          MagniCache is a lightweight Express middleware caching solution.
-          Imported as a package from npm, MagniCache can be inserted into the
-          middleware chain for a GraphQL endpoint to intercept GraphQL requests
-          and scan the cache for previously executed queries. Queries present in
-          the cache will return the cached result to the client, improving
-          response speeds and overall GraphQL performance.
+          MagniCache is a lightweight and performant GraphQL caching solution.
+          Packaged and shipped as two separate npm packages, MagniCache can be
+          implemented seamlessly into projects as an Express middleware for
+          server-side caching of queries and mutations, or as a localStorage
+          manipulation device for client-side caching.
+        </p>
+        <p>
+          Try it out{' '}
+          <Link to="/demo" style={{ textDecoration: 'none' }}>
+            here
+          </Link>
+          .
         </p>
       </div>
-      <p>Server-side caching with MagniCache is an effortless process.</p>
-      <p className="install-steps">
-        1. Install MagniCache <br />
-        <code className="about-code">npm i @magnicache/server</code>
-      </p>
-      <p className="install-steps">
-        2. Import MagniCache <br />
-        <code className="about-code">
-          const MagniCache = require('@magnicache/server');
-        </code>
-      </p>
-      <p className="install-steps">
-        3. Declare a new instance of MagniCache, passing in your GraphQL schema
-        <br />
-        <code className="about-code">
-          const magnicache = new MagniCache(schema);
-        </code>
-      </p>
-      <p className="install-steps">
-        4. Insert magnicache.query into the middleware chain for your '/graphql'
-        route
-        <br />
-        <code className="about-code">
-          app.use('/graphql', magnicache.query, (req, res) ={'>'} {'{'} &nbsp;
-          {'return'} {'res'}.status(200).send(res.locals.queryResponse);
-          {'}'}
-          );
-        </code>
-      </p>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-const { graphql } = require('graphql');
+const { GraphQLSchema, graphql } = require('graphql');
 const { parse } = require('graphql/language/parser');
 import { Response, Request, NextFunction } from 'express';
 import { MagnicacheType } from './../types';
@@ -11,6 +11,11 @@ const { IntrospectionQuery } = require('./IntrospectionQuery');
 // TODO?: put Cache.validate on Magnicache prototype, only store schema once
 
 function Magnicache(this: MagnicacheType, schema: {}, maxSize = 100): void {
+  if (!this.schemaIsValid(schema)) {
+    throw new Error(
+      'This schema is invalid. Please ensure that the passed in schema is an instance of GraphQLSchema, and that you are using a graphql package of version 14.0.0 or later'
+    );
+  }
   // save the provided schema
   this.schema = schema;
   // max size of cache in atomized queries
@@ -323,7 +328,7 @@ Magnicache.prototype.query = function (
                 (this.metrics.AvgMissTime + missTime) / this.metrics.totalMisses
               );
               this.metrics.AvgMissTime == Math.round(this.metrics.AvgMissTime);
-              // console.log('calc res', calcAMAT());
+              calcAMAT();
               // check if all queries have been fetched
               if (queries.length === queryResponses.length) {
                 // compile all queries
@@ -497,6 +502,10 @@ Magnicache.prototype.schemaParser = function (schema: typeof this.schema) {
     });
 
   return schemaTree;
+};
+
+Magnicache.prototype.schemaIsValid = function (schema) {
+  return schema instanceof GraphQLSchema;
 };
 
 module.exports = Magnicache;

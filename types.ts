@@ -33,6 +33,7 @@ export type MagnicacheType = {
   schemaParser: (
     schema: MagnicacheType['schema']
   ) => MagnicacheType['schemaTree'];
+  schemaIsValid: (schema: MagnicacheType['schema']) => boolean;
 };
 
 /*

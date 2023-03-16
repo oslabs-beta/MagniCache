@@ -1,6 +1,6 @@
 'use strict';
 exports.__esModule = true;
-var graphql = require('graphql').graphql;
+var _a = require('graphql'), GraphQLSchema = _a.GraphQLSchema, graphql = _a.graphql;
 var parse = require('graphql/language/parser').parse;
 var mergeWith = require('lodash.mergewith');
 var IntrospectionQuery = require('./IntrospectionQuery').IntrospectionQuery;
@@ -9,6 +9,29 @@ var IntrospectionQuery = require('./IntrospectionQuery').IntrospectionQuery;
 // TODO?: rename EvictionNode => Node
 // TODO?: put Cache.validate on Magnicache prototype, only store schema once
 function Magnicache(schema, maxSize) {
+    if (maxSize === void 0) { maxSize = 100; }
+    if (!this.schemaIsValid(schema)) {
+        throw new Error('This schema is invalid. Please ensure that the passed in schema is an instance of GraphQLSchema, and that you are using a graphql package of version 14.0.0 or later');
+    }
+    // save the provided schema
+    this.schema = schema;
+    // max size of cache in atomized queries
+    this.maxSize = maxSize;
+    // instantiate doublely linked list to handle caching
+    this.cache = new Cache(maxSize, schema);
+    this.schemaTree = this.schemaParser(schema);
+    this.metrics = {
+        cacheUsage: 0,
+        sizeLeft: this.maxSize,
+        totalHits: 0,
+        totalMisses: 0,
+        AvgCacheTime: 0,
+        AvgMissTime: 0,
+        AvgMemAccTime: 0
+    };
+    // bind method(s)
+    this.query = this.query.bind(this);
+    this.schemaParser = this.schemaParser.bind(this);
   if (maxSize === void 0) {
     maxSize = 100;
   }
@@ -156,54 +179,24 @@ var Cache = /** @class */ (function () {
 })();
 // used in middleware chain
 Magnicache.prototype.query = function (req, res, next) {
-  var _this = this;
-  // get graphql query from request body
-  var query = req.body.query;
-  // parse the query into an AST, deconstructing the part we use
-  var ast = parse(query).definitions[0];
-  // if query is for 'clearCache', clear the cache and return next
-  if (ast.selectionSet.selections[0].name.value === 'clearCache') {
-    this.cache = new Cache(this.maxSize, this.schema);
-    res.locals.queryResponse = { cacheStatus: 'cacheCleared' };
-    return next();
-  }
-  // if query is for metrics, attach metrics to locals and return next
-  if (ast.selectionSet.selections[0].name.value === 'getMetrics') {
-    res.locals.queryResponse = this.metrics;
-    return next();
-  }
-  // check if the operation type is a query
-  if (ast.operation === 'query') {
-    // if query is for the schema, bypass cache and execute query as normal
-    if (ast.selectionSet.selections[0].name.value === '__schema') {
-      graphql({ schema: this.schema, source: query })
-        .then(function (result) {
-          res.locals.queryResponse = result;
-          return next();
-        })
-        ['catch'](function (err) {
-          throw new Error(
-            'ERROR executing graphql query' + JSON.stringify(err)
-          );
-        });
-    } else {
-      // parse the ast into usable graphql querys
-      var queries_2 = this.magniParser(ast.selectionSet.selections);
-      var queryResponses_1 = [];
-      // compile all queryResponses into one object that is return to requester
-      var compileQueries_1 = function () {
-        // merge all responses into one object
-        var response = {};
-        for (
-          var _i = 0, queryResponses_2 = queryResponses_1;
-          _i < queryResponses_2.length;
-          _i++
-        ) {
-          var queryResponse = queryResponses_2[_i];
-          response = mergeWith(response, queryResponse);
-        }
-        // assign the combined result to the response locals
-        res.locals.queryResponse = response;
+    var _this = this;
+    // get graphql query from request body
+    var query = req.body.query;
+    // if query is null, send back a 400 code
+    if (query === null || query === '') {
+        res.send(400);
+    }
+    // parse the query into an AST
+    var ast = parse(query).definitions[0];
+    // if query is for 'clearCache', clear the cache and return next
+    if (ast.selectionSet.selections[0].name.value === 'clearCache') {
+        this.cache = new Cache(this.maxSize, this.schema);
+        res.locals.queryResponse = { cacheStatus: 'cacheCleared' };
+        return next();
+    }
+    // if query is for metrics, attach metrics to locals and return next
+    if (ast.selectionSet.selections[0].name.value === 'getMetrics') {
+        res.locals.queryResponse = this.metrics;
         return next();
       };
       // calculate the average memory access time
@@ -284,13 +277,99 @@ Magnicache.prototype.query = function (req, res, next) {
               );
             });
         }
-      };
-      var this_1 = this;
-      // loop through the individual queries and execute them in turn
-      for (var _i = 0, queries_1 = queries_2; _i < queries_1.length; _i++) {
-        var query_1 = queries_1[_i];
-        _loop_1(query_1);
-      }
+        else {
+            // parse the ast into usable graphql querys
+            var queries_2 = this.magniParser(ast.selectionSet.selections);
+            var queryResponses_1 = [];
+            // compile all queryResponses into one object that is return to requester
+            var compileQueries_1 = function () {
+                // merge all responses into one object
+                var response = {};
+                for (var _i = 0, queryResponses_2 = queryResponses_1; _i < queryResponses_2.length; _i++) {
+                    var queryResponse = queryResponses_2[_i];
+                    response = mergeWith(response, queryResponse);
+                }
+                // assign the combined result to the response locals
+                res.locals.queryResponse = response;
+                return next();
+            };
+            // calculate the average memory access time
+            var calcAMAT_1 = function () {
+                // calculate cache hit rate
+                var hitRate = _this.metrics.totalHits /
+                    (_this.metrics.totalHits + _this.metrics.totalMisses);
+                // calculate average memory access time and update metrics object
+                _this.metrics.AvgMemAccTime = Math.round(hitRate * _this.metrics.AvgCacheTime +
+                    (1 - hitRate) * _this.metrics.AvgMissTime);
+                // Return the calculated metric
+                return _this.metrics.AvgMemAccTime;
+            };
+            var _loop_1 = function (query_1) {
+                // check if query is already cached
+                if (this_1.cache.includes(query_1)) {
+                    // add a cookie indicating that the cache was hit
+                    // will be overwritten by any following querys
+                    res.cookie('cacheStatus', 'hit');
+                    // update the metrics with a hit count
+                    this_1.metrics.totalHits++;
+                    // Start a timter
+                    var hitStart = Date.now();
+                    // retrieve the data from cache and add to queryResponses array
+                    queryResponses_1.push(this_1.cache.get(query_1));
+                    // check if all queries have been fetched
+                    if (queries_2.length === queryResponses_1.length) {
+                        // compile all queries
+                        compileQueries_1();
+                    }
+                    // calculate the hit time
+                    var hitTime = Math.floor(Date.now() - hitStart);
+                    // update the metrics object
+                    this_1.metrics.AvgCacheTime = Math.round((this_1.metrics.AvgCacheTime + hitTime) / this_1.metrics.totalHits);
+                }
+                else {
+                    // start the miss timer
+                    var missStart_1 = Date.now();
+                    // execute the query
+                    graphql({ schema: this_1.schema, source: query_1 })
+                        .then(function (result) {
+                        // if no error, cache response
+                        if (!result.err)
+                            _this.cache.create(query_1, result);
+                        // update the metrics with the new size
+                        _this.metrics.cacheUsage = _this.cache.count();
+                        // store the query response
+                        queryResponses_1.push(result);
+                    })
+                        // update miss time as well as update the average memory access time
+                        .then(function () {
+                        // add a cookie indicating that the cache was missed
+                        res.cookie('cacheStatus', 'miss');
+                        // update the metrics with a missCount
+                        _this.metrics.totalMisses++;
+                        _this.sizeLeft = _this.maxSize - _this.metrics.cacheUsage;
+                        var missTime = Date.now() - missStart_1;
+                        _this.metrics.AvgMissTime = Math.round((_this.metrics.AvgMissTime + missTime) / _this.metrics.totalMisses);
+                        _this.metrics.AvgMissTime == Math.round(_this.metrics.AvgMissTime);
+                        console.log('calc res', calcAMAT_1());
+                        calcAMAT_1();
+                        // check if all queries have been fetched
+                        if (queries_2.length === queryResponses_1.length) {
+                            // compile all queries
+                            compileQueries_1();
+                        }
+                    })["catch"](function (err) {
+                        throw new Error('ERROR executing graphql query' + JSON.stringify(err));
+                    });
+                }
+            };
+            var this_1 = this;
+            // loop through the individual queries and execute them in turn
+            for (var _i = 0, queries_1 = queries_2; _i < queries_1.length; _i++) {
+                var query_1 = queries_1[_i];
+                _loop_1(query_1);
+            }
+        }
+        // if not a query
     }
     // if not a query
   } else if (ast.operation === 'mutation') {
@@ -437,5 +516,7 @@ Magnicache.prototype.schemaParser = function (schema) {
     });
   return schemaTree;
 };
-
+Magnicache.prototype.schemaIsValid = function (schema) {
+    return schema instanceof GraphQLSchema;
+};
 module.exports = Magnicache;

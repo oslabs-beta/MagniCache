@@ -11,7 +11,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cross-env NODE_ENV=production webpack",
+    "build": "NODE_ENV=production webpack",
     "dev": "cross-env NODE_ENV=development webpack serve & nodemon ./magnicache-demo/server.js",
     "test-server": "jest magnicache-server.test.ts",
     "test-client": "jest magnicache-client.test.ts",
