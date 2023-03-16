@@ -1,7 +1,6 @@
-"use strict";
-exports.__esModule = true;
 var parse = require('graphql/language/parser').parse;
-var mergeWith = require("lodash.mergewith");
+var mergeWith = require('lodash.mergewith');
+// import * as mergeWith from 'lodash.mergewith';
 function MagniClient(maxSize) {
     if (maxSize === void 0) { maxSize = 40; }
     this.maxSize = maxSize;
@@ -161,4 +160,5 @@ MagniClient.prototype.magniParser = function (selections, queryArray, queries) {
     // returning the array of individual querys
     return queries;
 };
-exports["default"] = MagniClient;
+// export default MagniClient;
+module.exports = MagniClient;

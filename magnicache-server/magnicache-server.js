@@ -2,7 +2,8 @@
 exports.__esModule = true;
 var _a = require('graphql'), GraphQLSchema = _a.GraphQLSchema, graphql = _a.graphql;
 var parse = require('graphql/language/parser').parse;
-var mergeWith = require("lodash.mergewith");
+// import * as mergeWith from 'lodash.mergewith';
+var mergeWith = require('lodash.mergewith');
 var IntrospectionQuery = require('./IntrospectionQuery').IntrospectionQuery;
 // TODO?: type "this" more specifically
 // TODO?: add query type to linked list => refactor mutations
@@ -80,6 +81,7 @@ var Cache = /** @class */ (function () {
         return newNode;
     };
     // remove node from linked list
+    // TODO: type node
     Cache.prototype["delete"] = function (node) {
         // SHOULD NEVER RUN: delete should only be invoked when node is known to exist
         if (node === null)
@@ -113,10 +115,10 @@ var Cache = /** @class */ (function () {
         if (node === null)
             throw new Error('ERROR in MagniCache.cache.get: node is null');
         // if the node is at the head, simply return the value
-        if (this.head === node)
+        if (node.prev === null)
             return node.value;
         // if node is at the tail, remove it from the tail
-        if (this.tail === node) {
+        else if (node.next === null) {
             this.tail = node.prev;
             node.prev.next = null;
             // if node is neither, remove it
@@ -132,6 +134,7 @@ var Cache = /** @class */ (function () {
         this.head = node;
         return node.value;
     };
+    // TODO: type node
     Cache.prototype.validate = function (node) {
         var _this = this;
         if ((node === null || node === void 0 ? void 0 : node.key) === null)
@@ -161,15 +164,27 @@ var Cache = /** @class */ (function () {
 }());
 // used in middleware chain
 Magnicache.prototype.query = function (req, res, next) {
-    var _this = this;
     // get graphql query from request body
+    var _this = this;
     var query = req.body.query;
     // if query is null, send back a 400 code
-    if (query === null || query === '') {
-        res.send(400);
-    }
+    // if (query === null || query === '') {
+    //   res.locals.queryResponse = 'missing query body';
+    //   return next();
+    // }
+    //TODO: Make sure to handle the error from parse if it is an invalid query
     // parse the query into an AST
-    var ast = parse(query).definitions[0];
+    // let ast;
+    var ast;
+    try {
+        var parsedAst = parse(query).definitions[0];
+        ast = parsedAst;
+    }
+    catch (error) {
+        res.locals.queryResponse = 'Invalid query';
+        return next();
+        console.error('An error occurred while parsing the query:', error);
+    }
     // if query is for 'clearCache', clear the cache and return next
     if (ast.selectionSet.selections[0].name.value === 'clearCache') {
         this.cache = new Cache(this.maxSize, this.schema);
@@ -266,7 +281,6 @@ Magnicache.prototype.query = function (req, res, next) {
                         var missTime = Date.now() - missStart_1;
                         _this.metrics.AvgMissTime = Math.round((_this.metrics.AvgMissTime + missTime) / _this.metrics.totalMisses);
                         _this.metrics.AvgMissTime == Math.round(_this.metrics.AvgMissTime);
-                        console.log('calc res', calcAMAT_1());
                         calcAMAT_1();
                         // check if all queries have been fetched
                         if (queries_2.length === queryResponses_1.length) {
@@ -372,15 +386,18 @@ Magnicache.prototype.magniParser = function (selections, queryArray, queries) {
     return queries;
 };
 Magnicache.prototype.schemaParser = function (schema) {
-    // TODO :refactor to be able to store multiple types for each query
+    // TODO: refactor to be able to store multiple types for each query
+    // TODO: stricter types for schemaTree
     var schemaTree = {
         queries: {
         //Ex: allMessages:Messages
         },
         mutations: {}
     };
+    // TODO: type 'type'
+    // TODO: refactor to ensure there isn't an infinite loop
     var typeFinder = function (type) {
-        console.log('field', type);
+        // console.log('field', type);
         if (type.name === null)
             return typeFinder(type.ofType);
         return type.name;
@@ -403,7 +420,7 @@ Magnicache.prototype.schemaParser = function (schema) {
         }
     })
         .then(function () {
-        console.log('schemaTree', schemaTree);
+        // console.log('schemaTree', schemaTree);
     })["catch"](function (err) {
         console.error(err);
         // throw new Error(`ERROR executing graphql query` + JSON.stringify(err));

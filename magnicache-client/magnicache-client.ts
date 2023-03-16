@@ -1,7 +1,8 @@
 const { parse } = require('graphql/language/parser');
-import * as mergeWith from 'lodash.mergewith';
+const mergeWith = require('lodash.mergewith');
+// import * as mergeWith from 'lodash.mergewith';
 
-function MagniClient(maxSize: number = 40): void {
+function MagniClient(this: any, maxSize: number = 40): void {
   this.maxSize = maxSize;
   // bind the method contexts
   this.query = this.query.bind(this);
@@ -189,4 +190,6 @@ MagniClient.prototype.magniParser = function (
   return queries;
 };
 
-export default MagniClient;
+// export default MagniClient;
+
+module.exports = MagniClient;

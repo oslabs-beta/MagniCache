@@ -2,7 +2,8 @@ const { GraphQLSchema, graphql } = require('graphql');
 const { parse } = require('graphql/language/parser');
 import { Response, Request, NextFunction } from 'express';
 import { MagnicacheType } from './../types';
-import * as mergeWith from 'lodash.mergewith';
+// import * as mergeWith from 'lodash.mergewith';
+const mergeWith = require('lodash.mergewith');
 const { IntrospectionQuery } = require('./IntrospectionQuery');
 // TODO?: type "this" more specifically
 // TODO?: add query type to linked list => refactor mutations
@@ -97,7 +98,8 @@ class Cache<T> {
   }
 
   // remove node from linked list
-  delete(node): void {
+  // TODO: type node
+  delete(node: any): void {
     // SHOULD NEVER RUN: delete should only be invoked when node is known to exist
     if (node === null)
       throw new Error('ERROR in MagniCache.cache.delete: node is null');
@@ -123,14 +125,14 @@ class Cache<T> {
 
   // retrieve node from linked list
   get(key: string): string {
-    const node = this.map.get(key);
+    const node: EvictionNode<T> = this.map.get(key);
     // SHOULD NEVER RUN: get should only be invoked when node is known to exist
     if (node === null)
       throw new Error('ERROR in MagniCache.cache.get: node is null');
     // if the node is at the head, simply return the value
-    if (this.head === node) return node.value;
+    if (node.prev === null) return node.value;
     // if node is at the tail, remove it from the tail
-    if (this.tail === node) {
+    else if (node.next === null) {
       this.tail = node.prev;
       node.prev.next = null;
       // if node is neither, remove it
@@ -146,8 +148,8 @@ class Cache<T> {
 
     return node.value;
   }
-
-  validate(node): void {
+  // TODO: type node
+  validate(node: any): void {
     if (node?.key === null)
       throw new Error('ERROR in MagniCache.cache.validate: invalid node');
     graphql({ schema: this.schema, source: node.key })
@@ -183,15 +185,32 @@ Magnicache.prototype.query = function (
   next: NextFunction
 ): void {
   // get graphql query from request body
+
   const { query } = req.body;
+
   // if query is null, send back a 400 code
-  if (query === null || query === '') {
-    res.send(400);
-  }
+  // if (query === null || query === '') {
+  //   res.locals.queryResponse = 'missing query body';
+  //   return next();
+  // }
+
+  //TODO: Make sure to handle the error from parse if it is an invalid query
+
   // parse the query into an AST
-  const {
-    definitions: [ast],
-  } = parse(query);
+  // let ast;
+  let ast: any;
+
+  try {
+    const {
+      definitions: [parsedAst],
+    } = parse(query);
+
+    ast = parsedAst;
+  } catch (error) {
+    res.locals.queryResponse = 'Invalid query';
+    return next();
+    console.error('An error occurred while parsing the query:', error);
+  }
 
   // if query is for 'clearCache', clear the cache and return next
   if (ast.selectionSet.selections[0].name.value === 'clearCache') {
@@ -361,7 +380,8 @@ Magnicache.prototype.query = function (
           });
         });
       })
-      .catch((err) => {
+      // TODO: type err
+      .catch((err: any) => {
         console.error(err);
         return err;
       });
@@ -439,18 +459,19 @@ Magnicache.prototype.magniParser = function (
   return queries;
 };
 
-Magnicache.prototype.schemaParser = function (schema) {
-  // TODO :refactor to be able to store multiple types for each query
-
-  const schemaTree = {
+Magnicache.prototype.schemaParser = function (schema: typeof this.schema) {
+  // TODO: refactor to be able to store multiple types for each query
+  // TODO: stricter types for schemaTree
+  const schemaTree: { queries: any; mutations: any } = {
     queries: {
       //Ex: allMessages:Messages
     },
     mutations: {},
   };
-
-  const typeFinder = (type) => {
-    console.log('field', type);
+  // TODO: type 'type'
+  // TODO: refactor to ensure there isn't an infinite loop
+  const typeFinder = (type: any): string => {
+    // console.log('field', type);
     if (type.name === null) return typeFinder(type.ofType);
     return type.name;
   };
@@ -471,7 +492,7 @@ Magnicache.prototype.schemaParser = function (schema) {
       }
     })
     .then(() => {
-      console.log('schemaTree', schemaTree);
+      // console.log('schemaTree', schemaTree);
     })
     // throw error to express global error handler
     .catch((err: {}) => {
