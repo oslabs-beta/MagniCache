@@ -267,7 +267,7 @@ Magnicache.prototype.query = function (
 
         // calculate average memory access time and update metrics object
         this.metrics.AvgMemAccTime = Math.round(
-          hitRate * this.metrics.AvgCacheTime +
+          hitRate * (this.metrics.AvgCacheTime + 1) +
             (1 - hitRate) * this.metrics.AvgMissTime
         );
 
@@ -298,7 +298,7 @@ Magnicache.prototype.query = function (
           // calculate the hit time
           const hitTime = Math.floor(Date.now() - hitStart);
           // update the metrics object
-          this.metrics.AvgCacheTime = Math.round(
+          this.metrics.AvgCacheTime = Math.ceil(
             (this.metrics.AvgCacheTime + hitTime) / this.metrics.totalHits
           );
         } else {
@@ -324,10 +324,11 @@ Magnicache.prototype.query = function (
               this.metrics.totalMisses++;
               this.sizeLeft = this.maxSize - this.metrics.cacheUsage;
               const missTime = Date.now() - missStart;
-              this.metrics.AvgMissTime = Math.round(
+              this.metrics.AvgMissTime = missTime
+              this.metrics.AvgMissTime = Math.ceil(
                 (this.metrics.AvgMissTime + missTime) / this.metrics.totalMisses
               );
-              this.metrics.AvgMissTime == Math.round(this.metrics.AvgMissTime);
+              this.metrics.AvgMissTime = Math.round(this.metrics.AvgMissTime);
               calcAMAT();
               // check if all queries have been fetched
               if (queries.length === queryResponses.length) {

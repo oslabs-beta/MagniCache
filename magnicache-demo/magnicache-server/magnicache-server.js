@@ -230,7 +230,7 @@ Magnicache.prototype.query = function (req, res, next) {
                 var hitRate = _this.metrics.totalHits /
                     (_this.metrics.totalHits + _this.metrics.totalMisses);
                 // calculate average memory access time and update metrics object
-                _this.metrics.AvgMemAccTime = Math.round(hitRate * _this.metrics.AvgCacheTime +
+                _this.metrics.AvgMemAccTime = Math.round(hitRate * (_this.metrics.AvgCacheTime + 1) +
                     (1 - hitRate) * _this.metrics.AvgMissTime);
                 // Return the calculated metric
                 return _this.metrics.AvgMemAccTime;
@@ -255,7 +255,7 @@ Magnicache.prototype.query = function (req, res, next) {
                     // calculate the hit time
                     var hitTime = Math.floor(Date.now() - hitStart);
                     // update the metrics object
-                    this_1.metrics.AvgCacheTime = Math.round((this_1.metrics.AvgCacheTime + hitTime) / this_1.metrics.totalHits);
+                    this_1.metrics.AvgCacheTime = Math.ceil((this_1.metrics.AvgCacheTime + hitTime) / this_1.metrics.totalHits);
                 }
                 else {
                     // start the miss timer
@@ -279,8 +279,9 @@ Magnicache.prototype.query = function (req, res, next) {
                         _this.metrics.totalMisses++;
                         _this.sizeLeft = _this.maxSize - _this.metrics.cacheUsage;
                         var missTime = Date.now() - missStart_1;
-                        _this.metrics.AvgMissTime = Math.round((_this.metrics.AvgMissTime + missTime) / _this.metrics.totalMisses);
-                        _this.metrics.AvgMissTime == Math.round(_this.metrics.AvgMissTime);
+                        _this.metrics.AvgMissTime = missTime;
+                        _this.metrics.AvgMissTime = Math.ceil((_this.metrics.AvgMissTime + missTime) / _this.metrics.totalMisses);
+                        _this.metrics.AvgMissTime = Math.round(_this.metrics.AvgMissTime);
                         calcAMAT_1();
                         // check if all queries have been fetched
                         if (queries_2.length === queryResponses_1.length) {

@@ -148,6 +148,15 @@ const MetricsContainer: React.FC = () => {
 
   return (
     <div className="metrics-container">
+      <div className="visuals-container">
+        <VisualsDisplay
+          key={'B1'}
+          queryValue={queryValue}
+          queryResponse={queryResponse}
+          metrics={metrics}
+          setMetrics={setMetrics}
+        />
+      </div>
       <div className="query-container">
         <QueryDisplay
           metrics={metrics}
@@ -162,15 +171,6 @@ const MetricsContainer: React.FC = () => {
           clientMode={clientMode}
           setClientMode={setClientMode}
           handleSwitchMode={handleSwitchMode}
-        />
-      </div>
-      <div className="visuals-container">
-        <VisualsDisplay
-          key={'B1'}
-          queryValue={queryValue}
-          queryResponse={queryResponse}
-          metrics={metrics}
-          setMetrics={setMetrics}
         />
       </div>
     </div>
