@@ -14,7 +14,8 @@
     "build": "cross-env NODE_ENV=production webpack",
     "dev": "cross-env NODE_ENV=development webpack serve & nodemon ./magnicache-demo/server.js",
     "test-server": "jest magnicache-server.test.ts",
-    "test-client": "jest magnicache-client.test.ts"
+    "test-client": "jest magnicache-client.test.ts",
+    "test-demo": "NODE_ENV=test jest magnicache-demo.test.ts"
   },
   "repository": {
     "type": "git",
@@ -46,6 +47,7 @@
     "cross-env": "^5.2.0",
     "css-loader": "^6.7.3",
     "file-loader": "^6.2.0",
+    "graphql": "^16.6.0",
     "html-webpack-plugin": "^5.5.0",
     "jest": "^29.5.0",
     "lodash.mergewith": "^4.6.2",
@@ -57,6 +59,7 @@
     "sass": "^1.57.1",
     "sass-loader": "^13.2.0",
     "style-loader": "^3.3.1",
+    "supertest": "^6.3.3",
     "throttle": "^1.0.3",
     "ts-jest": "^29.0.5",
     "ts-loader": "^9.4.2",
