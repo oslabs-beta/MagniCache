@@ -14,7 +14,7 @@ MagniCache is unique in its exceptional efficiency. MagniCache's caching algorit
 
 <p align="center">
   <img src="./assets/Readme-graph.jpg" width="80%">
-  <p align="center">Caching of queries leads to nearly instantaneous response times</p>
+  <p align="center">Caching of queries leads to nearly instantaneous response times!</p>
 </p>
 
 ## How to use MagniCache
@@ -56,9 +56,9 @@ After deciding on how to implement MagniCache into your project, follow the link
 
 As an Open Source Product, we are always welcoming contributions! To be apart of MagniCache, you can follow the steps below:
 
-1. Fork this repository, copying the `dev` branch
+1. Fork this repository, copying the `dev` branch.
 
-2. Create your feature branch from `dev`
+2. Create your feature branch from `dev`.
 
 3. Once you have finished contributing to your feature branch, add and commit all changes.
 
