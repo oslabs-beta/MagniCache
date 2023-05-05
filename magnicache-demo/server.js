@@ -20,7 +20,7 @@ const PORT = 3000;
 app.use(express.json());
 // app.use(cookieParser());
 
-app.get(['/', '/demo', '/info', '/team'], (req, res) => {
+app.get(['/', '/info', '/team'], (req, res) => {
   // express.static(path.join(__dirname, '../client'));
   res.status(200).sendFile(path.join(__dirname, '../client/index.html'));
 });
