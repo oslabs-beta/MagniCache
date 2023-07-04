@@ -19,7 +19,7 @@ MagniCache is unique in its exceptional efficiency. MagniCache's caching algorit
 
 ## How to use MagniCache
 
-<a href="linkedin.com/company/magnicache">Click here to demo MagniCache!</a>
+<a href="https://www.magnicache.us/demo">Click here to demo MagniCache!</a>
 
 Type your GraphQL queries in the Query field on the left and click Run. Check out the query response and metrics below to observe caching in action!
 
