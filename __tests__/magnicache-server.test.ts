@@ -4,7 +4,6 @@ import { NextFunction, Request, Response } from 'express';
 const { IntrospectionQuery } = require('./IntrospectionQuery');
 const { graphql } = require('graphql');
 
-//TODO: Set up proper error handling for invalid params
 describe('MagniCache Setup', () => {
   let magnicache: any;
   beforeEach((done) => {
@@ -42,7 +41,6 @@ describe('Magnicache.query execution', () => {
     done();
   });
 
-  //TODO: make the error handling for this better
   it('responds when missing query property', async () => {
     const expectedRes = {
       queryResponse: 'Invalid query',

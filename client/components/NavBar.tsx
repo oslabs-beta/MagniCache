@@ -15,9 +15,9 @@ const NavBar: React.FC = () => {
           <img src={logo} className="logo" />
         </Navbar.Brand>
         <Nav className="all-nav-links">
-          {/* <Nav.Link as={Link} id="demo-nav-link" to="/demo">
+          <Nav.Link as={Link} id="demo-nav-link" to="/demo">
             Demo
-          </Nav.Link> */}
+          </Nav.Link>
           <Nav.Link as={Link} id="install-nav-link" to="/info">
             Installation
           </Nav.Link>

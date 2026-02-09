@@ -13,7 +13,6 @@ function MagniClient(this: any, maxSize: number = 40): void {
   const cache = localStorage.getItem('MagniClient');
   if (cache === null) {
     this.cache = [];
-    // TODO: check if this line is even nesaccary
     localStorage.setItem('MagniClient', JSON.stringify(this.cache));
   } else {
     // make sure there are no duplicate in our cache array
@@ -39,7 +38,6 @@ MagniClient.prototype.set = function (query: string, value: {}): void {
 MagniClient.prototype.get = function (query: string): {} {
   // get value from localstorage
   const value = localStorage.getItem(query);
-  // TODO: improve error handling
   if (value === null) return {};
   // move the key to the end of the cache array
   const index = this.cache.indexOf(query);

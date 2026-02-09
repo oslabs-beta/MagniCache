@@ -32,7 +32,6 @@ describe('MagniClient', () => {
       expect(newMagniClient.cache).toEqual(['query1', 'query2']);
     });
 
-    // TODO: test for MagniClient's methods
   });
 
   describe('set', () => {

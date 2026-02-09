@@ -19,7 +19,7 @@ const App: Rtype = () => {
       <NavBar />
       <Routes>
         <Route path="/" element={<AboutPage />} />
-        {/* <Route path="/demo" element={<MetricsContainer />} /> */}
+        <Route path="/demo" element={<MetricsContainer />} />
         <Route path="/info" element={<DocsPage />} />
         <Route path="/team" element={<TeamPage />} />
       </Routes>
