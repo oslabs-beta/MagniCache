@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import CacheMetrics from '../components/CacheMetrics';
 import { CacheMetricsType } from '../../types';
+import CacheMetrics from '../components/CacheMetrics';
 
 // Component for creating and rendering container for extra metrics(CacheMetrics)
 const XMetrics = () => {

@@ -437,6 +437,18 @@ body {
   margin-top: 10%;
 }
 
+@keyframes spinner {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.img-fluid {
+  animation: spinner 8s linear infinite;
+}
+
 // ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE
 // ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE
 // ALL PAGES AND THEIR SELECTORS ABOVE THIS LINE
@@ -591,6 +603,9 @@ body {
 }
 
 @media (min-width: 1920px) {
+  .xtra-dough {
+    top: 34.5%;
+  }
 }
 
 // ALL MEDIA QUERIES ABOVE THIS LINE

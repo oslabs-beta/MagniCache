@@ -70,7 +70,6 @@ MagniClient.prototype.query = function (query, endpoint) {
         //whereas in server we saved response on res.locals to send back to client, here we just update the client side cache
         console.log(response);
         resolve([response, { uncached: uncached_1 }]);
-        // resolve(response);
       };
       var uncached_1 = false;
       var _loop_1 = function (query_1) {

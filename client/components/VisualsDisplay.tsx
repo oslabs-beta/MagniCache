@@ -1,19 +1,18 @@
-import React, { useState, useEffect, useContext, SetStateAction } from 'react';
 import {
-  Chart as ChartJS,
   ArcElement,
   CategoryScale,
+  Chart as ChartJS,
+  Legend,
   LinearScale,
-  PointElement,
   LineElement,
+  PointElement,
   Title,
   Tooltip,
-  Legend,
 } from 'chart.js';
+import React, { SetStateAction } from 'react';
 import { Line, Pie } from 'react-chartjs-2';
-import Response from './Response';
 import { Metrics } from '../../types';
-
+import Response from './Response';
 
 // Register necessary elements from Chartjs
 ChartJS.register(
@@ -38,7 +37,6 @@ interface VisualProps {
 
 // Create the charts within this file, response.tsx will take care of the metrics for the cache response
 const VisualsDisplay = (props: VisualProps) => {
-
   // Destructure metrics off of props
   // const { queryResponse, metrics } = props;
   const { metrics } = props;

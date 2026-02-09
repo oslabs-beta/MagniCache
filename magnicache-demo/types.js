@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 exports.__esModule = true;
 /*
      this.metrics = { //type this to be a cacheMetrics type

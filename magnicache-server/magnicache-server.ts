@@ -1,14 +1,11 @@
 const { GraphQLSchema, graphql } = require('graphql');
 const { parse } = require('graphql/language/parser');
-import { Response, Request, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { MagnicacheType } from './../types';
 // import * as mergeWith from 'lodash.mergewith';
 const mergeWith = require('lodash.mergewith');
 const { IntrospectionQuery } = require('./IntrospectionQuery');
-// TODO?: type "this" more specifically
-// TODO?: add query type to linked list => refactor mutations
-// TODO?: rename EvictionNode => Node
-// TODO?: put Cache.validate on Magnicache prototype, only store schema once
+
 
 function Magnicache(this: MagnicacheType, schema: {}, maxSize = 100): void {
   if (!this.schemaIsValid(schema)) {
@@ -97,8 +94,6 @@ class Cache<T> {
     return newNode;
   }
 
-  // remove node from linked list
-  // TODO: type node
   delete(node: any): void {
     // SHOULD NEVER RUN: delete should only be invoked when node is known to exist
     if (node === null)
@@ -148,7 +143,7 @@ class Cache<T> {
 
     return node.value;
   }
-  // TODO: type node
+
   validate(node: any): void {
     if (node?.key === null)
       throw new Error('ERROR in MagniCache.cache.validate: invalid node');
@@ -187,17 +182,6 @@ Magnicache.prototype.query = function (
   // get graphql query from request body
 
   const { query } = req.body;
-
-  // if query is null, send back a 400 code
-  // if (query === null || query === '') {
-  //   res.locals.queryResponse = 'missing query body';
-  //   return next();
-  // }
-
-  //TODO: Make sure to handle the error from parse if it is an invalid query
-
-  // parse the query into an AST
-  // let ast;
   let ast: any;
 
   try {
@@ -267,7 +251,7 @@ Magnicache.prototype.query = function (
 
         // calculate average memory access time and update metrics object
         this.metrics.AvgMemAccTime = Math.round(
-          hitRate * this.metrics.AvgCacheTime +
+          hitRate * (this.metrics.AvgCacheTime + 1) +
             (1 - hitRate) * this.metrics.AvgMissTime
         );
 
@@ -298,7 +282,7 @@ Magnicache.prototype.query = function (
           // calculate the hit time
           const hitTime = Math.floor(Date.now() - hitStart);
           // update the metrics object
-          this.metrics.AvgCacheTime = Math.round(
+          this.metrics.AvgCacheTime = Math.ceil(
             (this.metrics.AvgCacheTime + hitTime) / this.metrics.totalHits
           );
         } else {
@@ -324,10 +308,11 @@ Magnicache.prototype.query = function (
               this.metrics.totalMisses++;
               this.sizeLeft = this.maxSize - this.metrics.cacheUsage;
               const missTime = Date.now() - missStart;
-              this.metrics.AvgMissTime = Math.round(
+              this.metrics.AvgMissTime = missTime;
+              this.metrics.AvgMissTime = Math.ceil(
                 (this.metrics.AvgMissTime + missTime) / this.metrics.totalMisses
               );
-              this.metrics.AvgMissTime == Math.round(this.metrics.AvgMissTime);
+              this.metrics.AvgMissTime = Math.round(this.metrics.AvgMissTime);
               calcAMAT();
               // check if all queries have been fetched
               if (queries.length === queryResponses.length) {
@@ -380,7 +365,7 @@ Magnicache.prototype.query = function (
           });
         });
       })
-      // TODO: type err
+
       .catch((err: any) => {
         console.error(err);
         return err;
@@ -460,26 +445,21 @@ Magnicache.prototype.magniParser = function (
 };
 
 Magnicache.prototype.schemaParser = function (schema: typeof this.schema) {
-  // TODO: refactor to be able to store multiple types for each query
-  // TODO: stricter types for schemaTree
   const schemaTree: { queries: any; mutations: any } = {
     queries: {
       //Ex: allMessages:Messages
     },
     mutations: {},
   };
-  // TODO: type 'type'
-  // TODO: refactor to ensure there isn't an infinite loop
+
   const typeFinder = (type: any): string => {
-    // console.log('field', type);
     if (type.name === null) return typeFinder(type.ofType);
     return type.name;
   };
 
-  // TODO: Type the result for the schema
   graphql({ schema: this.schema, source: IntrospectionQuery })
     .then((result: any) => {
-      // console.log(result.data.__schema.queryType);
+
       if (result.data.__schema.queryType) {
         for (const field of result.data.__schema.queryType.fields) {
           schemaTree.queries[field.name] = typeFinder(field.type);
@@ -492,19 +472,17 @@ Magnicache.prototype.schemaParser = function (schema: typeof this.schema) {
       }
     })
     .then(() => {
-      // console.log('schemaTree', schemaTree);
     })
     // throw error to express global error handler
     .catch((err: {}) => {
       console.error(err);
-      // throw new Error(`ERROR executing graphql query` + JSON.stringify(err));
       return err;
     });
 
   return schemaTree;
 };
 
-Magnicache.prototype.schemaIsValid = function (schema) {
+Magnicache.prototype.schemaIsValid = function (schema:any) {
   return schema instanceof GraphQLSchema;
 };
 

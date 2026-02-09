@@ -6,16 +6,10 @@ interface ResultProps {
 }
 
 const Result: React.FC<ResultProps> = ({ queryResponse }) => {
-
   return (
     <>
-    {/* Return a 'single' result on to the page. */}
       <p className="single-result">
-        {JSON.stringify(
-          queryResponse,
-          null,
-          1.5
-        )}
+        {JSON.stringify(queryResponse, null, 1.5)}
       </p>
     </>
   );

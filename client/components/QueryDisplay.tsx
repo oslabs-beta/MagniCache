@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
-import Result from './Result';
-import XMetrics from '../containers/XMetrics';
 import { Metrics } from '../../types';
+import XMetrics from '../containers/XMetrics';
+import Result from './Result';
 
 // Create an interface for props to be destructered
 interface QueryProps {

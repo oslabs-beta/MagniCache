@@ -1,6 +1,5 @@
 import React from 'react';
 
-// Component for rendering documentation page(TODO)
 const DocsPage: React.FC = () => {
   return (
     <div id="docs-page">

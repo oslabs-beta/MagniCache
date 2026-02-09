@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
+import { Metrics } from '../../types';
 import QueryDisplay from '../components/QueryDisplay';
 import VisualsDisplay from '../components/VisualsDisplay';
-import { Metrics } from '../../types';
 
 // Import and create a new instance of the magnicache client function
 const MagniClient = require('../magnicache-client.js');
@@ -32,7 +32,6 @@ const MetricsContainer: React.FC = () => {
         const startTime = performance.now();
         magniClient
           .query(queryValue, '/graphql')
-          // TODO: to clean up, try destructuring array in .then parameters
           .then((res: any): any => {
             //set all the metrics in this 'then' block
             let cacheStatus!: 'hit' | 'miss';
@@ -148,6 +147,15 @@ const MetricsContainer: React.FC = () => {
 
   return (
     <div className="metrics-container">
+      <div className="visuals-container">
+        <VisualsDisplay
+          key={'B1'}
+          queryValue={queryValue}
+          queryResponse={queryResponse}
+          metrics={metrics}
+          setMetrics={setMetrics}
+        />
+      </div>
       <div className="query-container">
         <QueryDisplay
           metrics={metrics}
@@ -162,15 +170,6 @@ const MetricsContainer: React.FC = () => {
           clientMode={clientMode}
           setClientMode={setClientMode}
           handleSwitchMode={handleSwitchMode}
-        />
-      </div>
-      <div className="visuals-container">
-        <VisualsDisplay
-          key={'B1'}
-          queryValue={queryValue}
-          queryResponse={queryResponse}
-          metrics={metrics}
-          setMetrics={setMetrics}
         />
       </div>
     </div>

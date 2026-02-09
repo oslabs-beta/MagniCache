@@ -20,7 +20,7 @@ const PORT = 3000;
 app.use(express.json());
 // app.use(cookieParser());
 
-app.get(['/', '/demo', '/info', '/team'], (req, res) => {
+app.get(['/', '/info', '/team'], (req, res) => {
   // express.static(path.join(__dirname, '../client'));
   res.status(200).sendFile(path.join(__dirname, '../client/index.html'));
 });
@@ -66,7 +66,7 @@ const RootQueryType = new GraphQLObjectType({
       type: new GraphQLList(MessageType),
       description: 'all the  messages',
       resolve: async (parent) => {
-        // console.log('parent', parent);
+
         const query =
           'SELECT m.*, users.* FROM messages m INNER JOIN users ON users.user_id = m.sender_id';
         const data = await db.query(query);
@@ -123,11 +123,6 @@ const schema = new GraphQLSchema({
 
 const magnicache = new MagniCache(schema);
 
-//ideally, we would want a viz to have the following middleware:
-//app.get(/magnicache, magnicache.viz, (req,res) => {
-//return res.status(200).sendFile(<root>)
-//})
-
 //currently, we want any requests being sent to /graphql to come back w a custom (header/cookie?) that shows if it is chached or not
 //
 //alternatively, we can have magnicache.query take a vizaulaizer options, set and the send the respoinser from the middleware
@@ -137,7 +132,6 @@ app.use('/graphql', magnicache.query, (req, res) => {
 
 //catch-all route
 app.use('/', (req, res, next) =>
-  //TODO add a 404 page to route to
   next({
     log: 'Express catch all handler caught unknown route',
     status: 404,
@@ -153,7 +147,6 @@ const defaultErr = {
 
 app.use((err, req, res, next) => {
   const errorObj = Object.assign(defaultErr, err);
-  // console.log(errorObj.log);
   return res.status(errorObj.status).json(errorObj.message);
 });
 

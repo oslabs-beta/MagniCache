@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pie, Doughnut } from 'react-chartjs-2';
+import { Doughnut, Pie } from 'react-chartjs-2';
 import { CacheMetricsType } from '../../types';
 
 // Define interface for the props that will be passed to the component
@@ -69,8 +69,8 @@ const CacheMetrics = (props: CacheProps) => {
       <div className="cache-metric">Total Hits: {totalHits}</div>
       <br></br>
       <div className="half-metrics">
-      <div className="cache-metric">Total Misses: {totalMisses}</div>
-      <br></br>
+        <div className="cache-metric">Total Misses: {totalMisses}</div>
+        <br></br>
 
         <div className="cache-metric">
           Average Miss Response Time: {Math.round(AvgMissTime)}ms
